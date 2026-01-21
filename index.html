@@ -118,7 +118,7 @@
                 <div class="formation-controls">
                     <div class="formation-selector">
                         <label for="formation-select"><i class="fas fa-futbol"></i> Formación:</label>
-                        <select id="formation-select" onchange="changeFormation(this.value)">
+                        <select id="formation-select">
                             <option value="1-2-2-1">1-2-2-1 (Equilibrada)</option>
                             <option value="2-1-2">2-1-2 (Ofensiva Central)</option>
                             <option value="1-3-2">1-3-2 (Defensiva)</option>
@@ -126,7 +126,7 @@
                             <option value="1-4-1">1-4-1 (Ultra Defensiva)</option>
                         </select>
                     </div>
-                    <button class="btn-reset" onclick="resetLineup()">
+                    <button class="btn-reset" id="btn-reset">
                         <i class="fas fa-redo"></i> Restaurar Inicial
                     </button>
                 </div>
@@ -160,13 +160,13 @@
             </div>
 
             <!-- Modal para seleccionar jugador -->
-            <div class="player-selector-modal" id="player-selector-modal" onclick="closePlayerSelector()">
-                <div class="selector-content" onclick="event.stopPropagation()">
+            <div class="player-selector-modal" id="player-selector-modal">
+                <div class="selector-content">
                     <h3 id="selector-title">Seleccionar Jugador</h3>
                     <div id="player-options">
                         <!-- Options populated by JS -->
                     </div>
-                    <button class="selector-close" onclick="closePlayerSelector()">Cerrar</button>
+                    <button class="selector-close" id="selector-close">Cerrar</button>
                 </div>
             </div>
 

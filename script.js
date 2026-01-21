@@ -1,59 +1,100 @@
+// Polyfills para compatibilidad con Edge
+// NodeList.forEach polyfill
+if (window.NodeList && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
+// Array.from polyfill
+if (!Array.from) {
+    Array.from = function(arrayLike) {
+        return Array.prototype.slice.call(arrayLike);
+    };
+}
+
 // Global variables
-let rosterData = null;
-let currentLineup = [];
-let initialLineup = [];
-let draggedElement = null;
-let draggedIndex = null;
+var rosterData = null;
+var currentLineup = [];
+var initialLineup = [];
+var draggedElement = null;
+var draggedIndex = null;
 
 // Initialize roster on page load
-async function initRoster() {
-    try {
-        const res = await fetch('data/roster.json');
-        if (!res.ok) throw new Error('No se pudo cargar roster.json');
-        rosterData = await res.json();
+function initRoster() {
+    console.log('Iniciando carga del roster...');
+    console.log('URL base:', window.location.href);
+    
+    fetch('data/roster.json')
+        .then(function(res) {
+            console.log('Respuesta del fetch:', res.status, res.statusText);
+            
+            if (!res.ok) {
+                throw new Error('No se pudo cargar roster.json: ' + res.status + ' ' + res.statusText);
+            }
+            
+            return res.json();
+        })
+        .then(function(data) {
+            rosterData = data;
+            console.log('Datos cargados exitosamente:', rosterData);
 
-        // Render all sections
-        renderPositionLists();
-        renderFullRoster();
-        renderDT();
-        renderCaptains();
-        renderField();
-        
-        // Highlight veterans
-        highlightVeterans();
-    } catch (err) {
-        console.error('Error inicializando roster:', err);
-        showNotification('Error al cargar los datos del equipo', 'error');
-    }
+            // Render all sections
+            renderPositionLists();
+            renderFullRoster();
+            renderDT();
+            renderCaptains();
+            renderField();
+            
+            // Highlight veterans
+            highlightVeterans();
+            
+            console.log('Renderizado completado');
+        })
+        .catch(function(err) {
+            console.error('Error inicializando roster:', err);
+            console.error('Stack trace:', err.stack);
+            showNotification('Error al cargar los datos del equipo. Revisa la consola para más detalles.', 'error');
+            
+            // Show error on page
+            var main = document.querySelector('main');
+            if (main) {
+                var errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'background: #ffebee; color: #c62828; padding: 20px; margin: 20px; border-radius: 8px; border-left: 4px solid #c62828;';
+                errorDiv.innerHTML = '<h3><i class="fas fa-exclamation-triangle"></i> Error al cargar datos</h3>' +
+                    '<p><strong>Mensaje:</strong> ' + err.message + '</p>' +
+                    '<p><strong>Detalles:</strong> Verifica que el archivo data/roster.json existe y es accesible.</p>' +
+                    '<p><strong>URL actual:</strong> ' + window.location.href + '</p>';
+                main.insertBefore(errorDiv, main.firstChild);
+            }
+        });
 }
 
 // Render position lists (porteros, defensas, medio, delanteros)
 function renderPositionLists() {
-    document.querySelectorAll('.players-list').forEach(container => {
-        const pos = container.getAttribute('data-position');
+    document.querySelectorAll('.players-list').forEach(function(container) {
+        var pos = container.getAttribute('data-position');
         if (pos) renderPositionList(pos, container);
     });
 }
 
 function renderPositionList(positionKey, container) {
-    const posList = (rosterData.positions && rosterData.positions[positionKey]) || rosterData[positionKey] || [];
+    var posList = (rosterData.positions && rosterData.positions[positionKey]) || rosterData[positionKey] || [];
     container.innerHTML = '';
     
-    posList.forEach(entry => {
-        const playerRef = entry.id ? (rosterData.players && rosterData.players[entry.id]) : entry;
+    posList.forEach(function(entry) {
+        var playerRef = entry.id ? (rosterData.players && rosterData.players[entry.id]) : entry;
         if (!playerRef) return;
         
-        const item = document.createElement('div');
+        var item = document.createElement('div');
         item.className = 'player-item ' + (entry.priority || playerRef.priority || '');
 
-        const info = document.createElement('div');
+        var info = document.createElement('div');
         info.className = 'player-info';
 
-        const name = document.createElement('span');
+        var name = document.createElement('span');
         name.className = 'player-name' + (playerRef.veteran ? ' veteran' : '');
         name.textContent = playerRef.name;
 
-        const number = document.createElement('span');
+        var number = document.createElement('span');
         number.className = 'player-number';
         number.textContent = playerRef.number ? ('N° ' + playerRef.number) : 'Sin número';
 
@@ -206,7 +247,7 @@ function handleDragStart(e) {
 function handleDragEnd(e) {
     this.classList.remove('dragging');
     // Remove all drag-over classes
-    document.querySelectorAll('.player-on-field').forEach(el => {
+    document.querySelectorAll('.player-on-field').forEach(function(el) {
         el.classList.remove('drag-over');
     });
     draggedElement = null;
@@ -609,4 +650,54 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', initRoster);
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Iniciando aplicación');
+    
+    // Initialize roster
+    initRoster();
+    
+    // Setup event listeners
+    const formationSelect = document.getElementById('formation-select');
+    if (formationSelect) {
+        formationSelect.addEventListener('change', function(e) {
+            changeFormation(e.target.value);
+        });
+    }
+    
+    const btnReset = document.getElementById('btn-reset');
+    if (btnReset) {
+        btnReset.addEventListener('click', function(e) {
+            e.preventDefault();
+            resetLineup();
+        });
+    }
+    
+    const selectorClose = document.getElementById('selector-close');
+    if (selectorClose) {
+        selectorClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            closePlayerSelector();
+        });
+    }
+    
+    const modal = document.getElementById('player-selector-modal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closePlayerSelector();
+            }
+        });
+    }
+    
+    const selectorContent = document.querySelector('.selector-content');
+    if (selectorContent) {
+        selectorContent.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+});
+
+// Make functions globally available for compatibility
+window.changeFormation = changeFormation;
+window.resetLineup = resetLineup;
+window.closePlayerSelector = closePlayerSelector;
