@@ -596,8 +596,92 @@ h1 {
     transition: transform 0.3s, box-shadow 0.3s;
     color: white;
     padding: 5px;
-    cursor: pointer;
+    cursor: move;
     border: 3px solid rgba(255,255,255,0.3);
+    position: relative;
+}
+
+.player-on-field .player-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.player-on-field .player-field-name {
+    font-size: 0.75rem;
+    line-height: 1.1;
+}
+
+.player-on-field .player-field-number {
+    font-size: 0.8rem;
+    line-height: 1.1;
+}
+
+.player-on-field.empty-position {
+    background: rgba(255, 255, 255, 0.3);
+    border: 3px dashed rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-on-field.empty-position i {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.player-on-field.empty-position:hover {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: white;
+}
+
+.player-on-field.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+}
+
+.player-on-field.drag-over {
+    transform: scale(1.2);
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.remove-player-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #e53935;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s;
+    font-size: 0.7rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.player-on-field:hover .remove-player-btn {
+    opacity: 1;
+}
+
+.remove-player-btn:hover {
+    background: #c62828;
+    transform: scale(1.1);
+}
+
+.remove-player-btn:active {
+    transform: scale(0.95);
 }
 
 @media (max-width: 768px) {
@@ -607,6 +691,21 @@ h1 {
         font-size: 0.7rem;
         padding: 3px;
     }
+    
+    .player-on-field .player-field-name {
+        font-size: 0.65rem;
+    }
+    
+    .player-on-field .player-field-number {
+        font-size: 0.7rem;
+    }
+    
+    .remove-player-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 0.6rem;
+        opacity: 1;
+    }
 }
 
 @media (max-width: 480px) {
@@ -615,6 +714,20 @@ h1 {
         height: 48px;
         font-size: 0.65rem;
         padding: 2px;
+    }
+    
+    .player-on-field .player-field-name {
+        font-size: 0.6rem;
+    }
+    
+    .player-on-field .player-field-number {
+        font-size: 0.65rem;
+    }
+    
+    .remove-player-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 0.55rem;
     }
 }
 

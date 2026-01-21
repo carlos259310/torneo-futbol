@@ -1,58 +1,197 @@
 {
-  "players": {
-    "1": { "name": "Fernando Almeida", "number": "99", "veteran": false },
-    "2": { "name": "Gregorio", "number": "17", "veteran": true },
-    "3": { "name": "Carlos Daniel", "number": "15", "veteran": false },
-    "4": { "name": "Fredual", "number": "2", "veteran": false },
-    "5": { "name": "Fernando Senior", "number": "7", "veteran": true },
-    "6": { "name": "Javier", "number": "27", "veteran": false },
-    "7": { "name": "Harold", "number": "9", "veteran": false },
-    "8": { "name": "Jhon Villamizar", "number": "22", "veteran": false },
-    "9": { "name": "Carlos Medina", "number": "94", "veteran": false },
-    "10": { "name": "Juan Duarte", "number": "10", "veteran": false },
-    "11": { "name": "Cristian", "number": "4", "veteran": false }
-  },
-  "positions": {
-    "porteros": [
-      { "id": "1", "priority": "high-priority" },
-      { "id": "2", "priority": "medium-priority" },
-      { "id": "3", "priority": "medium-priority" },
-      { "id": "4", "priority": "low-priority" }
+    "players": {
+        "1": {
+            "name": "Fernando Almeida",
+            "number": "99",
+            "veteran": false
+        },
+        "2": {
+            "name": "Gregorio",
+            "number": "17",
+            "veteran": true
+        },
+        "3": {
+            "name": "Carlos Daniel",
+            "number": "15",
+            "veteran": false
+        },
+        "4": {
+            "name": "Fredual",
+            "number": "2",
+            "veteran": false
+        },
+        "5": {
+            "name": "Fernando Senior",
+            "number": "7",
+            "veteran": true
+        },
+        "6": {
+            "name": "Javier",
+            "number": "27",
+            "veteran": false
+        },
+        "7": {
+            "name": "Harold",
+            "number": "9",
+            "veteran": false
+        },
+        "8": {
+            "name": "Jhon Villamizar",
+            "number": "22",
+            "veteran": false
+        },
+        "9": {
+            "name": "Carlos Medina",
+            "number": "94",
+            "veteran": false
+        },
+        "10": {
+            "name": "Juan Duarte",
+            "number": "10",
+            "veteran": false
+        },
+        "11": {
+            "name": "Cristian",
+            "number": "4",
+            "veteran": false
+        }
+    },
+    "positions": {
+        "porteros": [
+            {
+                "id": "1",
+                "priority": "high-priority"
+            },
+            {
+                "id": "2",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "3",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "4",
+                "priority": "low-priority"
+            } ,
+                      {
+                "id": "7",
+                "priority": "low-priority"
+            }
+        ],
+        "defensas": [
+            {
+                "id": "3",
+                "priority": "high-priority"
+            },
+            {
+                "id": "2",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "11",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "4",
+                "priority": "low-priority"
+            },
+            {
+                "id": "5",
+                "priority": "low-priority"
+            },
+            {
+                "id": "6",
+                "priority": "low-priority"
+            }
+        ],
+        "medio": [
+            {
+                "id": "7",
+                "priority": "high-priority"
+            },
+            {
+                "id": "8",
+                "priority": "high-priority"
+            },
+            {
+                "id": "6",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "9",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "2",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "3",
+                "priority": "low-priority"
+            }
+        ],
+        "delanteros": [
+            {
+                "id": "10",
+                "priority": "high-priority"
+            },
+            {
+                "id": "8",
+                "priority": "medium-priority"
+            },
+            {
+                "id": "7",
+                "priority": "low-priority"
+            }
+        ]
+    },
+    "captains": [
+        {
+            "order": 1,
+            "id": "7"
+        },
+        {
+            "order": 2,
+            "id": "3"
+        },
+        {
+            "order": 3,
+            "id": "8"
+        },
+        {
+            "order": 4,
+            "id": "1"
+        }
     ],
-    "defensas": [
-      { "id": "3", "priority": "high-priority" },
-      { "id": "2", "priority": "medium-priority" },
-      { "id": "11", "priority": "medium-priority" },
-      { "id": "4", "priority": "low-priority" },
-      { "id": "5", "priority": "low-priority" },
-      { "id": "6", "priority": "low-priority" }
-    ],
-    "medio": [
-      { "id": "7", "priority": "high-priority" },
-      { "id": "8", "priority": "high-priority" },
-      { "id": "6", "priority": "medium-priority" },
-      { "id": "9", "priority": "medium-priority" },
-      { "id": "3", "priority": "low-priority" }
-    ],
-    "delanteros": [
-      { "id": "10", "priority": "high-priority" },
-      { "id": "8", "priority": "medium-priority" },
-      { "id": "7", "priority": "low-priority" }
+    "dt": {
+        "id": "5"
+    },
+    "field": [
+        {
+            "class": "goalkeeper",
+            "id": "1",
+            "side": "left"
+        },
+        {
+            "class": "defender-1",
+            "id": "2"
+        },
+        {
+            "class": "defender-2",
+            "id": "3"
+        },
+        {
+            "class": "midfielder-1",
+            "id": "6"
+        },
+        {
+            "class": "midfielder-2",
+            "id": "7"
+        },
+        {
+            "class": "forward",
+            "id": "8"
+        }
     ]
-  },
-  "captains": [
-    { "order": 1, "id": "7" },
-    { "order": 2, "id": "3" },
-    { "order": 3, "id": "8" },
-    { "order": 4, "id": "1" }
-  ],
-  "dt": { "id": "5" },
-  "field": [
-    { "class": "goalkeeper", "id": "1", "side": "left" },
-    { "class": "defender-1", "id": "2" },
-    { "class": "defender-2", "id": "3" },
-    { "class": "midfielder-1", "id": "6" },
-    { "class": "midfielder-2", "id": "7" },
-    { "class": "forward", "id": "8" }
-  ]
 }

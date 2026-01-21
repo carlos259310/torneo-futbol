@@ -2,6 +2,8 @@
 let rosterData = null;
 let currentLineup = [];
 let initialLineup = [];
+let draggedElement = null;
+let draggedIndex = null;
 
 // Initialize roster on page load
 async function initRoster() {
@@ -193,8 +195,23 @@ function updateFieldDisplay() {
 
     // Add players to field
     currentLineup.forEach((fp, index) => {
-        const playerRef = fp.id ? (rosterData.players && rosterData.players[fp.id]) : fp;
-        if (!playerRef) return;
+        const playerRef = fp.id ? (rosterData.players && rosterData.players[fp.id]) : null;
+        if (!playerRef) {
+            // Empty position - show placeholder
+            const placeholder = document.createElement('div');
+            placeholder.className = 'player-on-field empty-position ' + (fp.class || '');
+            placeholder.dataset.positionIndex = index;
+            placeholder.dataset.positionClass = fp.class;
+            placeholder.innerHTML = '<i class="fas fa-plus"></i>';
+            placeholder.title = 'Click para agregar jugador';
+            
+            placeholder.addEventListener('click', function() {
+                openPlayerSelector(index, fp.class);
+            });
+            
+            fieldEl.appendChild(placeholder);
+            return;
+        }
         
         const p = document.createElement('div');
         p.className = 'player-on-field ' + (fp.class || '');
@@ -206,19 +223,120 @@ function updateFieldDisplay() {
         
         p.dataset.positionIndex = index;
         p.dataset.positionClass = fp.class;
+        p.draggable = true;
         
+        // Player content
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'player-content';
         if (playerRef.number) {
-            p.innerHTML = `<span style="font-size:0.75rem">${playerRef.name}</span><span style="font-size:0.8rem">${playerRef.number}</span>`;
+            contentDiv.innerHTML = `<span class="player-field-name">${playerRef.name}</span><span class="player-field-number">${playerRef.number}</span>`;
         } else {
-            p.textContent = playerRef.name;
+            contentDiv.textContent = playerRef.name;
         }
-
-        p.addEventListener('click', function() {
+        
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-player-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.title = 'Quitar jugador';
+        removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            removePlayerFromField(index);
+        };
+        
+        p.appendChild(contentDiv);
+        p.appendChild(removeBtn);
+        
+        // Click to change player
+        p.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-player-btn')) return;
             openPlayerSelector(index, fp.class);
         });
+        
+        // Drag events
+        p.addEventListener('dragstart', handleDragStart);
+        p.addEventListener('dragend', handleDragEnd);
+        p.addEventListener('dragover', handleDragOver);
+        p.addEventListener('drop', handleDrop);
+        p.addEventListener('dragenter', handleDragEnter);
+        p.addEventListener('dragleave', handleDragLeave);
 
         fieldEl.appendChild(p);
     });
+}
+
+// Drag and Drop handlers
+function handleDragStart(e) {
+    draggedElement = this;
+    draggedIndex = parseInt(this.dataset.positionIndex);
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    // Remove all drag-over classes
+    document.querySelectorAll('.player-on-field').forEach(el => {
+        el.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    this.classList.remove('drag-over');
+    
+    if (draggedElement !== this) {
+        const targetIndex = parseInt(this.dataset.positionIndex);
+        
+        // Swap players
+        const temp = currentLineup[draggedIndex];
+        currentLineup[draggedIndex] = currentLineup[targetIndex];
+        currentLineup[targetIndex] = temp;
+        
+        updateFieldDisplay();
+        showNotification('Jugadores intercambiados', 'success');
+    }
+    
+    return false;
+}
+
+// Remove player from field
+function removePlayerFromField(index) {
+    const playerRef = currentLineup[index].id ? rosterData.players[currentLineup[index].id] : null;
+    const playerName = playerRef ? playerRef.name : 'Jugador';
+    
+    if (confirm(`¿Quitar a ${playerName} de la alineación?`)) {
+        // Keep position structure but remove player id
+        currentLineup[index] = {
+            class: currentLineup[index].class,
+            side: currentLineup[index].side,
+            id: null
+        };
+        updateFieldDisplay();
+        showNotification(`${playerName} removido de la alineación`, 'info');
+    }
 }
 
 // Open player selector modal
@@ -297,7 +415,7 @@ function resetLineup() {
     if (confirm('¿Estás seguro de que quieres restaurar la alineación inicial?')) {
         currentLineup = JSON.parse(JSON.stringify(initialLineup));
         updateFieldDisplay();
-        showNotification('Alineación restaurada', 'success');
+        showNotification('Alineación restaurada correctamente', 'success');
     }
 }
 
