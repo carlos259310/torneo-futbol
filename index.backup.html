@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipo de Fútbol 6</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        /* Navigation Menu */
+        .navbar {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 44px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link:active {
+            transform: translateY(0);
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .futsal-badge {
+            background-color: #ff9800;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .veteran-note {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* Sección de Plantilla Completa */
+        .roster-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .roster-section h2 {
+            color: #1e3c72;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff9800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .roster-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+            cursor: default;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+        }
+
+        .roster-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #1e3c72;
+        }
+
+        .roster-card .player-number-badge {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(30, 60, 114, 0.3);
+            flex-shrink: 0;
+        }
+
+        .roster-card .roster-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .roster-card .roster-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1e3c72;
+            line-height: 1.3;
+        }
+
+        .roster-card .roster-name.veteran {
+            color: #1565c0;
+        }
+
+        .roster-card .roster-name.veteran::after {
+            content: "*";
+            margin-left: 3px;
+        }
+
+        .roster-total {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: right;
+        }
+
+        .captains-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1 1 auto;
+        }
+
+        /* Inline compact container to hold DT + Captains as two horizontal cards */
+        .positions-inline {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .dt-section {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 10px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 0 0 auto;
+            min-width: 200px;
+        }
+
+        .dt-section h3 {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
+
+        .dt-section h3 i {
+            margin-right: 6px;
+        }
+
+        .dt-section #dt-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dt-section .dt-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .dt-section .dt-number {
+            background-color: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .captains-section h3 {
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Compact items inside the cards */
+        .captains-list {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .captain-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .captain-rank {
+            background-color: #1e3c72;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .captain-item .player-name {
+            font-size: 0.9rem;
+        }
+
+        .captain-item .player-number {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Responsive: stack vertically on small screens */
+        @media (max-width: 768px) {
+            .positions-inline { flex-direction: column; }
+            .dt-section, .captains-section { width: 100%; }
+        }
+
+        /* Full-width DT section */
+        .dt-full-section {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border-radius: 10px;
+            padding: 14px 22px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dt-full-section h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dt-info-full {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dt-info-full .dt-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .dt-info-full .dt-number {
+            background-color: rgba(255,255,255,0.25);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Full-width Captains section */
+        .captains-full-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 14px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .captains-full-section h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1e3c72;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .veteran-note i {
+            margin-right: 5px;
+        }
+        
+        .positions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        @media (min-width: 1200px) {
+            .positions-container {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 18px;
+            }
+        }
+        
+        .position-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .position-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .position-header {
+            padding: 16px 18px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .porteros .position-header { background-color: #1e88e5; }
+        .defensas .position-header { background-color: #43a047; }
+        .medio .position-header { background-color: #fb8c00; }
+        .delanteros .position-header { background-color: #e53935; }
+        
+        .position-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        .position-icon {
+            font-size: 1.5rem;
+        }
+        
+        .players-list {
+            padding: 16px 18px;
+        }
+        
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .player-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Los indicadores de prioridad se han eliminado del HTML; reglas CSS relacionadas retiradas */
+        
+        .player-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .player-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .player-number {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .veteran {
+            color: #1565c0;
+            font-weight: bold;
+        }
+        
+        .veteran::after {
+            content: "*";
+            color: #1565c0;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .high-priority .priority-number {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .medium-priority .priority-number {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .low-priority .priority-number {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .formation-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .formation-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff9800;
+        }
+        
+        .formation-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .field {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            background: linear-gradient(to bottom, #4caf50, #2e7d32);
+            border-radius: 10px;
+            border: 3px solid #1b5e20;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .field {
+                height: 280px;
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .field {
+                height: 240px;
+            }
+        }
+        
+        .goal-area {
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            border: 3px solid white;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @media (max-width: 768px) {
+            .goal-area {
+                width: 70px;
+                height: 140px;
+                border-width: 2px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .goal-area {
+                width: 60px;
+                height: 120px;
+            }
+        }
+        
+        .goal-left {
+            left: 0;
+            border-right: 0;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        
+        .goal-right {
+            right: 0;
+            border-left: 0;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .player-on-field {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .player-on-field {
+                width: 54px;
+                height: 54px;
+                font-size: 0.7rem;
+                padding: 3px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .player-on-field {
+                width: 48px;
+                height: 48px;
+                font-size: 0.65rem;
+                padding: 2px;
+            }
+        }
+        
+        .player-on-field:hover {
+            transform: scale(1.15);
+            z-index: 10;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            border-color: white;
+        }
+
+        .player-on-field.selected {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+        
+        .goalkeeper { top: 50%; left: 8%; transform: translateY(-50%); background-color: #1e88e5; }
+        .defender-1 { top: 30%; left: 30%; background-color: #43a047; }
+        .defender-2 { top: 70%; left: 30%; background-color: #43a047; }
+        .midfielder-1 { top: 25%; left: 55%; transform: translateX(-50%); background-color: #fb8c00; }
+        .midfielder-2 { top: 75%; left: 55%; transform: translateX(-50%); background-color: #fb8c00; }
+        .forward { top: 50%; left: 80%; transform: translateY(-50%); background-color: #e53935; }
+        
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 480px) {
+            .color-legend {
+                gap: 8px;
+                margin-top: 16px;
+            }
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            .legend-item {
+                font-size: 0.85rem;
+                margin: 3px;
+            }
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        .color-portero { background-color: #1e88e5; }
+        .color-defensa { background-color: #43a047; }
+        .color-medio { background-color: #fb8c00; }
+        .color-delantero { background-color: #e53935; }
+        
+        .formation-note {
+            margin-top: 15px;
+            font-style: italic;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Player Selector Modal */
+        .player-selector-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .player-selector-modal.active {
+            display: flex;
+        }
+
+        .selector-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .selector-content h3 {
+            color: #1e3c72;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff9800;
+            font-size: 1.2rem;
+        }
+
+        .player-option {
+            padding: 14px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 56px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .player-option:active {
+            background: #dee2e6;
+            transform: scale(0.98);
+        }
+
+        .player-option:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        .player-option-badge {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .player-option-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .player-option-name.veteran {
+            color: #1565c0;
+        }
+
+        .player-option-name.veteran::after {
+            content: " *";
+        }
+
+        .selector-close {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 16px;
+            width: 100%;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+            min-height: 48px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .selector-close:hover {
+            background: #c62828;
+        }
+
+        .selector-close:active {
+            background: #b71c1c;
+            transform: scale(0.98);
+        }
+        
+        .player-duplicates {
+            background-color: #fffde7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .player-duplicates h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffeb3b;
+        }
+        
+        .duplicate-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .duplicate-item {
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .duplicate-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .duplicate-positions {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .player-count {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .player-count span {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+        
+        .team-rules {
+            background-color: #fff3e0;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #ff9800;
+        }
+        
+        .team-rules h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #ff9800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .team-rules h2 i {
+            color: #ff9800;
+        }
+        
+        .team-rules-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .team-rules-list li {
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: start;
+            gap: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .team-rules-list li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team-rules-list li i {
+            color: #ff9800;
+            font-size: 1.3rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .team-rules-list li span {
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .futsal-rules {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .futsal-rules h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4caf50;
+        }
+        
+        .rules-list {
+            list-style-type: none;
+        }
+        
+        .rules-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .rules-list i {
+            color: #4caf50;
+            margin-right: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .positions-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .roster-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .player-on-field:active {
+                transform: scale(1.1);
+            }
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 12px;
+            }
+
+            header {
+                padding: 16px;
+                margin-bottom: 20px;
+            }
+
+            .selector-content {
+                padding: 16px;
+                max-height: 70vh;
+            }
+
+            .dt-full-section,
+            .captains-full-section {
+                flex-wrap: wrap;
+                padding: 12px 16px;
+            }
+
+            .dt-info-full {
+                flex-wrap: wrap;
+            }
+
+            .formation-section {
+                padding: 16px;
+            }
+
+            .formation-section h2 {
+                font-size: 1.3rem;
+            }
+        }
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#plantilla" class="nav-link"><i class="fas fa-users"></i> Plantilla</a>
+            <a href="#posiciones" class="nav-link"><i class="fas fa-th"></i> Posiciones</a>
+            <a href="#dt-capitanes" class="nav-link"><i class="fas fa-user-tie"></i> DT & Capitanes</a>
+            <a href="#alineacion" class="nav-link"><i class="fas fa-chalkboard"></i> Alineación</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="futsal-badge">
+                <i class="fas fa-futbol"></i>  TORNEO FÚTBOL 6
+            </div>
+            <h1>Equipo de Fútbol</h1>
+            <div class="veteran-note">
+                <i class="fas fa-star"></i> Los jugadores marcados con * son veteranos y obligatorios en la alineación
+            </div>
+        </header>
+        
+        <main>
+            <!-- Sección: Plantilla Completa -->
+            <section id="plantilla" class="roster-section" aria-label="Plantilla Completa">
+                <h2><i class="fas fa-users"></i> Plantilla Completa</h2>
+                <div class="roster-grid" id="roster-grid">
+                    <!-- jugadores renderizados desde JSON -->
+                </div>
+                <div class="roster-total" id="roster-total"></div>
+            </section>
+
+            <!-- Sección: Posiciones por Rol -->
+            <div id="posiciones" class="positions-container">
+                <!-- Porteros -->
+                <div class="position-card porteros">
+                    <div class="position-header">
+                        <h2 class="position-title">Porteros</h2>
+                        <div class="position-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                    </div>
+                    <div class="players-list" data-position="porteros">
+                        <!-- los jugadores se inyectan desde JSON -->
+                    </div>
+                </div>
+                
+                <!-- Defensas -->
+                <div class="position-card defensas">
+                    <div class="position-header">
+                        <h2 class="position-title">Defensas</h2>
+                        <div class="position-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <div class="players-list" data-position="defensas">
+                        <!-- los jugadores se inyectan desde JSON -->
+                    </div>
+                </div>
+                
+                <!-- Medio -->
+                <div class="position-card medio">
+                    <div class="position-header">
+                        <h2 class="position-title">Mediocampistas</h2>
+                        <div class="position-icon">
+                            <i class="fas fa-compress-alt"></i>
+                        </div>
+                    </div>
+                    <div class="players-list" data-position="medio">
+                        <!-- los jugadores se inyectan desde JSON -->
+                    </div>
+                </div>
+                
+                <!-- Delanteros -->
+                <div class="position-card delanteros">
+                    <div class="position-header">
+                        <h2 class="position-title">Delanteros</h2>
+                        <div class="position-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div class="players-list" data-position="delanteros">
+                        <!-- los jugadores se inyectan desde JSON -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Director Técnico (línea completa) -->
+            <section id="dt-capitanes" class="dt-full-section" aria-label="Director Técnico">
+                <h3><i class="fas fa-user-tie"></i> Director Técnico</h3>
+                <div id="dt-info" class="dt-info-full">
+                    <!-- DT rendered from JSON -->
+                </div>
+            </section>
+
+            <!-- Sección: Capitanes (línea completa) -->
+            <section class="captains-full-section" id="captains-full-section" aria-label="Capitanes">
+                <h3><i class="fas fa-star"></i> Capitanes</h3>
+                <div class="captains-list" id="captains-list">
+                    <!-- captains injected from JSON -->
+                </div>
+            </section>
+            
+            <!-- Formación 1-2-2 para fútbol 6 -->
+            <div id="alineacion" class="formation-section">
+                <h2><i class="fas fa-chalkboard"></i> Alineación Sugerida</h2>
+                <p>Formación 1-2-2 para fútbol 6. Haz clic en cada posición para cambiar el jugador:</p>
+                
+                <div class="formation-diagram">
+                    <div class="field" id="field">
+                        <!-- áreas de gol y jugadores se generan desde JSON -->
+                    </div>
+                    
+                    <div class="color-legend">
+                        <div class="legend-item">
+                            <div class="color-box color-portero"></div>
+                            <span>Portero</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-defensa"></div>
+                            <span>Defensa</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-medio"></div>
+                            <span>Mediocampista</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box color-delantero"></div>
+                            <span>Delantero</span>
+                        </div>
+                    </div>
+                    
+                    <p class="formation-note">Haz clic en cualquier jugador para cambiar la alineación según las posiciones disponibles</p>
+                </div>
+            </div>
+
+            <!-- Modal para seleccionar jugador -->
+            <div class="player-selector-modal" id="player-selector-modal">
+                <div class="selector-content">
+                    <h3 id="selector-title">Seleccionar Jugador</h3>
+                    <div id="player-options">
+                        <!-- Options populated by JS -->
+                    </div>
+                    <button class="selector-close" onclick="closePlayerSelector()">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Sección de Reglas del Equipo -->
+            <section class="team-rules">
+                <h2><i class="fas fa-gavel"></i> Reglas del Equipo</h2>
+                <ul class="team-rules-list">
+                    <li>
+                        <i class="fas fa-handshake"></i>
+                        <span>Mantener el respeto por los compañeros antes, durante y después de los partidos. El compañerismo es fundamental para el éxito del equipo.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-ban"></i>
+                        <span>No presentarse en estado de ebriedad a los partidos. La responsabilidad y el compromiso con el equipo son prioritarios.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>Llegar con puntualidad a los encuentros. El tiempo de todos es valioso y la organización depende de cada jugador.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-tshirt"></i>
+                        <span>Portar el uniforme completo y en buen estado. La presentación del equipo refleja nuestro profesionalismo.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-comments"></i>
+                        <span>Comunicar cualquier ausencia con anticipación. La planificación permite reorganizar la alineación a tiempo.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-users"></i>
+                        <span>Apoyar a todos los compañeros sin importar su nivel. El equipo crece cuando todos nos ayudamos mutuamente.</span>
+                    </li>
+                </ul>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Equipo de Fútbol 6 - Organización por posición</p>
+            <p>Actualizado para formato de 6 jugadores</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Carga sencilla del JSON externo y renderizado (fácil de mantener)
+        async function initRoster() {
+            try {
+                const res = await fetch('data/roster.json');
+                if (!res.ok) throw new Error('No se pudo cargar roster.json');
+                const roster = await res.json();
+
+                function renderPositionList(positionKey, container) {
+                    // support new normalized roster.players + roster.positions OR legacy roster[positionKey]
+                    const posList = (roster.positions && roster.positions[positionKey]) || roster[positionKey] || [];
+                    posList.forEach(entry => {
+                        const playerRef = entry.id ? (roster.players && roster.players[entry.id]) : entry;
+                        if (!playerRef) return;
+                        const item = document.createElement('div');
+                        item.className = 'player-item ' + (entry.priority || playerRef.priority || '');
+
+                        const info = document.createElement('div');
+                        info.className = 'player-info';
+
+                        const name = document.createElement('span');
+                        name.className = 'player-name' + (playerRef.veteran ? ' veteran' : '');
+                        name.textContent = playerRef.name;
+
+                        const number = document.createElement('span');
+                        number.className = 'player-number';
+                        number.textContent = playerRef.number ? ('N° ' + playerRef.number) : 'Sin número';
+
+                        info.appendChild(name);
+                        info.appendChild(number);
+                        item.appendChild(info);
+                        container.appendChild(item);
+                    });
+                }
+
+                document.querySelectorAll('.players-list').forEach(container => {
+                    const pos = container.getAttribute('data-position');
+                    if (pos) renderPositionList(pos, container);
+                });
+
+                // Render full roster grid (all players)
+                (function renderFullRoster() {
+                    const grid = document.getElementById('roster-grid');
+                    const totalEl = document.getElementById('roster-total');
+                    if (!grid || !roster.players) return;
+                    grid.innerHTML = '';
+                    const ids = Object.keys(roster.players).sort((a, b) => {
+                        const numA = parseInt(roster.players[a].number) || 0;
+                        const numB = parseInt(roster.players[b].number) || 0;
+                        return numA - numB;
+                    });
+                    ids.forEach(id => {
+                        const p = roster.players[id];
+                        const card = document.createElement('div');
+                        card.className = 'roster-card';
+
+                        const badge = document.createElement('div');
+                        badge.className = 'player-number-badge';
+                        badge.textContent = p.number || '—';
+
+                        const info = document.createElement('div');
+                        info.className = 'roster-info';
+
+                        const name = document.createElement('span');
+                        name.className = 'roster-name' + (p.veteran ? ' veteran' : '');
+                        name.textContent = p.name;
+
+                        info.appendChild(name);
+                        card.appendChild(badge);
+                        card.appendChild(info);
+                        grid.appendChild(card);
+                    });
+                    if (totalEl) totalEl.textContent = `Total: ${ids.length} jugadores`;
+                })();
+
+                // Render DT (Director Técnico) from roster.dt
+                (function renderDT() {
+                    const dtEntry = roster.dt;
+                    const dtContainer = document.getElementById('dt-info');
+                    if (!dtContainer) return;
+                    dtContainer.innerHTML = '';
+                    if (!dtEntry) return;
+                    const player = (dtEntry.id && roster.players) ? roster.players[dtEntry.id] : null;
+
+                    const nameEl = document.createElement('span');
+                    nameEl.className = 'dt-name';
+                    nameEl.textContent = player ? player.name : (dtEntry.name || '—');
+
+                    dtContainer.appendChild(nameEl);
+
+                    if (player && player.number) {
+                        const numEl = document.createElement('span');
+                        numEl.className = 'dt-number';
+                        numEl.textContent = 'N° ' + player.number;
+                        dtContainer.appendChild(numEl);
+                    }
+                })();
+
+                // Renderizar la cancha desde el JSON (soporta normalized roster.field with id)
+                const fieldEl = document.getElementById('field');
+                const fieldList = roster.field || [];
+                
+                // Store current lineup for dynamic changes
+                window.currentLineup = [...fieldList];
+                window.rosterData = roster;
+
+                function renderField() {
+                    fieldEl.innerHTML = '';
+                    
+                    // Añadir área de gol sólo donde esté el arquero
+                    const keeperEntry = window.currentLineup.find(f => f.class === 'goalkeeper');
+                    if (keeperEntry) {
+                        const goal = document.createElement('div');
+                        const side = keeperEntry.side || 'left';
+                        goal.className = side === 'right' ? 'goal-area goal-right' : 'goal-area goal-left';
+                        fieldEl.appendChild(goal);
+                    }
+
+                    window.currentLineup.forEach((fp, index) => {
+                        const playerRef = fp.id ? (roster.players && roster.players[fp.id]) : fp;
+                        if (!playerRef) return;
+                        const p = document.createElement('div');
+                        p.className = 'player-on-field ' + (fp.class || '');
+                        p.dataset.positionIndex = index;
+                        p.dataset.positionClass = fp.class;
+                        
+                        if (playerRef.number) {
+                            p.innerHTML = `<span style="font-size:0.75rem">${playerRef.name}</span><span style="font-size:0.8rem">${playerRef.number}</span>`;
+                        } else {
+                            p.textContent = playerRef.name;
+                        }
+
+                        p.addEventListener('click', function() {
+                            openPlayerSelector(index, fp.class);
+                        });
+
+                        fieldEl.appendChild(p);
+                    });
+                }
+
+                renderField();
+
+                // Function to open player selector
+                window.openPlayerSelector = function(positionIndex, positionClass) {
+                    const modal = document.getElementById('player-selector-modal');
+                    const title = document.getElementById('selector-title');
+                    const optionsContainer = document.getElementById('player-options');
+                    
+                    // Map position class to roster position key
+                    const positionMap = {
+                        'goalkeeper': 'porteros',
+                        'defender-1': 'defensas',
+                        'defender-2': 'defensas',
+                        'midfielder-1': 'medio',
+                        'midfielder-2': 'medio',
+                        'forward': 'delanteros'
+                    };
+
+                    const positionKey = positionMap[positionClass];
+                    const positionNames = {
+                        'porteros': 'Portero',
+                        'defensas': 'Defensa',
+                        'medio': 'Mediocampista',
+                        'delanteros': 'Delantero'
+                    };
+
+                    title.textContent = `Seleccionar ${positionNames[positionKey]}`;
+                    optionsContainer.innerHTML = '';
+
+                    // Get available players for this position
+                    const availablePlayers = roster.positions[positionKey] || [];
+                    
+                    availablePlayers.forEach(entry => {
+                        const player = roster.players[entry.id];
+                        if (!player) return;
+
+                        const option = document.createElement('div');
+                        option.className = 'player-option';
+
+                        const badge = document.createElement('div');
+                        badge.className = 'player-option-badge';
+                        badge.textContent = player.number || '—';
+
+                        const name = document.createElement('span');
+                        name.className = 'player-option-name' + (player.veteran ? ' veteran' : '');
+                        name.textContent = player.name;
+
+                        option.appendChild(badge);
+                        option.appendChild(name);
+
+                        option.addEventListener('click', function() {
+                            // Update lineup
+                            window.currentLineup[positionIndex] = {
+                                class: positionClass,
+                                id: entry.id,
+                                side: window.currentLineup[positionIndex].side
+                            };
+                            renderField();
+                            closePlayerSelector();
+                        });
+
+                        optionsContainer.appendChild(option);
+                    });
+
+                    modal.classList.add('active');
+                };
+
+                window.closePlayerSelector = function() {
+                    document.getElementById('player-selector-modal').classList.remove('active');
+                };
+
+                // Render captains section (resolve by id when roster.players is normalized)
+                (function renderCaptains() {
+                    const caps = roster.captains || [];
+                    const capsContainer = document.getElementById('captains-list');
+                    if (!capsContainer) return;
+                    capsContainer.innerHTML = '';
+                    caps.sort((a,b) => (a.order||0) - (b.order||0)).forEach(c => {
+                        const item = document.createElement('div');
+                        item.className = 'captain-item';
+
+                        const rank = document.createElement('div');
+                        rank.className = 'captain-rank';
+                        rank.textContent = c.order || '-';
+
+                        // resolve player data
+                        const player = (c.id && roster.players) ? roster.players[c.id] : null;
+                        const displayName = player ? player.name : (c.name || '—');
+                        const displayNumber = player ? player.number : (c.number || '');
+                        const isVeteran = player ? !!player.veteran : false;
+
+                        const txt = document.createElement('div');
+                        const nameEl = document.createElement('span');
+                        nameEl.className = 'player-name' + (isVeteran ? ' veteran' : '');
+                        nameEl.textContent = displayName;
+
+                        const numEl = document.createElement('span');
+                        numEl.className = 'player-number';
+                        numEl.textContent = displayNumber ? ('N° ' + displayNumber) : '';
+
+                        txt.appendChild(nameEl);
+                        if (displayNumber) txt.appendChild(document.createTextNode(' '));
+                        txt.appendChild(numEl);
+
+                        item.appendChild(rank);
+                        item.appendChild(txt);
+                        capsContainer.appendChild(item);
+                    });
+                })();
+
+                // Resaltar veteranos en listas
+                document.querySelectorAll('.player-name.veteran').forEach(player => {
+                    const playerItem = player.closest('.player-item');
+                    if (playerItem) playerItem.style.backgroundColor = '#f0f8ff';
+                });
+
+            } catch (err) {
+                console.error('Error inicializando roster:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initRoster);
+    </script>
+</body>
+</html>
