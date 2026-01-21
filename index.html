@@ -113,11 +113,21 @@
             <!-- Formación 1-2-2 para fútbol 6 -->
             <div id="alineacion" class="formation-section">
                 <h2><i class="fas fa-chalkboard"></i> Alineación Sugerida</h2>
-                <p>Formación 1-2-2 para fútbol 6. Haz clic en cada posición para cambiar el jugador:</p>
+                <p>Selecciona una formación y haz clic en cada posición para cambiar el jugador:</p>
                 
                 <div class="formation-controls">
+                    <div class="formation-selector">
+                        <label for="formation-select"><i class="fas fa-futbol"></i> Formación:</label>
+                        <select id="formation-select" onchange="changeFormation(this.value)">
+                            <option value="1-2-2-1">1-2-2-1 (Equilibrada)</option>
+                            <option value="2-1-2">2-1-2 (Ofensiva Central)</option>
+                            <option value="1-3-2">1-3-2 (Defensiva)</option>
+                            <option value="1-2-3">1-2-3 (Ofensiva)</option>
+                            <option value="1-4-1">1-4-1 (Ultra Defensiva)</option>
+                        </select>
+                    </div>
                     <button class="btn-reset" onclick="resetLineup()">
-                        <i class="fas fa-redo"></i> Restaurar Alineación Inicial
+                        <i class="fas fa-redo"></i> Restaurar Inicial
                     </button>
                 </div>
                 
@@ -150,8 +160,8 @@
             </div>
 
             <!-- Modal para seleccionar jugador -->
-            <div class="player-selector-modal" id="player-selector-modal">
-                <div class="selector-content">
+            <div class="player-selector-modal" id="player-selector-modal" onclick="closePlayerSelector()">
+                <div class="selector-content" onclick="event.stopPropagation()">
                     <h3 id="selector-title">Seleccionar Jugador</h3>
                     <div id="player-options">
                         <!-- Options populated by JS -->
@@ -166,31 +176,31 @@
                 <ul class="team-rules-list">
                     <li>
                         <i class="fas fa-handshake"></i>
-                        <span>Mantener el respeto por los compañeros antes, durante y después de los partidos. El compañerismo es fundamental para el éxito del equipo.</span>
+                        <span><strong>Respeto y compañerismo:</strong> Mantener el respeto hacia todos los compañeros antes, durante y después de los partidos. El compañerismo, la buena convivencia y el apoyo mutuo son fundamentales para el éxito del equipo.</span>
                     </li>
                     <li>
                         <i class="fas fa-ban"></i>
-                        <span>No presentarse en estado de ebriedad a los partidos. La responsabilidad y el compromiso con el equipo son prioritarios.</span>
+                        <span><strong>Responsabilidad y conducta:</strong> No presentarse a los partidos en estado de ebriedad ni bajo los efectos de sustancias que afecten el rendimiento o la conducta. La responsabilidad y el compromiso con el equipo son prioritarios.</span>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
-                        <span>Llegar con puntualidad a los encuentros. El tiempo de todos es valioso y la organización depende de cada jugador.</span>
+                        <span><strong>Puntualidad:</strong> Llegar puntualmente a los encuentros programados. El respeto por el tiempo de los demás es clave para una correcta organización del equipo.</span>
                     </li>
                     <li>
                         <i class="fas fa-clipboard-list"></i>
-                        <span>Respetar las alineaciones y decisiones técnicas del equipo, así como los tiempos de juego asignados. Mantener disponibilidad y compromiso sin abandonar el campo hasta finalizar el partido.</span>
+                        <span><strong>Respeto a las decisiones técnicas:</strong> Respetar las alineaciones, cambios y decisiones técnicas del equipo. Todo jugador deberá permanecer disponible y acompañar al equipo hasta la finalización del partido, aun cuando sea sustituido.</span>
                     </li>
                     <li>
                         <i class="fas fa-comments"></i>
-                        <span>Comunicar cualquier ausencia con anticipación. La planificación permite reorganizar la alineación a tiempo.</span>
+                        <span><strong>Comunicación de ausencias:</strong> Informar con anticipación cualquier ausencia o retraso. Una comunicación oportuna permite reorganizar la alineación y evitar inconvenientes.</span>
                     </li>
                     <li>
                         <i class="fas fa-users"></i>
-                        <span>Apoyar a todos los compañeros sin importar su nivel. El equipo crece cuando todos nos ayudamos mutuamente.</span>
+                        <span><strong>Apoyo y respeto entre compañeros:</strong> Brindar apoyo y respeto a todos los integrantes del equipo, sin importar su nivel de juego. El crecimiento del grupo depende del compromiso y la solidaridad de todos.</span>
                     </li>
                     <li>
-                        <i class="fas fa-whistle"></i>
-                        <span>Respetar al árbitro en todo momento. En caso de decisiones polémicas, el delegado del equipo colocará una queja formal con los organizadores del torneo.</span>
+                        <i class="fas fa-flag"></i>
+                        <span><strong>Respeto al árbitro y a la organización:</strong> Respetar en todo momento las decisiones del árbitro. En caso de situaciones polémicas, únicamente el delegado del equipo estará autorizado para presentar una queja formal ante los organizadores del torneo.</span>
                     </li>
                 </ul>
             </section>

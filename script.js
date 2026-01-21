@@ -171,99 +171,27 @@ function renderField() {
     const fieldEl = document.getElementById('field');
     const fieldList = rosterData.field || [];
     
-    // Store lineups
-    currentLineup = [...fieldList];
-    initialLineup = JSON.parse(JSON.stringify(fieldList));
-    
-    updateFieldDisplay();
-}
-
-function updateFieldDisplay() {
-    const fieldEl = document.getElementById('field');
-    if (!fieldEl) return;
-    
-    fieldEl.innerHTML = '';
-    
-    // Add goal area where keeper is
-    const keeperEntry = currentLineup.find(f => f.class === 'goalkeeper');
-    if (keeperEntry) {
-        const goal = document.createElement('div');
-        const side = keeperEntry.side || 'left';
-        goal.className = side === 'right' ? 'goal-area goal-right' : 'goal-area goal-left';
-        fieldEl.appendChild(goal);
-    }
-
-    // Add players to field
-    currentLineup.forEach((fp, index) => {
-        const playerRef = fp.id ? (rosterData.players && rosterData.players[fp.id]) : null;
-        if (!playerRef) {
-            // Empty position - show placeholder
-            const placeholder = document.createElement('div');
-            placeholder.className = 'player-on-field empty-position ' + (fp.class || '');
-            placeholder.dataset.positionIndex = index;
-            placeholder.dataset.positionClass = fp.class;
-            placeholder.innerHTML = '<i class="fas fa-plus"></i>';
-            placeholder.title = 'Click para agregar jugador';
-            
-            placeholder.addEventListener('click', function() {
-                openPlayerSelector(index, fp.class);
-            });
-            
-            fieldEl.appendChild(placeholder);
-            return;
-        }
-        
-        const p = document.createElement('div');
-        p.className = 'player-on-field ' + (fp.class || '');
-        
-        // Add veteran indicator
-        if (playerRef.veteran) {
-            p.classList.add('veteran-player');
-        }
-        
-        p.dataset.positionIndex = index;
-        p.dataset.positionClass = fp.class;
-        p.draggable = true;
-        
-        // Player content
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'player-content';
-        if (playerRef.number) {
-            contentDiv.innerHTML = `<span class="player-field-name">${playerRef.name}</span><span class="player-field-number">${playerRef.number}</span>`;
-        } else {
-            contentDiv.textContent = playerRef.name;
-        }
-        
-        // Remove button
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-player-btn';
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        removeBtn.title = 'Quitar jugador';
-        removeBtn.onclick = function(e) {
-            e.stopPropagation();
-            removePlayerFromField(index);
+    // Store lineups and add default formation style
+    currentLineup = fieldList.map((fp, index) => {
+        const defaultStyles = [
+            'top: 50%; left: 8%; transform: translateY(-50%);', // goalkeeper
+            'top: 30%; left: 28%;', // defender-1
+            'top: 70%; left: 28%;', // defender-2
+            'top: 30%; left: 55%;', // midfielder-1
+            'top: 70%; left: 55%;', // midfielder-2
+            'top: 50%; left: 80%; transform: translateY(-50%);' // forward
+        ];
+        return {
+            ...fp,
+            customStyle: defaultStyles[index] || ''
         };
-        
-        p.appendChild(contentDiv);
-        p.appendChild(removeBtn);
-        
-        // Click to change player
-        p.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-player-btn')) return;
-            openPlayerSelector(index, fp.class);
-        });
-        
-        // Drag events
-        p.addEventListener('dragstart', handleDragStart);
-        p.addEventListener('dragend', handleDragEnd);
-        p.addEventListener('dragover', handleDragOver);
-        p.addEventListener('drop', handleDrop);
-        p.addEventListener('dragenter', handleDragEnter);
-        p.addEventListener('dragleave', handleDragLeave);
-
-        fieldEl.appendChild(p);
     });
+    initialLineup = JSON.parse(JSON.stringify(currentLineup));
+    
+    updateFieldDisplayWithCustomStyles();
 }
+
+
 
 // Drag and Drop handlers
 function handleDragStart(e) {
@@ -271,7 +199,8 @@ function handleDragStart(e) {
     draggedIndex = parseInt(this.dataset.positionIndex);
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.innerHTML);
+    e.dataTransfer.setData('text/plain', draggedIndex);
+    console.log('Drag started:', draggedIndex);
 }
 
 function handleDragEnd(e) {
@@ -280,18 +209,19 @@ function handleDragEnd(e) {
     document.querySelectorAll('.player-on-field').forEach(el => {
         el.classList.remove('drag-over');
     });
+    draggedElement = null;
+    console.log('Drag ended');
 }
 
 function handleDragOver(e) {
-    if (e.preventDefault) {
-        e.preventDefault();
-    }
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     return false;
 }
 
 function handleDragEnter(e) {
-    if (this !== draggedElement) {
+    e.preventDefault();
+    if (this !== draggedElement && !this.classList.contains('empty-position')) {
         this.classList.add('drag-over');
     }
 }
@@ -301,21 +231,22 @@ function handleDragLeave(e) {
 }
 
 function handleDrop(e) {
-    if (e.stopPropagation) {
-        e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
     
     this.classList.remove('drag-over');
     
-    if (draggedElement !== this) {
+    if (draggedElement && draggedElement !== this && !this.classList.contains('empty-position')) {
         const targetIndex = parseInt(this.dataset.positionIndex);
+        
+        console.log('Swapping', draggedIndex, 'with', targetIndex);
         
         // Swap players
         const temp = currentLineup[draggedIndex];
         currentLineup[draggedIndex] = currentLineup[targetIndex];
         currentLineup[targetIndex] = temp;
         
-        updateFieldDisplay();
+        updateFieldDisplayWithCustomStyles();
         showNotification('Jugadores intercambiados', 'success');
     }
     
@@ -332,9 +263,10 @@ function removePlayerFromField(index) {
         currentLineup[index] = {
             class: currentLineup[index].class,
             side: currentLineup[index].side,
+            customStyle: currentLineup[index].customStyle,
             id: null
         };
-        updateFieldDisplay();
+        updateFieldDisplayWithCustomStyles();
         showNotification(`${playerName} removido de la alineación`, 'info');
     }
 }
@@ -350,12 +282,23 @@ function openPlayerSelector(positionIndex, positionClass) {
         'goalkeeper': 'porteros',
         'defender-1': 'defensas',
         'defender-2': 'defensas',
+        'defender-3': 'defensas',
+        'defender-4': 'defensas',
+        'midfielder': 'medio',
         'midfielder-1': 'medio',
         'midfielder-2': 'medio',
-        'forward': 'delanteros'
+        'forward': 'delanteros',
+        'forward-1': 'delanteros',
+        'forward-2': 'delanteros'
     };
 
     const positionKey = positionMap[positionClass];
+    
+    // Verificar que la posición está mapeada
+    if (!positionKey) {
+        console.error('Posición no mapeada:', positionClass);
+        return;
+    }
     const positionNames = {
         'porteros': 'Portero',
         'defensas': 'Defensa',
@@ -369,12 +312,19 @@ function openPlayerSelector(positionIndex, positionClass) {
     // Get available players for this position
     const availablePlayers = rosterData.positions[positionKey] || [];
     
+    // Get list of players already in lineup (excluding current position)
+    const playersInLineup = currentLineup
+        .map((pos, idx) => idx !== positionIndex ? pos.id : null)
+        .filter(id => id !== null);
+    
     availablePlayers.forEach(entry => {
         const player = rosterData.players[entry.id];
         if (!player) return;
 
         const option = document.createElement('div');
-        option.className = 'player-option';
+        const isAlreadyInLineup = playersInLineup.includes(entry.id);
+        
+        option.className = 'player-option' + (isAlreadyInLineup ? ' player-disabled' : '');
 
         const badge = document.createElement('div');
         badge.className = 'player-option-badge';
@@ -382,19 +332,28 @@ function openPlayerSelector(positionIndex, positionClass) {
 
         const name = document.createElement('span');
         name.className = 'player-option-name' + (player.veteran ? ' veteran' : '');
-        name.textContent = player.name;
+        name.textContent = player.name + (isAlreadyInLineup ? ' (Ya en campo)' : '');
 
         option.appendChild(badge);
         option.appendChild(name);
 
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // Prevent selection if player is already in lineup
+            if (isAlreadyInLineup) {
+                showNotification(`${player.name} ya está en la alineación`, 'error');
+                return;
+            }
+            
             // Update lineup
             currentLineup[positionIndex] = {
                 class: positionClass,
                 id: entry.id,
-                side: currentLineup[positionIndex].side
+                side: currentLineup[positionIndex].side,
+                customStyle: currentLineup[positionIndex].customStyle
             };
-            updateFieldDisplay();
+            updateFieldDisplayWithCustomStyles();
             closePlayerSelector();
             showNotification(`${player.name} seleccionado como ${positionNames[positionKey]}`, 'success');
         });
@@ -407,16 +366,182 @@ function openPlayerSelector(positionIndex, positionClass) {
 
 // Close player selector modal
 function closePlayerSelector() {
-    document.getElementById('player-selector-modal').classList.remove('active');
+    const modal = document.getElementById('player-selector-modal');
+    modal.classList.remove('active');
+    // Clear content after animation
+    setTimeout(() => {
+        const optionsContainer = document.getElementById('player-options');
+        if (optionsContainer) {
+            optionsContainer.innerHTML = '';
+        }
+    }, 300);
 }
 
 // Reset lineup to initial state
 function resetLineup() {
     if (confirm('¿Estás seguro de que quieres restaurar la alineación inicial?')) {
         currentLineup = JSON.parse(JSON.stringify(initialLineup));
-        updateFieldDisplay();
+        updateFieldDisplayWithCustomStyles();
         showNotification('Alineación restaurada correctamente', 'success');
     }
+}
+
+// Change formation
+function changeFormation(formation) {
+    const formations = {
+        '1-2-2-1': [
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 30%; left: 28%;' },
+            { class: 'defender-2', style: 'top: 70%; left: 28%;' },
+            { class: 'midfielder-1', style: 'top: 30%; left: 55%;' },
+            { class: 'midfielder-2', style: 'top: 70%; left: 55%;' },
+            { class: 'forward', style: 'top: 50%; left: 80%; transform: translateY(-50%);' }
+        ],
+        '2-1-2': [
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 35%; left: 28%;' },
+            { class: 'defender-2', style: 'top: 65%; left: 28%;' },
+            { class: 'midfielder', style: 'top: 50%; left: 50%; transform: translateY(-50%);' },
+            { class: 'forward-1', style: 'top: 35%; left: 72%;' },
+            { class: 'forward-2', style: 'top: 65%; left: 72%;' }
+        ],
+        '1-3-2': [
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 20%; left: 30%;' },
+            { class: 'defender-2', style: 'top: 50%; left: 30%; transform: translateY(-50%);' },
+            { class: 'defender-3', style: 'top: 80%; left: 30%;' },
+            { class: 'midfielder-1', style: 'top: 35%; left: 65%;' },
+            { class: 'forward', style: 'top: 65%; left: 65%;' }
+        ],
+        '1-2-3': [
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 35%; left: 28%;' },
+            { class: 'defender-2', style: 'top: 65%; left: 28%;' },
+            { class: 'midfielder-1', style: 'top: 20%; left: 60%;' },
+            { class: 'forward', style: 'top: 50%; left: 60%; transform: translateY(-50%);' },
+            { class: 'forward-2', style: 'top: 80%; left: 60%;' }
+        ],
+        '1-4-1': [
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 15%; left: 35%;' },
+            { class: 'defender-2', style: 'top: 40%; left: 35%;' },
+            { class: 'defender-3', style: 'top: 60%; left: 35%;' },
+            { class: 'defender-4', style: 'top: 85%; left: 35%;' },
+            { class: 'forward', style: 'top: 50%; left: 75%; transform: translateY(-50%);' }
+        ]
+    };
+
+    const newFormation = formations[formation];
+    if (!newFormation) return;
+
+    // Update positions with new formation styles
+    newFormation.forEach((pos, index) => {
+        if (currentLineup[index]) {
+            currentLineup[index].class = pos.class;
+            currentLineup[index].customStyle = pos.style;
+        }
+    });
+
+    updateFieldDisplayWithCustomStyles();
+    showNotification(`Formación cambiada a ${formation}`, 'success');
+}
+
+// Update field display with custom styles
+function updateFieldDisplayWithCustomStyles() {
+    const fieldEl = document.getElementById('field');
+    if (!fieldEl) return;
+    
+    fieldEl.innerHTML = '';
+    
+    // Add goal area
+    const keeperEntry = currentLineup.find(f => f.class === 'goalkeeper');
+    if (keeperEntry) {
+        const goal = document.createElement('div');
+        const side = keeperEntry.side || 'left';
+        goal.className = side === 'right' ? 'goal-area goal-right' : 'goal-area goal-left';
+        fieldEl.appendChild(goal);
+    }
+
+    // Add players with custom positions
+    currentLineup.forEach((fp, index) => {
+        if (!fp || !fp.class) return;
+        
+        const playerRef = fp.id ? (rosterData.players && rosterData.players[fp.id]) : null;
+        
+        if (!playerRef) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'player-on-field empty-position';
+            placeholder.dataset.positionIndex = index;
+            placeholder.dataset.positionClass = fp.class;
+            placeholder.innerHTML = '<i class="fas fa-plus"></i>';
+            placeholder.title = 'Click para agregar jugador';
+            
+            // Apply custom style if available
+            if (fp.customStyle) {
+                placeholder.setAttribute('style', fp.customStyle);
+            }
+            
+            placeholder.addEventListener('click', function() {
+                openPlayerSelector(index, fp.class);
+            });
+            
+            fieldEl.appendChild(placeholder);
+            return;
+        }
+        
+        const p = document.createElement('div');
+        p.className = 'player-on-field ' + (fp.class || '');
+        
+        if (playerRef.veteran) {
+            p.classList.add('veteran-player');
+        }
+        
+        p.dataset.positionIndex = index;
+        p.dataset.positionClass = fp.class;
+        p.setAttribute('draggable', 'true');
+        
+        // Apply custom style if available
+        if (fp.customStyle) {
+            p.setAttribute('style', fp.customStyle + ' position: absolute !important;');
+        }
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'player-content';
+        contentDiv.style.pointerEvents = 'none';
+        if (playerRef.number) {
+            contentDiv.innerHTML = `<span class="player-field-name">${playerRef.name}</span><span class="player-field-number">#${playerRef.number}</span>`;
+        } else {
+            contentDiv.innerHTML = `<span class="player-field-name">${playerRef.name}</span>`;
+        }
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-player-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.title = 'Quitar jugador';
+        removeBtn.setAttribute('draggable', 'false');
+        removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            removePlayerFromField(index);
+        };
+        
+        p.appendChild(contentDiv);
+        p.appendChild(removeBtn);
+        
+        p.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-player-btn')) return;
+            openPlayerSelector(index, fp.class);
+        });
+        
+        p.ondragstart = handleDragStart;
+        p.ondragend = handleDragEnd;
+        p.ondragover = handleDragOver;
+        p.ondrop = handleDrop;
+        p.ondragenter = handleDragEnter;
+        p.ondragleave = handleDragLeave;
+
+        fieldEl.appendChild(p);
+    });
 }
 
 // Highlight veterans in lists
