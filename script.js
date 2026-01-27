@@ -21,7 +21,6 @@ var currentLineup = []; // Empieza vacío
 var convocatoria = new Set(); // Jugadores convocados
 var draggedPlayerId = null;
 var draggedFromConvocatoria = false;
-var savedConvocatorias = []; // Convocatorias guardadas
 
 // ============================================================================
 // INITIALIZATION
@@ -51,7 +50,6 @@ function initRoster() {
             initializeEmptyLineup(); // Campo vacío con formación 1-2-2-1
             updateConvocatoriaStats();
             highlightVeterans();
-            loadSavedConvocatorias(); // Cargar convocatorias guardadas
             
             console.log('Renderizado completado');
         })
@@ -128,8 +126,21 @@ function renderFullRoster() {
         var name = document.createElement('span');
         name.className = 'roster-name' + (p.veteran ? ' veteran' : '');
         name.textContent = p.name;
+        
+        var positionsDiv = document.createElement('div');
+        positionsDiv.className = 'roster-positions';
+        
+        var playerPositions = getPlayerPositions(id);
+        playerPositions.forEach(function(pos) {
+            var posBadge = document.createElement('span');
+            posBadge.className = 'roster-pos-badge pos-' + pos.key;
+            posBadge.textContent = pos.label;
+            posBadge.title = pos.full + ' - Prioridad: ' + pos.priority;
+            positionsDiv.appendChild(posBadge);
+        });
 
         info.appendChild(name);
+        info.appendChild(positionsDiv);
         card.appendChild(badge);
         card.appendChild(info);
         grid.appendChild(card);
@@ -232,9 +243,27 @@ function renderConvocatoria() {
         badge.className = 'player-badge-mini';
         badge.textContent = player.number || '—';
         
+        var infoContainer = document.createElement('div');
+        infoContainer.className = 'convocado-info';
+        
         var nameSpan = document.createElement('span');
         nameSpan.className = 'convocado-name' + (player.veteran ? ' veteran' : '');
         nameSpan.textContent = player.name;
+        
+        var positionsDiv = document.createElement('div');
+        positionsDiv.className = 'player-positions-badges';
+        
+        var playerPositions = getPlayerPositions(id);
+        playerPositions.forEach(function(pos) {
+            var posBadge = document.createElement('span');
+            posBadge.className = 'pos-badge pos-' + pos.key;
+            posBadge.textContent = pos.label;
+            posBadge.title = pos.full + ' - ' + pos.priority;
+            positionsDiv.appendChild(posBadge);
+        });
+        
+        infoContainer.appendChild(nameSpan);
+        infoContainer.appendChild(positionsDiv);
         
         // Drag handlers
         item.ondragstart = function(e) {
@@ -256,7 +285,7 @@ function renderConvocatoria() {
         
         item.appendChild(checkbox);
         item.appendChild(badge);
-        item.appendChild(nameSpan);
+        item.appendChild(infoContainer);
         
         if (player.veteran) {
             var veteranBadge = document.createElement('span');
@@ -346,11 +375,11 @@ function getFormationConfig(formation) {
         ],
         '1-2-1-1': [
             { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
-            { class: 'defender-1', style: 'top: 35%; left: 30%;' },
-            { class: 'defender-2', style: 'top: 65%; left: 30%;' },
-            { class: 'midfielder-1', style: 'top: 35%; left: 55%;' },
-            { class: 'midfielder-2', style: 'top: 65%; left: 55%;' },
-            { class: 'forward', style: 'top: 50%; left: 80%; transform: translateY(-50%);' }
+            { class: 'defender-1', style: 'top: 50%; left: 28%; transform: translateY(-50%);' },
+            { class: 'midfielder-1', style: 'top: 30%; left: 48%;' },
+            { class: 'midfielder-2', style: 'top: 70%; left: 48%;' },
+            { class: 'midfielder-3', style: 'top: 50%; left: 68%; transform: translateY(-50%);' },
+            { class: 'forward', style: 'top: 50%; left: 88%; transform: translateY(-50%);' }
         ],
         '2-1-2': [
             { class: 'goalkeeper', style: 'top: 35%; left: 10%;' },
@@ -660,6 +689,41 @@ function validateLineup() {
 // UTILITIES
 // ============================================================================
 
+function getPlayerPositions(playerId) {
+    var positions = [];
+    var positionMap = {
+        'porteros': { label: 'POR', full: 'Portero', key: 'porteros' },
+        'defensas': { label: 'DEF', full: 'Defensa', key: 'defensas' },
+        'medio': { label: 'MED', full: 'Mediocampista', key: 'medio' },
+        'delanteros': { label: 'DEL', full: 'Delantero', key: 'delanteros' }
+    };
+    
+    var priorityNames = {
+        'high-priority': 'Alta',
+        'medium-priority': 'Media',
+        'low-priority': 'Baja'
+    };
+    
+    Object.keys(rosterData.positions).forEach(function(posKey) {
+        var posList = rosterData.positions[posKey] || [];
+        posList.forEach(function(entry) {
+            if (entry.id === playerId) {
+                var pos = positionMap[posKey];
+                if (pos) {
+                    positions.push({
+                        label: pos.label,
+                        full: pos.full,
+                        key: pos.key,
+                        priority: priorityNames[entry.priority] || 'Normal'
+                    });
+                }
+            }
+        });
+    });
+    
+    return positions;
+}
+
 function highlightVeterans() {
     document.querySelectorAll('.player-name.veteran').forEach(function(player) {
         var playerItem = player.closest('.player-item');
@@ -739,219 +803,6 @@ function showConfirm(title, message, onConfirm, onCancel) {
     function closeModal() {
         modal.classList.remove('show');
         setTimeout(function() { modal.remove(); }, 300);
-    }
-}
-
-function showInputModal(title, message, placeholder, onConfirm) {
-    var modal = document.createElement('div');
-    modal.className = 'custom-modal-overlay';
-    modal.innerHTML = 
-        '<div class="custom-modal">' +
-        '  <div class="custom-modal-header">' +
-        '    <h3>' + title + '</h3>' +
-        '  </div>' +
-        '  <div class="custom-modal-body">' +
-        '    <p>' + message + '</p>' +
-        '    <input type="text" class="modal-input" id="modal-input-field" placeholder="' + placeholder + '" />' +
-        '  </div>' +
-        '  <div class="custom-modal-footer">' +
-        '    <button class="btn-modal btn-cancel" data-action="cancel">' +
-        '      <i class="fas fa-times"></i> Cancelar' +
-        '    </button>' +
-        '    <button class="btn-modal btn-confirm" data-action="confirm">' +
-        '      <i class="fas fa-check"></i> Guardar' +
-        '    </button>' +
-        '  </div>' +
-        '</div>';
-    
-    document.body.appendChild(modal);
-    setTimeout(function() { 
-        modal.classList.add('show');
-        var input = document.getElementById('modal-input-field');
-        if (input) input.focus();
-    }, 10);
-    
-    var input = document.getElementById('modal-input-field');
-    input.onkeypress = function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            document.querySelector('[data-action="confirm"]').click();
-        }
-    };
-    
-    modal.onclick = function(e) {
-        if (e.target.classList.contains('custom-modal-overlay') || 
-            e.target.dataset.action === 'cancel') {
-            closeModal();
-        } else if (e.target.closest('[data-action="confirm"]')) {
-            var value = document.getElementById('modal-input-field').value;
-            closeModal();
-            if (onConfirm) onConfirm(value);
-        }
-    };
-    
-    function closeModal() {
-        modal.classList.remove('show');
-        setTimeout(function() { modal.remove(); }, 300);
-    }
-}
-
-// ============================================================================
-// CONVOCATORIA STORAGE
-// ============================================================================
-
-function saveConvocatoria() {
-    if (convocatoria.size === 0) {
-        showNotification('No hay jugadores convocados', 'warning');
-        return;
-    }
-    
-    showInputModal(
-        'Guardar Convocatoria',
-        'Ingresa un nombre para identificar esta convocatoria:',
-        'Ej: Partido vs Equipo X',
-        function(name) {
-            if (!name || name.trim() === '') {
-                showNotification('Debes ingresar un nombre', 'warning');
-                return;
-            }
-            
-            var saved = {
-                id: Date.now(),
-                name: name.trim(),
-                date: new Date().toISOString(),
-                players: Array.from(convocatoria)
-            };
-            
-            savedConvocatorias.push(saved);
-            localStorage.setItem('convocatorias', JSON.stringify(savedConvocatorias));
-            
-            showNotification('Convocatoria guardada: ' + name.trim(), 'success');
-            updateSavedCount();
-        }
-    );
-}
-
-function loadSavedConvocatorias() {
-    try {
-        var stored = localStorage.getItem('convocatorias');
-        if (stored) {
-            savedConvocatorias = JSON.parse(stored);
-            updateSavedCount();
-        }
-    } catch (e) {
-        console.error('Error cargando convocatorias:', e);
-    }
-}
-
-function loadConvocatoria(id) {
-    var saved = savedConvocatorias.find(function(c) { return c.id === id; });
-    if (!saved) return;
-    
-    showConfirm(
-        'Cargar convocatoria',
-        '¿Cargar "' + saved.name + '"? Se perderá la convocatoria actual.',
-        function() {
-            convocatoria.clear();
-            saved.players.forEach(function(playerId) {
-                if (rosterData.players[playerId]) {
-                    convocatoria.add(playerId);
-                }
-            });
-            
-            renderConvocatoria();
-            updateConvocatoriaStats();
-            showNotification('Convocatoria cargada', 'success');
-        }
-    );
-}
-
-function deleteConvocatoria(id) {
-    var saved = savedConvocatorias.find(function(c) { return c.id === id; });
-    if (!saved) return;
-    
-    showConfirm(
-        'Eliminar convocatoria',
-        '¿Eliminar "' + saved.name + '"?',
-        function() {
-            savedConvocatorias = savedConvocatorias.filter(function(c) { return c.id !== id; });
-            localStorage.setItem('convocatorias', JSON.stringify(savedConvocatorias));
-            showSavedConvocatoriasModal();
-            updateSavedCount();
-            showNotification('Convocatoria eliminada', 'info');
-        }
-    );
-}
-
-function showSavedConvocatoriasModal() {
-    var modal = document.createElement('div');
-    modal.className = 'custom-modal-overlay';
-    modal.id = 'saved-modal';
-    
-    var content = '<div class="custom-modal modal-large">' +
-        '<div class="custom-modal-header">' +
-        '  <h3><i class="fas fa-folder-open"></i> Convocatorias Guardadas</h3>' +
-        '  <button class="modal-close" onclick="document.getElementById(\'saved-modal\').remove()">' +
-        '    <i class="fas fa-times"></i>' +
-        '  </button>' +
-        '</div>' +
-        '<div class="custom-modal-body">';
-    
-    if (savedConvocatorias.length === 0) {
-        content += '<div class="empty-state">' +
-            '<i class="fas fa-folder-open"></i>' +
-            '<p>No hay convocatorias guardadas</p>' +
-            '<small>Marca jugadores y guarda tu primera convocatoria</small>' +
-            '</div>';
-    } else {
-        content += '<div class="saved-list">';
-        savedConvocatorias.slice().reverse().forEach(function(saved) {
-            var date = new Date(saved.date);
-            var dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-            var timeStr = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            
-            content += '<div class="saved-item">' +
-                '<div class="saved-item-icon"><i class="fas fa-clipboard-list"></i></div>' +
-                '<div class="saved-item-info">' +
-                '  <div class="saved-item-name">' + saved.name + '</div>' +
-                '  <div class="saved-item-meta">' +
-                '    <span><i class="fas fa-users"></i> ' + saved.players.length + ' jugadores</span>' +
-                '    <span><i class="fas fa-calendar"></i> ' + dateStr + '</span>' +
-                '    <span><i class="fas fa-clock"></i> ' + timeStr + '</span>' +
-                '  </div>' +
-                '</div>' +
-                '<div class="saved-item-actions">' +
-                '  <button class="btn-icon-large btn-load-conv" onclick="loadConvocatoria(' + saved.id + ')" title="Cargar">' +
-                '    <i class="fas fa-download"></i>' +
-                '  </button>' +
-                '  <button class="btn-icon-large btn-delete-conv" onclick="deleteConvocatoria(' + saved.id + ')" title="Eliminar">' +
-                '    <i class="fas fa-trash-alt"></i>' +
-                '  </button>' +
-                '</div>' +
-                '</div>';
-        });
-        content += '</div>';
-    }
-    
-    content += '</div></div>';
-    modal.innerHTML = content;
-    
-    document.body.appendChild(modal);
-    setTimeout(function() { modal.classList.add('show'); }, 10);
-    
-    modal.onclick = function(e) {
-        if (e.target.classList.contains('custom-modal-overlay')) {
-            modal.classList.remove('show');
-            setTimeout(function() { modal.remove(); }, 300);
-        }
-    };
-}
-
-function updateSavedCount() {
-    var badge = document.getElementById('saved-count');
-    if (badge) {
-        badge.textContent = savedConvocatorias.length;
-        badge.style.display = savedConvocatorias.length > 0 ? 'inline-flex' : 'none';
     }
 }
 
@@ -1059,22 +910,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    var btnSaveConv = document.getElementById('btn-save-conv');
-    if (btnSaveConv) {
-        btnSaveConv.addEventListener('click', function(e) {
-            e.preventDefault();
-            saveConvocatoria();
-        });
-    }
-    
-    var btnViewSaved = document.getElementById('btn-view-saved');
-    if (btnViewSaved) {
-        btnViewSaved.addEventListener('click', function(e) {
-            e.preventDefault();
-            showSavedConvocatoriasModal();
-        });
-    }
-    
     var btnExportPng = document.getElementById('btn-export-png');
     if (btnExportPng) {
         btnExportPng.addEventListener('click', function(e) {
@@ -1093,6 +928,4 @@ window.autoLineup = autoLineup;
 window.clearLineup = clearLineup;
 window.selectAllPlayers = selectAllPlayers;
 window.clearConvocatoria = clearConvocatoria;
-window.saveConvocatoria = saveConvocatoria;
-window.loadConvocatoria = loadConvocatoria;
 window.exportLineupToPNG = exportLineupToPNG;

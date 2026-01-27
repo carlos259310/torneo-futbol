@@ -135,14 +135,14 @@ h1 {
     display: flex;
     align-items: center;
     gap: 14px;
-    transition: all 0.3s;
+    transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border: 2px solid transparent;
 }
 
 .roster-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     border-color: #1e3c72;
 }
 
@@ -169,6 +169,31 @@ h1 {
 .roster-card .roster-name.veteran { color: #1565c0; }
 .roster-card .roster-name.veteran::after { content: "*"; margin-left: 3px; }
 
+.roster-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.roster-positions {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.roster-pos-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .roster-total {
     margin-top: 14px;
     padding-top: 10px;
@@ -194,12 +219,12 @@ h1 {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s;
+    transition: transform 0.2s ease;
 }
 
 .position-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .position-header {
@@ -421,7 +446,7 @@ h1 {
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -487,19 +512,21 @@ h1 {
 .convocado-item {
     background: white;
     border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: grab;
-    transition: all 0.3s;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .convocado-item:hover {
     border-color: #1e3c72;
-    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.2);
+    box-shadow: 0 3px 8px rgba(30, 60, 114, 0.12);
+    transform: translateX(1px);
 }
 
 .convocado-item.dragging {
@@ -513,39 +540,86 @@ h1 {
 }
 
 .convocado-checkbox {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
     accent-color: #1e3c72;
+    flex-shrink: 0;
 }
 
 .player-badge-mini {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
     font-weight: 700;
-    font-size: 0.75rem;
-    width: 28px;
-    height: 28px;
+    font-size: 0.8rem;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(30, 60, 114, 0.3);
+}
+
+.convocado-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
 }
 
 .convocado-name {
-    flex: 1;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .convocado-name.veteran {
     color: #1565c0;
 }
 
+.player-positions-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.pos-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pos-badge.pos-porteros {
+    background: #1e88e5;
+}
+
+.pos-badge.pos-defensas {
+    background: #43a047;
+}
+
+.pos-badge.pos-medio {
+    background: #fb8c00;
+}
+
+.pos-badge.pos-delanteros {
+    background: #e53935;
+}
+
 .veteran-badge-mini {
     color: #ffd700;
-    font-size: 0.85rem;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
 .convocatoria-note {
@@ -783,7 +857,7 @@ h1 {
 
 .goalkeeper { background-color: #1e88e5 !important; }
 .defender-1, .defender-2, .defender-3, .defender-4 { background-color: #43a047 !important; }
-.midfielder-1, .midfielder-2 { background-color: #fb8c00 !important; }
+.midfielder-1, .midfielder-2, .midfielder-3 { background-color: #fb8c00 !important; }
 .forward, .forward-2 { background-color: #e53935 !important; }
 
 .color-legend-compact {
@@ -824,257 +898,6 @@ h1 {
 }
 
 /* ============================================================================
-   SAVED CONVOCATORIAS - IMPROVED UI
-   ============================================================================ */
-
-.convocatoria-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 2px solid #e0e0e0;
-}
-
-.btn-action {
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    position: relative;
-}
-
-.btn-save {
-    background: linear-gradient(135deg, #4caf50, #388e3c);
-    color: white;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-}
-
-.btn-save:hover {
-    background: linear-gradient(135deg, #388e3c, #2e7d32);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-}
-
-.btn-load {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: white;
-    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.3);
-}
-
-.btn-load:hover {
-    background: linear-gradient(135deg, #2a5298, #1e3c72);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.4);
-}
-
-.badge {
-    background: #ff9800;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 12px;
-    min-width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-large {
-    max-width: 650px;
-    width: 90%;
-}
-
-.modal-close {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.3rem;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.3s;
-}
-
-.modal-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: rotate(90deg);
-}
-
-.custom-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #999;
-}
-
-.empty-state i {
-    font-size: 4rem;
-    color: #ddd;
-    margin-bottom: 20px;
-}
-
-.empty-state p {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #666;
-    margin-bottom: 8px;
-}
-
-.empty-state small {
-    font-size: 0.9rem;
-    color: #999;
-}
-
-.saved-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 500px;
-    overflow-y: auto;
-    padding: 4px;
-}
-
-.saved-item {
-    background: linear-gradient(135deg, #f8f9fa, #ffffff);
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.3s;
-    cursor: pointer;
-}
-
-.saved-item:hover {
-    border-color: #1e3c72;
-    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.15);
-    transform: translateX(4px);
-}
-
-.saved-item-icon {
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.saved-item-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.saved-item-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #1e3c72;
-}
-
-.saved-item-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.saved-item-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.saved-item-meta i {
-    color: #999;
-    font-size: 0.75rem;
-}
-
-.saved-item-actions {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.btn-icon-large {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
-    color: #1e3c72;
-    border-radius: 8px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 1rem;
-}
-
-.btn-load-conv:hover {
-    background: #1e3c72;
-    color: white;
-    border-color: #1e3c72;
-    transform: scale(1.1);
-}
-
-.btn-delete-conv {
-    color: #e53935;
-}
-
-.btn-delete-conv:hover {
-    background: #e53935;
-    color: white;
-    border-color: #e53935;
-    transform: scale(1.1);
-}
-
-.modal-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all 0.3s;
-    margin-top: 12px;
-}
-
-.modal-input:focus {
-    outline: none;
-    border-color: #1e3c72;
-    box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
-}
-
-/* ============================================================================
    CUSTOM MODALS
    ============================================================================ */
 
@@ -1090,7 +913,7 @@ h1 {
     justify-content: center;
     z-index: 9999;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
 }
 
 .custom-modal-overlay.show {
@@ -1105,7 +928,7 @@ h1 {
     width: 90%;
     overflow: hidden;
     transform: scale(0.9);
-    transition: transform 0.3s ease;
+    transition: transform 0.25s ease;
 }
 
 .custom-modal-overlay.show .custom-modal {
@@ -1316,7 +1139,23 @@ footer {
     }
     
     .convocado-item {
-        padding: 8px 10px;
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .player-badge-mini {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+    
+    .convocado-name {
+        font-size: 0.85rem;
+    }
+    
+    .pos-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
     }
     
     .btn-small {
@@ -1347,25 +1186,6 @@ footer {
         min-width: 100px;
     }
     
-    #saved-convocatorias-list {
-        max-height: 150px;
-    }
-    
-    .saved-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .saved-item-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
-    
-    .modal-large {
-        width: 95%;
-        max-width: 500px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -1442,13 +1262,32 @@ footer {
     }
     
     .convocado-item {
-        font-size: 0.85rem;
+        padding: 8px;
+        gap: 8px;
     }
     
     .player-badge-mini {
-        width: 24px;
-        height: 24px;
+        width: 26px;
+        height: 26px;
         font-size: 0.7rem;
+    }
+    
+    .convocado-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .convocado-info {
+        gap: 4px;
+    }
+    
+    .convocado-name {
+        font-size: 0.8rem;
+    }
+    
+    .pos-badge {
+        font-size: 0.6rem;
+        padding: 1px 5px;
     }
     
     .custom-modal-footer {
@@ -1481,31 +1320,5 @@ footer {
     .team-rules-list li {
         padding: 10px 12px;
         font-size: 0.85rem;
-    }
-    
-    .btn-action {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-    }
-    
-    .saved-item {
-        padding: 12px;
-    }
-    
-    .saved-item-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 1.2rem;
-    }
-    
-    .saved-item-meta {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .btn-icon-large {
-        width: 38px;
-        height: 38px;
-        font-size: 0.9rem;
     }
 }
