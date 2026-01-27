@@ -14,14 +14,14 @@
             <a href="#plantilla" class="nav-link"><i class="fas fa-users"></i> Plantilla</a>
             <a href="#posiciones" class="nav-link"><i class="fas fa-th"></i> Posiciones</a>
             <a href="#dt-capitanes" class="nav-link"><i class="fas fa-user-tie"></i> DT & Capitanes</a>
-            <a href="#alineacion" class="nav-link"><i class="fas fa-chalkboard"></i> Alineación</a>
+            <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Convocatoria & Alineación</a>
         </div>
     </nav>
 
     <div class="container">
         <header>
             <div class="futsal-badge">
-                <i class="fas fa-futbol"></i>  TORNEO FÚTBOL 6
+                <i class="fas fa-futbol"></i> TORNEO FÚTBOL 6
             </div>
             <h1>Equipo de Fútbol</h1>
             <div class="veteran-note">
@@ -33,182 +33,168 @@
             <!-- Sección: Plantilla Completa -->
             <section id="plantilla" class="roster-section" aria-label="Plantilla Completa">
                 <h2><i class="fas fa-users"></i> Plantilla Completa</h2>
-                <div class="roster-grid" id="roster-grid">
-                    <!-- jugadores renderizados desde JSON -->
-                </div>
+                <div class="roster-grid" id="roster-grid"></div>
                 <div class="roster-total" id="roster-total"></div>
             </section>
 
             <!-- Sección: Posiciones por Rol -->
             <div id="posiciones" class="positions-container">
-                <!-- Porteros -->
                 <div class="position-card porteros">
                     <div class="position-header">
                         <h2 class="position-title">Porteros</h2>
-                        <div class="position-icon">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
+                        <div class="position-icon"><i class="fas fa-tshirt"></i></div>
                     </div>
-                    <div class="players-list" data-position="porteros">
-                        <!-- los jugadores se inyectan desde JSON -->
-                    </div>
+                    <div class="players-list" data-position="porteros"></div>
                 </div>
                 
-                <!-- Defensas -->
                 <div class="position-card defensas">
                     <div class="position-header">
                         <h2 class="position-title">Defensas</h2>
-                        <div class="position-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
+                        <div class="position-icon"><i class="fas fa-shield-alt"></i></div>
                     </div>
-                    <div class="players-list" data-position="defensas">
-                        <!-- los jugadores se inyectan desde JSON -->
-                    </div>
+                    <div class="players-list" data-position="defensas"></div>
                 </div>
                 
-                <!-- Medio -->
                 <div class="position-card medio">
                     <div class="position-header">
                         <h2 class="position-title">Mediocampistas</h2>
-                        <div class="position-icon">
-                            <i class="fas fa-compress-alt"></i>
-                        </div>
+                        <div class="position-icon"><i class="fas fa-compress-alt"></i></div>
                     </div>
-                    <div class="players-list" data-position="medio">
-                        <!-- los jugadores se inyectan desde JSON -->
-                    </div>
+                    <div class="players-list" data-position="medio"></div>
                 </div>
                 
-                <!-- Delanteros -->
                 <div class="position-card delanteros">
                     <div class="position-header">
                         <h2 class="position-title">Delanteros</h2>
-                        <div class="position-icon">
-                            <i class="fas fa-bullseye"></i>
-                        </div>
+                        <div class="position-icon"><i class="fas fa-bullseye"></i></div>
                     </div>
-                    <div class="players-list" data-position="delanteros">
-                        <!-- los jugadores se inyectan desde JSON -->
-                    </div>
+                    <div class="players-list" data-position="delanteros"></div>
                 </div>
             </div>
 
-            <!-- Sección: Director Técnico (línea completa) -->
-            <section id="dt-capitanes" class="dt-full-section" aria-label="Director Técnico">
+            <!-- Sección: Director Técnico -->
+            <section id="dt-capitanes" class="dt-full-section">
                 <h3><i class="fas fa-user-tie"></i> Director Técnico</h3>
-                <div id="dt-info" class="dt-info-full">
-                    <!-- DT rendered from JSON -->
-                </div>
+                <div id="dt-info" class="dt-info-full"></div>
             </section>
 
-            <!-- Sección: Capitanes (línea completa) -->
-            <section class="captains-full-section" id="captains-full-section" aria-label="Capitanes">
+            <!-- Sección: Capitanes -->
+            <section class="captains-full-section">
                 <h3><i class="fas fa-star"></i> Capitanes</h3>
-                <div class="captains-list" id="captains-list">
-                    <!-- captains injected from JSON -->
-                </div>
+                <div class="captains-list" id="captains-list"></div>
             </section>
             
-            <!-- Formación 1-2-2 para fútbol 6 -->
-            <div id="alineacion" class="formation-section">
-                <h2><i class="fas fa-chalkboard"></i> Alineación Sugerida</h2>
-                <p>Selecciona una formación y haz clic en cada posición para cambiar el jugador:</p>
-                
-                <div class="formation-controls">
-                    <div class="formation-selector">
-                        <label for="formation-select"><i class="fas fa-futbol"></i> Formación:</label>
-                        <select id="formation-select">
-                            <option value="1-2-2-1">1-2-2-1 (Equilibrada)</option>
-                            <option value="2-1-2">2-1-2 (Ofensiva Central)</option>
-                            <option value="1-3-2">1-3-2 (Defensiva)</option>
-                            <option value="1-2-3">1-2-3 (Ofensiva)</option>
-                            <option value="1-4-1">1-4-1 (Ultra Defensiva)</option>
-                        </select>
-                    </div>
-                    <button class="btn-reset" id="btn-reset">
-                        <i class="fas fa-redo"></i> Restaurar Inicial
-                    </button>
+            <!-- SECCIÓN UNIFICADA: Convocatoria y Alineación -->
+            <section id="convocatoria-alineacion" class="convocatoria-alineacion-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-clipboard-check"></i> Convocatoria y Alineación del Partido</h2>
                 </div>
                 
-                <div class="formation-diagram">
-                    <div class="field" id="field">
-                        <!-- áreas de gol y jugadores se generan desde JSON -->
+                <div class="unified-container">
+                    <!-- Panel Izquierdo: Convocatoria -->
+                    <div class="convocatoria-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-users-cog"></i> Jugadores Convocados</h3>
+                            <div class="convocatoria-stats">
+                                <span class="stat-badge">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="convocados-count">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="convocatoria-controls">
+                            <button class="btn-small btn-primary" id="btn-select-all" title="Seleccionar todos">
+                                <i class="fas fa-check-double"></i> Todos
+                            </button>
+                            <button class="btn-small btn-danger" id="btn-clear-all" title="Limpiar convocatoria">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
+                        </div>
+                        
+                        <div class="convocatoria-actions">
+                            <button class="btn-action btn-save" id="btn-save-conv" title="Guardar convocatoria">
+                                <i class="fas fa-save"></i> Guardar convocatoria
+                            </button>
+                            <button class="btn-action btn-load" id="btn-view-saved" title="Ver guardadas">
+                                <i class="fas fa-folder-open"></i> Ver guardadas <span class="badge" id="saved-count">0</span>
+                            </button>
+                        </div>
+                        
+                        <div class="convocatoria-list" id="convocatoria-list"></div>
+                        
+                        <div class="convocatoria-note">
+                            <i class="fas fa-info-circle"></i>
+                            Arrastra jugadores al campo o márcalos y usa "Alineación Automática"
+                        </div>
                     </div>
                     
-                    <div class="color-legend">
-                        <div class="legend-item">
-                            <div class="color-box color-portero"></div>
-                            <span>Portero</span>
+                    <!-- Panel Derecho: Alineación -->
+                    <div class="alineacion-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-chalkboard"></i> Alineación</h3>
+                            <div class="formation-selector-compact">
+                                <label for="formation-select"><i class="fas fa-futbol"></i></label>
+                                <select id="formation-select">
+                                    <option value="1-2-2-1">1-2-2-1</option>
+                                    <option value="1-2-1-1">1-2-1-1</option>
+                                    <option value="2-1-2">2-1-2</option>
+                                    <option value="1-3-2">1-3-2</option>
+                                    <option value="1-2-3">1-2-3</option>
+                                    <option value="1-4-1">1-4-1</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="color-box color-defensa"></div>
-                            <span>Defensa</span>
+                        
+                        <div class="lineup-actions">
+                            <button class="btn-small btn-warning" id="btn-auto-lineup" title="Generar alineación automática">
+                                <i class="fas fa-magic"></i> Auto
+                            </button>
+                            <button class="btn-small btn-secondary" id="btn-clear-lineup" title="Vaciar alineación">
+                                <i class="fas fa-eraser"></i> Vaciar
+                            </button>
+                            <button class="btn-small btn-success" id="btn-export-png" title="Exportar a PNG">
+                                <i class="fas fa-download"></i> PNG
+                            </button>
                         </div>
-                        <div class="legend-item">
-                            <div class="color-box color-medio"></div>
-                            <span>Mediocampista</span>
+                        
+                        <div class="lineup-warnings" id="lineup-warnings"></div>
+                        
+                        <div class="field-container">
+                            <div class="field" id="field"></div>
+                            
+                            <div class="color-legend-compact">
+                                <span><div class="color-box color-portero"></div>POR</span>
+                                <span><div class="color-box color-defensa"></div>DEF</span>
+                                <span><div class="color-box color-medio"></div>MED</span>
+                                <span><div class="color-box color-delantero"></div>DEL</span>
+                            </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="color-box color-delantero"></div>
-                            <span>Delantero</span>
-                        </div>
+                        
+                        <p class="formation-hint">
+                            <i class="fas fa-hand-pointer"></i> Arrastra desde convocatoria o haz click para quitar
+                        </p>
                     </div>
-                    
-                    <p class="formation-note">Haz clic en cualquier jugador para cambiar la alineación según las posiciones disponibles</p>
                 </div>
-            </div>
+            </section>
 
-            <!-- Modal para seleccionar jugador -->
-            <div class="player-selector-modal" id="player-selector-modal">
-                <div class="selector-content">
-                    <h3 id="selector-title">Seleccionar Jugador</h3>
-                    <div id="player-options">
-                        <!-- Options populated by JS -->
-                    </div>
-                    <button class="selector-close" id="selector-close">Cerrar</button>
-                </div>
-            </div>
-
-            <!-- Sección de Reglas del Equipo -->
+            <!-- Reglas del Equipo -->
             <section class="team-rules">
                 <h2><i class="fas fa-gavel"></i> Reglas del Equipo</h2>
                 <ul class="team-rules-list">
-                    <li>
-                        <i class="fas fa-handshake"></i>
-                        <span><strong>Respeto y compañerismo:</strong> Mantener el respeto hacia todos los compañeros antes, durante y después de los partidos. El compañerismo, la buena convivencia y el apoyo mutuo son fundamentales para el éxito del equipo.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-ban"></i>
-                        <span><strong>Responsabilidad y conducta:</strong> No presentarse a los partidos en estado de ebriedad ni bajo los efectos de sustancias que afecten el rendimiento o la conducta. La responsabilidad y el compromiso con el equipo son prioritarios.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-clock"></i>
-                        <span><strong>Puntualidad:</strong> Llegar puntualmente a los encuentros programados. El respeto por el tiempo de los demás es clave para una correcta organización del equipo.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-clipboard-list"></i>
-                        <span><strong>Respeto a las decisiones técnicas:</strong> Respetar las alineaciones, cambios y decisiones técnicas del equipo. Todo jugador deberá permanecer disponible y acompañar al equipo hasta la finalización del partido, aun cuando sea sustituido.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-comments"></i>
-                        <span><strong>Comunicación de ausencias:</strong> Informar con anticipación cualquier ausencia o retraso. Una comunicación oportuna permite reorganizar la alineación y evitar inconvenientes.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-users"></i>
-                        <span><strong>Apoyo y respeto entre compañeros:</strong> Brindar apoyo y respeto a todos los integrantes del equipo, sin importar su nivel de juego. El crecimiento del grupo depende del compromiso y la solidaridad de todos.</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-flag"></i>
-                        <span><strong>Respeto al árbitro y a la organización:</strong> Respetar en todo momento las decisiones del árbitro. En caso de situaciones polémicas, únicamente el delegado del equipo estará autorizado para presentar una queja formal ante los organizadores del torneo.</span>
-                    </li>
+                    <li><i class="fas fa-handshake"></i><span><strong>Respeto y compañerismo:</strong> Mantener el respeto hacia todos los compañeros.</span></li>
+                    <li><i class="fas fa-ban"></i><span><strong>Responsabilidad:</strong> No presentarse en estado de ebriedad.</span></li>
+                    <li><i class="fas fa-clock"></i><span><strong>Puntualidad:</strong> Llegar a tiempo a los encuentros.</span></li>
+                    <li><i class="fas fa-clipboard-list"></i><span><strong>Respeto técnico:</strong> Respetar decisiones y alineaciones.</span></li>
+                    <li><i class="fas fa-comments"></i><span><strong>Comunicación:</strong> Informar ausencias con anticipación.</span></li>
+                    <li><i class="fas fa-users"></i><span><strong>Apoyo:</strong> Brindar apoyo a todos los integrantes.</span></li>
+                    <li><i class="fas fa-flag"></i><span><strong>Respeto al árbitro:</strong> Respetar decisiones arbitrales.</span></li>
                 </ul>
             </section>
         </main>
         
         <footer>
-            <p>Equipo de Fútbol 6 - Organización por posición</p>
-            <p>Actualizado para formato de 6 jugadores</p>
+            <p>Equipo de Fútbol 6 - Sistema de Gestión v2.0</p>
         </footer>
     </div>
     
