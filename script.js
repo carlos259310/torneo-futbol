@@ -363,7 +363,7 @@ function clearConvocatoria() {
 
 function getFormationConfig(formation) {
     var configs = {
-        '1-2-2-1': [
+        '1-2-2-1': [ // GK + 2 Def + 2 Mid + 1 Fwd = 6
             { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
             { class: 'defender-1', style: 'top: 30%; left: 28%;' },
             { class: 'defender-2', style: 'top: 70%; left: 28%;' },
@@ -371,44 +371,53 @@ function getFormationConfig(formation) {
             { class: 'midfielder-2', style: 'top: 70%; left: 55%;' },
             { class: 'forward', style: 'top: 50%; left: 80%; transform: translateY(-50%);' }
         ],
-        '1-2-1-1': [
+        '1-2-1-2': [ // GK + 2 Def + 1 Mid + 2 Fwd = 6
             { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
-            { class: 'defender-1', style: 'top: 50%; left: 28%; transform: translateY(-50%);' },
-            { class: 'midfielder-1', style: 'top: 30%; left: 48%;' },
-            { class: 'midfielder-2', style: 'top: 70%; left: 48%;' },
-            { class: 'midfielder-3', style: 'top: 50%; left: 68%; transform: translateY(-50%);' },
-            { class: 'forward', style: 'top: 50%; left: 88%; transform: translateY(-50%);' }
+            { class: 'defender-1', style: 'top: 25%; left: 30%;' },
+            { class: 'defender-2', style: 'top: 75%; left: 30%;' },
+            { class: 'midfielder-1', style: 'top: 50%; left: 55%; transform: translateY(-50%);' },
+            { class: 'forward', style: 'top: 30%; left: 80%;' },
+            { class: 'forward-2', style: 'top: 70%; left: 80%;' }
         ],
-        '2-1-2': [
-            { class: 'goalkeeper', style: 'top: 35%; left: 10%;' },
-            { class: 'goalkeeper', style: 'top: 65%; left: 10%;' },
-            { class: 'midfielder-1', style: 'top: 50%; left: 45%; transform: translateY(-50%);' },
-            { class: 'forward', style: 'top: 35%; left: 75%;' },
-            { class: 'forward-2', style: 'top: 65%; left: 75%;' }
+        '1-2-3': [ // GK + 2 Def + 3 Fwd = 6
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 30%; left: 25%;' },
+            { class: 'defender-2', style: 'top: 70%; left: 25%;' },
+            { class: 'midfielder-1', style: 'top: 50%; left: 50%; transform: translateY(-50%);' }, /* Pivot/Center Fwd */
+            { class: 'forward', style: 'top: 25%; left: 75%;' },
+            { class: 'forward-2', style: 'top: 75%; left: 75%;' }
         ],
-        '1-3-2': [
+        '1-3-2': [ // GK + 3 Def + 2 Fwd = 6
             { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
             { class: 'defender-1', style: 'top: 20%; left: 35%;' },
-            { class: 'defender-2', style: 'top: 50%; left: 35%; transform: translateY(-50%);' },
+            { class: 'defender-2', style: 'top: 50%; left: 30%; transform: translateY(-50%);' },
             { class: 'defender-3', style: 'top: 80%; left: 35%;' },
             { class: 'forward', style: 'top: 35%; left: 75%;' },
             { class: 'forward-2', style: 'top: 65%; left: 75%;' }
         ],
-        '1-2-3': [
+        '1-4-1': [ // GK + 4 Def + 1 Fwd = 6
             { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
-            { class: 'defender-1', style: 'top: 35%; left: 25%;' },
-            { class: 'defender-2', style: 'top: 65%; left: 25%;' },
-            { class: 'forward', style: 'top: 20%; left: 70%;' },
-            { class: 'midfielder-1', style: 'top: 50%; left: 70%; transform: translateY(-50%);' },
-            { class: 'forward-2', style: 'top: 80%; left: 70%;' }
-        ],
-        '1-4-1': [
-            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
-            { class: 'defender-1', style: 'top: 20%; left: 35%;' },
-            { class: 'defender-2', style: 'top: 40%; left: 35%;' },
-            { class: 'defender-3', style: 'top: 60%; left: 35%;' },
-            { class: 'defender-4', style: 'top: 80%; left: 35%;' },
+            { class: 'defender-1', style: 'top: 15%; left: 35%;' },
+            { class: 'defender-2', style: 'top: 38%; left: 35%;' },
+            { class: 'defender-3', style: 'top: 62%; left: 35%;' },
+            { class: 'defender-4', style: 'top: 85%; left: 35%;' },
             { class: 'forward', style: 'top: 50%; left: 75%; transform: translateY(-50%);' }
+        ],
+        '1-1-2-1-1': [ // Romboide: GK + 1 Def + 2 Wing + 1 AMC + 1 Fwd
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 50%; left: 25%; transform: translateY(-50%);' }, /* Libero */
+            { class: 'midfielder-1', style: 'top: 20%; left: 45%;' }, /* Left Wing */
+            { class: 'midfielder-2', style: 'top: 80%; left: 45%;' }, /* Right Wing */
+            { class: 'midfielder-3', style: 'top: 50%; left: 60%; transform: translateY(-50%);' }, /* Enganche/Volante */
+            { class: 'forward', style: 'top: 50%; left: 85%; transform: translateY(-50%);' }
+        ],
+        '1-3-1-1': [ // Control: GK + 1 Def + 3 Mid + 1 Fwd (Standard 1-3-1 in 6-a-side)
+            { class: 'goalkeeper', style: 'top: 50%; left: 8%; transform: translateY(-50%);' },
+            { class: 'defender-1', style: 'top: 50%; left: 25%; transform: translateY(-50%);' },
+            { class: 'midfielder-1', style: 'top: 20%; left: 50%;' },
+            { class: 'midfielder-2', style: 'top: 50%; left: 50%; transform: translateY(-50%);' },
+            { class: 'midfielder-3', style: 'top: 80%; left: 50%;' },
+            { class: 'forward', style: 'top: 50%; left: 80%; transform: translateY(-50%);' }
         ]
     };
     
@@ -426,6 +435,27 @@ function initializeEmptyLineup() {
     });
     updateFieldDisplay();
     validateLineup();
+}
+
+
+function resetLineup() {
+    var selector = document.getElementById('formation-select');
+    var formationName = selector ? selector.value : '1-2-2-1';
+    var formation = getFormationConfig(formationName);
+    
+    // Map existing players to new positions based on index
+    var newLineup = formation.map(function(posTemplate, i) {
+        var existingPlayerId = currentLineup[i] ? currentLineup[i].id : null;
+        return {
+            class: posTemplate.class,
+            style: posTemplate.style,
+            id: existingPlayerId
+        };
+    });
+    
+    currentLineup = newLineup;
+    updateFieldDisplay();
+    showNotification('Posiciones restablecidas', 'info');
 }
 
 function updateFieldDisplay() {
@@ -462,8 +492,7 @@ function updateFieldDisplay() {
                 openPlayerSelection(index);
             };
 
-            // Drop target logic simply allows dragging
-            slot.ondragover = function(e) { /* ... */ }; // Kept for logic reference but overridden below
+            // Drop target
             slot.ondragover = function(e) {
                 e.preventDefault();
                 slot.classList.add('drag-over');
@@ -476,19 +505,36 @@ function updateFieldDisplay() {
             slot.ondrop = function(e) {
                 e.preventDefault();
                 slot.classList.remove('drag-over');
-                
-                if (draggedPlayerId) {
-                    assignPlayerToPosition(index, draggedPlayerId);
-                }
+                handleSlotDrop(e, index);
             };
         } else {
-            // Occupied slot (Code remains...)
+            // Occupied slot
             var player = rosterData.players[pos.id];
             if (!player) return;
             
             slot.classList.add('occupied-slot');
             if (player.veteran) slot.classList.add('veteran-player');
             
+            // MAKE DRAGGABLE FOR FREE MOVE
+            slot.draggable = true;
+            slot.ondragstart = function(e) {
+                e.dataTransfer.setData('text/plain', JSON.stringify({ 
+                    type: 'field-move', 
+                    index: index, 
+                    playerId: pos.id,
+                    offsetX: e.offsetX, 
+                    offsetY: e.offsetY
+                }));
+                e.dataTransfer.effectAllowed = "move";
+                slot.classList.add('dragging');
+                setTimeout(() => slot.classList.add('invisible-drag'), 0);
+            };
+            
+            slot.ondragend = function() {
+                slot.classList.remove('dragging');
+                slot.classList.remove('invisible-drag');
+            };
+
             var content = document.createElement('div');
             content.className = 'player-content';
             content.innerHTML = 
@@ -503,9 +549,23 @@ function updateFieldDisplay() {
                 e.stopPropagation();
                 removePlayerFromPosition(index);
             };
+            // Prevent drag when clicking remove
+            removeBtn.ondragstart = function(e) { e.preventDefault(); e.stopPropagation(); };
             
             slot.appendChild(content);
             slot.appendChild(removeBtn);
+            
+            // Allow drop on occupied slot (Swap)
+            slot.ondragover = function(e) {
+                e.preventDefault();
+                slot.classList.add('drag-over');
+            };
+            slot.ondragleave = function() { slot.classList.remove('drag-over'); };
+            slot.ondrop = function(e) {
+                 e.preventDefault();
+                 slot.classList.remove('drag-over');
+                 handleSlotDrop(e, index);
+            };
             
             // Click to remove
             slot.addEventListener('click', function() {
@@ -515,6 +575,76 @@ function updateFieldDisplay() {
         
         fieldEl.appendChild(slot);
     });
+    
+    // Field Container Drop Zone (For Free positioning)
+    fieldEl.ondragover = function(e) {
+        e.preventDefault();
+    };
+    
+    fieldEl.ondrop = function(e) {
+        e.preventDefault();
+        handleFieldFreeDrop(e, fieldEl);
+    };
+}
+
+function handleSlotDrop(e, targetIndex) {
+    try {
+        var data = e.dataTransfer.getData('text/plain');
+        if (!data) {
+             // Fallback if draggedPlayerId is set global
+             if (draggedPlayerId) {
+                 assignPlayerToPosition(targetIndex, draggedPlayerId);
+                 draggedPlayerId = null;
+             }
+             return;
+        }
+        
+        var source = JSON.parse(data);
+        if (source.type === 'field-move') {
+            // Swap logic
+            var fromIndex = source.index;
+            if (fromIndex === targetIndex) return;
+            
+            var temp = currentLineup[targetIndex].id;
+            currentLineup[targetIndex].id = currentLineup[fromIndex].id;
+            currentLineup[fromIndex].id = temp;
+            
+            updateFieldDisplay();
+            validateLineup();
+            showNotification('Posiciones intercambiadas', 'success');
+        }
+    } catch(err) { 
+        // If JSON parse fails, it might be from the roster
+        if (draggedPlayerId) {
+             assignPlayerToPosition(targetIndex, draggedPlayerId);
+             draggedPlayerId = null; 
+        }
+    }
+}
+
+function handleFieldFreeDrop(e, fieldEl) {
+    var data = e.dataTransfer.getData('text/plain');
+    if (!data) return;
+    
+    try {
+        var source = JSON.parse(data);
+        if (source.type === 'field-move') {
+            var rect = fieldEl.getBoundingClientRect();
+            var x = e.clientX - rect.left - (source.offsetX || 32); 
+            var y = e.clientY - rect.top - (source.offsetY || 32);
+            
+            // Constrain
+            x = Math.max(0, Math.min(x, rect.width - 64));
+            y = Math.max(0, Math.min(y, rect.height - 64));
+            
+            // Convert to %
+            var leftPct = (x / rect.width) * 100;
+            var topPct = (y / rect.height) * 100;
+            
+            currentLineup[source.index].style = 'left:' + leftPct + '%; top:' + topPct + '%;';
+            updateFieldDisplay();
+        }
+    } catch(err) { console.error(err); }
 }
 
 function assignPlayerToPosition(positionIndex, playerId) {
@@ -1033,6 +1163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bindBtn('btn-auto-lineup', autoLineup);
     bindBtn('btn-clear-lineup', clearLineup);
+    bindBtn('btn-reset-lineup', resetLineup);
     bindBtn('btn-export-png', exportLineupToPNG);
     
     // Select All and Clear All removed from HTML but keeping safe logic
@@ -1049,6 +1180,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.changeFormation = changeFormation;
 window.autoLineup = autoLineup;
+window.resetLineup = resetLineup;
 window.clearLineup = clearLineup;
 window.selectAllPlayers = selectAllPlayers;
 window.clearConvocatoria = clearConvocatoria;
