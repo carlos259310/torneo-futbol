@@ -16,11 +16,74 @@ if (!Array.from) {
 // GLOBAL STATE
 // ============================================================================
 
-var rosterData = null;
+// ============================================================================
+// GLOBAL STATE
+// ============================================================================
+
+// DATOS EMBEBIDOS PARA EVITAR PROBLEMAS DE CARGA LOCAL (CORS)
+var rosterData = {
+    "players": {
+        "1": { "name": "Fernando Almeida", "number": "99", "veteran": false },
+        "2": { "name": "Gregorio", "number": "17", "veteran": true },
+        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false },
+        "4": { "name": "Fredual", "number": "2", "veteran": false },
+        "5": { "name": "Fernando Senior", "number": "7", "veteran": true },
+        "6": { "name": "Javier", "number": "27", "veteran": false },
+        "7": { "name": "Harold", "number": "9", "veteran": false },
+        "8": { "name": "Jhon Villamizar", "number": "22", "veteran": false },
+        "9": { "name": "Carlos Medina", "number": "94", "veteran": false },
+        "10": { "name": "Juan Duarte", "number": "10", "veteran": false },
+        "11": { "name": "Cristian", "number": "4", "veteran": false },
+        "12": { "name": "Ingeniero John", "number": "3", "veteran": false },
+        "13": { "name": "Juan Velandia", "number": "23", "veteran": false }
+    },
+    "positions": {
+        "porteros": [
+            { "id": "1", "priority": "high-priority" },
+            { "id": "2", "priority": "medium-priority" },
+            { "id": "3", "priority": "medium-priority" },
+            { "id": "4", "priority": "low-priority" },
+            { "id": "7", "priority": "low-priority" }
+        ],
+        "defensas": [
+            { "id": "3", "priority": "high-priority" },
+            { "id": "2", "priority": "medium-priority" },
+            { "id": "11", "priority": "medium-priority" },
+            { "id": "4", "priority": "low-priority" },
+            { "id": "5", "priority": "low-priority" },
+            { "id": "6", "priority": "low-priority" },
+            { "id": "12", "priority": "high-priority" }
+        ],
+        "medio": [
+            { "id": "7", "priority": "high-priority" },
+            { "id": "8", "priority": "high-priority" },
+            { "id": "6", "priority": "medium-priority" },
+            { "id": "9", "priority": "medium-priority" },
+            { "id": "2", "priority": "medium-priority" },
+            { "id": "3", "priority": "low-priority" },
+            { "id": "12", "priority": "medium-priority" },
+            { "id": "13", "priority": "medium-priority" }
+        ],
+        "delanteros": [
+            { "id": "10", "priority": "high-priority" },
+            { "id": "8", "priority": "medium-priority" },
+            { "id": "7", "priority": "low-priority" },
+            { "id": "13", "priority": "high-priority" }
+        ]
+    },
+    "captains": [
+        { "order": 1, "id": "7" },
+        { "order": 2, "id": "3" },
+        { "order": 3, "id": "8" },
+        { "order": 4, "id": "1" }
+    ],
+    "dt": { "id": "5" }
+};
+
 var currentLineup = []; // Empieza vacío
-var convocatoria = new Set(); // Jugadores convocados
+var convocatoria = new Set(); // Ya no se usa para restringir, pero mantenemos compatibilidad básica si se necesita
 var draggedPlayerId = null;
-var draggedFromConvocatoria = false;
+// Removed draggedFromConvocatoria flag as we allow dragging from main roster directly now contextually
 
 // ============================================================================
 // INITIALIZATION
@@ -29,34 +92,27 @@ var draggedFromConvocatoria = false;
 function initRoster() {
     console.log('Iniciando carga del roster...');
     
-    fetch('data/roster.json')
-        .then(function(res) {
-            if (!res.ok) throw new Error('Error cargando roster.json');
-            return res.json();
-        })
-        .then(function(data) {
-            rosterData = data;
-            console.log('Datos cargados');
-
-            // NO inicializar convocatoria automáticamente
-            // El usuario debe seleccionar manualmente
-
-            // Render sections
-            renderPositionLists();
-            renderFullRoster();
-            renderDT();
-            renderCaptains();
-            renderConvocatoria();
-            initializeEmptyLineup(); // Campo vacío con formación 1-2-2-1
-            updateConvocatoriaStats();
-            highlightVeterans();
-            
-            console.log('Renderizado completado');
-        })
-        .catch(function(err) {
-            console.error('Error:', err);
-            showNotification('Error al cargar datos', 'error');
-        });
+    // Usamos los datos embebidos directamente
+    try {
+        console.log('Cargando datos embebidos...');
+        
+        // Auto-fill convocatoria logic removed for simplicity - all players available
+        
+        // Render sections
+        renderPositionLists();
+        renderFullRoster();
+        renderDT();
+        renderCaptains();
+        renderConvocatoria(); // Renamed internally to "Available Players" logic
+        initializeEmptyLineup();
+        updateConvocatoriaStats();
+        highlightVeterans();
+        
+        console.log('Renderizado completado');
+    } catch (err) {
+        console.error('Error:', err);
+        showNotification('Error al cargar datos', 'error');
+    }
 }
 
 // ============================================================================
@@ -206,7 +262,7 @@ function renderCaptains() {
 }
 
 // ============================================================================
-// CONVOCATORIA
+// CONVOCATORIA (Ahora "Lista Disponible")
 // ============================================================================
 
 function renderConvocatoria() {
@@ -229,15 +285,7 @@ function renderConvocatoria() {
         item.dataset.playerId = id;
         item.setAttribute('draggable', 'true');
         
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'convocado-checkbox';
-        checkbox.id = 'conv-' + id;
-        checkbox.checked = convocatoria.has(id);
-        
-        checkbox.addEventListener('change', function() {
-            toggleConvocatoria(id);
-        });
+        // Remove Checkbox - Todos disponibles
         
         var badge = document.createElement('div');
         badge.className = 'player-badge-mini';
@@ -265,25 +313,17 @@ function renderConvocatoria() {
         infoContainer.appendChild(nameSpan);
         infoContainer.appendChild(positionsDiv);
         
-        // Drag handlers
+        // Drag handlers simplified
         item.ondragstart = function(e) {
-            if (!convocatoria.has(id)) {
-                e.preventDefault();
-                showNotification('Marca el checkbox primero para convocar', 'warning');
-                return;
-            }
             draggedPlayerId = id;
-            draggedFromConvocatoria = true;
             item.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         };
         
         item.ondragend = function() {
             item.classList.remove('dragging');
-            draggedFromConvocatoria = false;
         };
         
-        item.appendChild(checkbox);
         item.appendChild(badge);
         item.appendChild(infoContainer);
         
@@ -299,64 +339,22 @@ function renderConvocatoria() {
 }
 
 function toggleConvocatoria(playerId) {
-    var player = rosterData.players[playerId];
-    
-    if (convocatoria.has(playerId)) {
-        // Deseleccionar
-        convocatoria.delete(playerId);
-        
-        // Quitar de alineación si está
-        var found = false;
-        currentLineup.forEach(function(pos) {
-            if (pos.id === playerId) {
-                pos.id = null;
-                found = true;
-            }
-        });
-        
-        if (found) {
-            updateFieldDisplay();
-            showNotification(player.name + ' quitado de alineación', 'info');
-        }
-    } else {
-        // Seleccionar
-        convocatoria.add(playerId);
-    }
-    
-    updateConvocatoriaStats();
-    validateLineup();
+   // Deprecated function kept empty to prevent errors if called, though UI no longer calls it
 }
 
 function updateConvocatoriaStats() {
     var count = document.getElementById('convocados-count');
-    if (count) count.textContent = convocatoria.size;
+    // Count all players as available
+    var total = Object.keys(rosterData.players).length;
+    if (count) count.textContent = total;
 }
 
 function selectAllPlayers() {
-    Object.keys(rosterData.players).forEach(function(id) {
-        convocatoria.add(id);
-    });
-    renderConvocatoria();
-    updateConvocatoriaStats();
-    showNotification('Todos convocados', 'success');
+    // No-op
 }
 
 function clearConvocatoria() {
-    showConfirm(
-        '¿Limpiar convocatoria?',
-        'Se vaciará también la alineación.',
-        function() {
-            convocatoria.clear();
-            currentLineup.forEach(function(pos) { pos.id = null; });
-            
-            renderConvocatoria();
-            updateConvocatoriaStats();
-            updateFieldDisplay();
-            validateLineup();
-            
-            showNotification('Convocatoria y alineación limpiadas', 'success');
-        }
-    );
+    // No-op
 }
 
 // ============================================================================
@@ -457,14 +455,18 @@ function updateFieldDisplay() {
             // Empty slot
             slot.classList.add('empty-slot');
             slot.innerHTML = '<i class="fas fa-plus"></i>';
-            slot.title = 'Arrastra un jugador aquí';
+            slot.title = 'Arrastra un jugador aquí o haz click para seleccionar';
             
-            // Drop target
+            // Interaction: Click to open selection (Mobile friendly)
+            slot.onclick = function() {
+                openPlayerSelection(index);
+            };
+
+            // Drop target logic simply allows dragging
+            slot.ondragover = function(e) { /* ... */ }; // Kept for logic reference but overridden below
             slot.ondragover = function(e) {
                 e.preventDefault();
-                if (draggedFromConvocatoria && draggedPlayerId) {
-                    slot.classList.add('drag-over');
-                }
+                slot.classList.add('drag-over');
             };
             
             slot.ondragleave = function() {
@@ -475,12 +477,12 @@ function updateFieldDisplay() {
                 e.preventDefault();
                 slot.classList.remove('drag-over');
                 
-                if (draggedFromConvocatoria && draggedPlayerId) {
+                if (draggedPlayerId) {
                     assignPlayerToPosition(index, draggedPlayerId);
                 }
             };
         } else {
-            // Occupied slot
+            // Occupied slot (Code remains...)
             var player = rosterData.players[pos.id];
             if (!player) return;
             
@@ -516,11 +518,6 @@ function updateFieldDisplay() {
 }
 
 function assignPlayerToPosition(positionIndex, playerId) {
-    if (!convocatoria.has(playerId)) {
-        showNotification('Jugador no convocado', 'error');
-        return;
-    }
-    
     // Check if already in lineup
     var alreadyAssigned = currentLineup.some(function(p, idx) {
         return p.id === playerId && idx !== positionIndex;
@@ -549,6 +546,106 @@ function removePlayerFromPosition(positionIndex) {
     updateFieldDisplay();
     validateLineup();
     showNotification(player.name + ' quitado', 'info');
+}
+
+// ============================================================================
+// MOBILE/MODAL SELECTION LOGIC
+// ============================================================================
+
+var currentSlotIndex = null;
+
+function openPlayerSelection(slotIndex) {
+    currentSlotIndex = slotIndex;
+    var modal = document.getElementById('player-selection-modal');
+    var list = document.getElementById('modal-players-list');
+    
+    if (!modal || !list) return;
+    
+    list.innerHTML = '';
+    
+    // Suggest relevant roles
+    var slotConfig = currentLineup[slotIndex];
+    var suggestedRole = '';
+    if (slotConfig.class.includes('goal')) suggestedRole = 'porteros';
+    else if (slotConfig.class.includes('def')) suggestedRole = 'defensas';
+    else if (slotConfig.class.includes('mid')) suggestedRole = 'medio';
+    else if (slotConfig.class.includes('for')) suggestedRole = 'delanteros';
+    
+    document.getElementById('modal-title').textContent = 'Seleccionar ' + (suggestedRole ? suggestedRole.toUpperCase() : 'Jugador');
+    
+    // Sort: Suggested role first, then number
+    var ids = Object.keys(rosterData.players);
+    
+    ids.sort(function(a, b) {
+        var pA = rosterData.players[a];
+        var pB = rosterData.players[b];
+        
+        // Check if players have the role
+        var rolesA = getPlayerPositions(a).map(p => p.key);
+        var rolesB = getPlayerPositions(b).map(p => p.key);
+        
+        var matchA = rolesA.includes(suggestedRole);
+        var matchB = rolesB.includes(suggestedRole);
+        
+        if (matchA && !matchB) return -1;
+        if (!matchA && matchB) return 1;
+        
+        return (parseInt(pA.number) || 99) - (parseInt(pB.number) || 99);
+    });
+    
+    ids.forEach(function(id) {
+        // Skip already assigned
+        if (currentLineup.some(p => p.id === id)) return;
+        
+        var player = rosterData.players[id];
+        var positions = getPlayerPositions(id);
+        
+        var item = document.createElement('div');
+        item.className = 'modal-player-item';
+        
+        // Highlight compatible players
+        var isCompatible = positions.some(p => p.key === suggestedRole);
+        if (isCompatible) item.style.background = '#f0fdf4'; // Light green hint
+        
+        item.onclick = function() {
+            assignPlayerToPosition(currentSlotIndex, id);
+            closePlayerModal();
+        };
+        
+        var badge = document.createElement('div');
+        badge.className = 'player-number-badge';
+        badge.style.width = '32px'; 
+        badge.style.height = '32px';
+        badge.style.fontSize = '0.8rem';
+        badge.textContent = player.number || '-';
+        
+        var info = document.createElement('div');
+        info.style.flex = '1';
+        
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'modal-player-name';
+        nameDiv.textContent = player.name + (player.veteran ? ' ★' : '');
+        
+        var roleDiv = document.createElement('div');
+        roleDiv.className = 'modal-player-number';
+        roleDiv.textContent = positions.map(p => p.label).join(', ');
+        
+        info.appendChild(nameDiv);
+        info.appendChild(roleDiv);
+        
+        item.appendChild(badge);
+        item.appendChild(info);
+        
+        list.appendChild(item);
+    });
+    
+    modal.classList.remove('hidden');
+}
+
+function closePlayerModal() {
+    var modal = document.getElementById('player-selection-modal');
+    if (modal) modal.classList.add('hidden');
+    currentSlotIndex = null;
 }
 
 function changeFormation(formation) {
@@ -596,49 +693,77 @@ function clearLineup() {
 }
 
 function autoLineup() {
-    if (convocatoria.size === 0) {
-        showNotification('Primero convoca jugadores', 'warning');
+    if (!rosterData || !rosterData.positions) {
+        showNotification('Error: Datos no cargados', 'error');
         return;
     }
     
     showConfirm(
         'Alineación automática',
-        '¿Crear alineación con jugadores convocados?',
+        '¿Rellenar posiciones vacías con los mejores jugadores disponibles?',
         function() {
-    
-    var convocadosArray = Array.from(convocatoria);
-    
-    currentLineup.forEach(function(position) {
-        var positionKey = null;
-        var posClass = position.class;
-        
-        if (posClass.includes('goalkeeper')) positionKey = 'porteros';
-        else if (posClass.includes('defender')) positionKey = 'defensas';
-        else if (posClass.includes('midfielder')) positionKey = 'medio';
-        else if (posClass.includes('forward')) positionKey = 'delanteros';
-        
-        if (!positionKey) return;
-        
-        var availablePlayers = (rosterData.positions[positionKey] || []).filter(function(entry) {
-            return convocadosArray.indexOf(entry.id) !== -1 && 
-                   !currentLineup.some(function(p) { return p.id === entry.id; });
-        });
-        
-        availablePlayers.sort(function(a, b) {
-            var priorityOrder = { 'high-priority': 0, 'medium-priority': 1, 'low-priority': 2 };
-            return (priorityOrder[a.priority] || 99) - (priorityOrder[b.priority] || 99);
-        });
-        
-        if (availablePlayers.length > 0) {
-            position.id = availablePlayers[0].id;
-        }
-    });
-    
-    updateFieldDisplay();
-    validateLineup();
-    showNotification('Alineación automática creada', 'success');
+            // Get all player IDs as "available"
+            var allPlayerIds = Object.keys(rosterData.players);
+            
+            currentLineup.forEach(function(position) {
+                // Skip if already filled
+                if (position.id) return;
+
+                var positionKey = null;
+                var posClass = position.class;
+                
+                if (posClass.includes('goalkeeper')) positionKey = 'porteros';
+                else if (posClass.includes('defender')) positionKey = 'defensas';
+                else if (posClass.includes('midfielder')) positionKey = 'medio';
+                else if (posClass.includes('forward')) positionKey = 'delanteros';
+                
+                if (!positionKey) return;
+                
+                // Find candidates for this specific position role
+                var candidates = (rosterData.positions[positionKey] || []).filter(function(entry) {
+                    // Must not be already in the lineup
+                    return !currentLineup.some(function(p) { return p.id === entry.id; });
+                });
+                
+                // Sort by priority (high first)
+                candidates.sort(function(a, b) {
+                    var priorityOrder = { 'high-priority': 0, 'medium-priority': 1, 'low-priority': 2 };
+                    return (priorityOrder[a.priority] || 99) - (priorityOrder[b.priority] || 99);
+                });
+                
+                // Assign best candidate
+                if (candidates.length > 0) {
+                    position.id = candidates[0].id;
+                }
+            });
+            
+            updateFieldDisplay();
+            validateLineup();
+            showNotification('Alineación completada', 'success');
         }
     );
+}
+
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    var isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    var icon = document.getElementById('theme-icon');
+    if (icon) {
+        // If dark mode is active, show SUN (to switch to light)
+        // If light mode is active, show MOON (to switch to dark)
+        icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+}
+
+// Check saved theme on load
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    // Ensure icon matches on load
+    var icon = document.getElementById('theme-icon');
+    if (icon) icon.className = 'fas fa-sun';
 }
 
 // ============================================================================
@@ -765,6 +890,10 @@ document.head.appendChild(style);
 // ============================================================================
 
 function showConfirm(title, message, onConfirm, onCancel) {
+    // Remove existing modal if any
+    var existingContext = document.querySelector('.custom-modal-overlay');
+    if (existingContext) existingContext.remove();
+
     var modal = document.createElement('div');
     modal.className = 'custom-modal-overlay';
     modal.innerHTML = 
@@ -776,10 +905,10 @@ function showConfirm(title, message, onConfirm, onCancel) {
         '    <p>' + message + '</p>' +
         '  </div>' +
         '  <div class="custom-modal-footer">' +
-        '    <button class="btn-modal btn-cancel" data-action="cancel">' +
+        '    <button class="btn-modal btn-cancel" id="modal-cancel-btn">' +
         '      <i class="fas fa-times"></i> Cancelar' +
         '    </button>' +
-        '    <button class="btn-modal btn-confirm" data-action="confirm">' +
+        '    <button class="btn-modal btn-confirm" id="modal-confirm-btn">' +
         '      <i class="fas fa-check"></i> Confirmar' +
         '    </button>' +
         '  </div>' +
@@ -787,22 +916,34 @@ function showConfirm(title, message, onConfirm, onCancel) {
     
     document.body.appendChild(modal);
     
-    setTimeout(function() { modal.classList.add('show'); }, 10);
+    // Force reflow for animation
+    void modal.offsetWidth;
+    modal.classList.add('show');
     
+    // Event handling - direct IDs are safer than bubbling
+    document.getElementById('modal-cancel-btn').onclick = function() {
+        closeModal();
+        if (onCancel) onCancel();
+    };
+    
+    document.getElementById('modal-confirm-btn').onclick = function() {
+        closeModal();
+        if (onConfirm) onConfirm();
+    };
+    
+    // Close on background click
     modal.onclick = function(e) {
-        if (e.target.classList.contains('custom-modal-overlay') || 
-            e.target.dataset.action === 'cancel') {
+        if (e.target === modal) {
             closeModal();
             if (onCancel) onCancel();
-        } else if (e.target.closest('[data-action="confirm"]')) {
-            closeModal();
-            if (onConfirm) onConfirm();
         }
     };
     
     function closeModal() {
         modal.classList.remove('show');
-        setTimeout(function() { modal.remove(); }, 300);
+        setTimeout(function() { 
+            if (modal.parentNode) modal.parentNode.removeChild(modal); 
+        }, 300);
     }
 }
 
@@ -878,45 +1019,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    var btnAutoLineup = document.getElementById('btn-auto-lineup');
-    if (btnAutoLineup) {
-        btnAutoLineup.addEventListener('click', function(e) {
-            e.preventDefault();
-            autoLineup();
-        });
+    function bindBtn(id, handler) {
+        var btn = document.getElementById(id);
+        if (btn) {
+            btn.onclick = function(e) { /* Direct onclick to ensure no overriding issues */
+                e.preventDefault();
+                handler();
+            };
+        } else {
+            console.warn('Button not found:', id);
+        }
     }
+
+    bindBtn('btn-auto-lineup', autoLineup);
+    bindBtn('btn-clear-lineup', clearLineup);
+    bindBtn('btn-export-png', exportLineupToPNG);
     
-    var btnClearLineup = document.getElementById('btn-clear-lineup');
-    if (btnClearLineup) {
-        btnClearLineup.addEventListener('click', function(e) {
-            e.preventDefault();
-            clearLineup();
-        });
-    }
-    
+    // Select All and Clear All removed from HTML but keeping safe logic
     var btnSelectAll = document.getElementById('btn-select-all');
-    if (btnSelectAll) {
-        btnSelectAll.addEventListener('click', function(e) {
-            e.preventDefault();
-            selectAllPlayers();
-        });
-    }
+    if (btnSelectAll) btnSelectAll.onclick = function(e) { e.preventDefault(); selectAllPlayers(); };
     
     var btnClearAll = document.getElementById('btn-clear-all');
-    if (btnClearAll) {
-        btnClearAll.addEventListener('click', function(e) {
-            e.preventDefault();
-            clearConvocatoria();
-        });
-    }
-    
-    var btnExportPng = document.getElementById('btn-export-png');
-    if (btnExportPng) {
-        btnExportPng.addEventListener('click', function(e) {
-            e.preventDefault();
-            exportLineupToPNG();
-        });
-    }
+    if (btnClearAll) btnClearAll.onclick = function(e) { e.preventDefault(); clearConvocatoria(); };
 });
 
 // ============================================================================

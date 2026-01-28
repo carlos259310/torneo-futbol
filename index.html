@@ -14,7 +14,10 @@
             <a href="#plantilla" class="nav-link"><i class="fas fa-users"></i> Plantilla</a>
             <a href="#posiciones" class="nav-link"><i class="fas fa-th"></i> Posiciones</a>
             <a href="#dt-capitanes" class="nav-link"><i class="fas fa-user-tie"></i> DT & Capitanes</a>
-            <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Convocatoria & Alineación</a>
+            <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Alineación</a>
+            <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" style="background:none; border:none; cursor:pointer;">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
         </div>
     </nav>
 
@@ -91,32 +94,25 @@
                 </div>
                 
                 <div class="unified-container">
-                    <!-- Panel Izquierdo: Convocatoria -->
+                    <!-- Panel Izquierdo: Jugadores Disponibles -->
                     <div class="convocatoria-panel">
                         <div class="panel-header">
-                            <h3><i class="fas fa-users-cog"></i> Jugadores Convocados</h3>
+                            <h3><i class="fas fa-users"></i> Jugadores Disponibles</h3>
                             <div class="convocatoria-stats">
                                 <span class="stat-badge">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="fas fa-list"></i>
                                     <span id="convocados-count">0</span>
                                 </span>
                             </div>
                         </div>
                         
-                        <div class="convocatoria-controls">
-                            <button class="btn-small btn-primary" id="btn-select-all" title="Seleccionar todos">
-                                <i class="fas fa-check-double"></i> Todos
-                            </button>
-                            <button class="btn-small btn-danger" id="btn-clear-all" title="Limpiar convocatoria">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+                        <!-- Controls removed for simplicity as requested -->
                         
                         <div class="convocatoria-list" id="convocatoria-list"></div>
                         
                         <div class="convocatoria-note">
-                            <i class="fas fa-info-circle"></i>
-                            Arrastra jugadores al campo o márcalos y usa "Alineación Automática"
+                            <i class="fas fa-hand-pointer"></i>
+                            Arrastra los jugadores directamente al campo
                         </div>
                     </div>
                     
@@ -138,8 +134,8 @@
                         </div>
                         
                         <div class="lineup-actions">
-                            <button class="btn-small btn-warning" id="btn-auto-lineup" title="Generar alineación automática">
-                                <i class="fas fa-magic"></i> Auto
+                            <button class="btn-small btn-warning" id="btn-auto-lineup" title="Rellenar vacíos automáticamente">
+                                <i class="fas fa-magic"></i> Auto Rellenar
                             </button>
                             <button class="btn-small btn-secondary" id="btn-clear-lineup" title="Vaciar alineación">
                                 <i class="fas fa-eraser"></i> Vaciar
@@ -189,6 +185,19 @@
         </footer>
     </div>
     
+    <!-- Player Selection Modal (Mobile Friendly) -->
+    <div id="player-selection-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Seleccionar Jugador</h3>
+                <button class="modal-close" onclick="closePlayerModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-players-list" class="modal-list">
+                <!-- Players injected here by JS -->
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
