@@ -567,8 +567,15 @@ function updateFieldDisplay() {
                  handleSlotDrop(e, index);
             };
             
-            // Click to remove
-            slot.addEventListener('click', function() {
+            // Click to remove (or open menu eventually)
+            slot.addEventListener('click', function(e) {
+                // If it was a drag, don't trigger click
+                if (slot.classList.contains('dragging')) return;
+                
+                // Confirm removal on click for better UX (prevent accidental)
+                // Or just remove as currently implemented.
+                // Let's stick to simple remove but ensure propagation is stopped if needed
+                e.stopPropagation();
                 removePlayerFromPosition(index);
             });
         }

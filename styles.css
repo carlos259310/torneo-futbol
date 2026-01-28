@@ -413,6 +413,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
 .modal-player-name { font-weight: 600; font-size: 0.95rem; }
 .modal-player-number { color: var(--text-muted); font-size: 0.85rem; }
 
+
 /* Mobile Bottom Sheet style override */
 @media (max-width: 600px) {
     .modal-overlay { align-items: flex-end; }
@@ -424,9 +425,43 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
         from { transform: translateY(100%); }
         to { transform: translateY(0); }
     }
+    
+    /* Field Scaling on Mobile */
+    .field {
+        min-height: 50vh; /* Use viewport height unit */
+        max-height: 60vh;
+        border-width: 2px;
+    }
+    
+    .field-slot {
+        width: 48px; height: 48px; /* Smaller slots */
+        border-width: 2px;
+    }
+    
+    .player-field-name { font-size: 0.65rem; max-width: 50px; }
+    .player-field-number { width: 16px; height: 16px; font-size: 0.65rem; }
+    .remove-player-btn { width: 20px; height: 20px; right: -6px; top: -6px; }
+    
+    /* Layout Adjustments */
+    .container { padding: 10px; }
+    .nav-container { gap: 8px; justify-content: center; }
+    .nav-link { font-size: 0.8rem; padding: 6px 12px; }
+    
+    .unified-container { gap: 1rem; }
+    
+    /* Smaller buttons */
+    .btn-small { padding: 0.5rem; font-size: 0.75rem; }
+    
+    /* Hide legend text if needed or make smaller */
+    .color-legend-compact { gap: 0.5rem; font-size: 0.7rem; width: 100%; flex-wrap: wrap; }
 }
 
-/* Custom Confirmation Modal */
+/* Very small screens */
+@media (max-width: 360px) {
+    .field-slot { width: 40px; height: 40px; }
+    .player-field-name { display: none; } /* Hide name to avoid clutter */
+    .player-field-number { margin-top: 0; }
+}
 .custom-modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.5); z-index: 3000;
