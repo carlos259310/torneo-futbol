@@ -2,7 +2,8 @@
 
 ## 📋 Resumen Ejecutivo
 
-Aplicación web para gestionar plantilla, convocatorias y alineaciones de un equipo de fútbol 6. 
+Aplicación web para gestionar plantilla, convocatorias y alineaciones de un equipo de fútbol 6.
+
 - **Tecnologías**: HTML5, CSS3, JavaScript vanilla (ES5)
 - **Almacenamiento**: JSON local + localStorage
 - **Sin dependencias** (excepto html2canvas para exportación)
@@ -35,7 +36,10 @@ TORNEO DE FUTBOL/
     "ID": {
       "name": "Nombre Completo",
       "number": "Número",
-      "veteran": boolean
+      "veteran": boolean,
+      "rating": float,
+      "strengths": ["Habilidad 1", "Habilidad 2"],
+      "improvements": ["Aspecto 1", "Aspecto 2"]
     }
   },
   "positions": {
@@ -60,6 +64,9 @@ TORNEO DE FUTBOL/
 
 - **players**: Mapa de jugadores por ID único
 - **veteran**: `true` para jugadores obligatorios en alineación
+- **rating**: Calificación del jugador (usada para priorizar en auto-alineación)
+- **strengths**: Lista de fortalezas/habilidades (se muestran en popover)
+- **improvements**: Aspectos a mejorar (se muestran en popover)
 - **priority**: Orden de preferencia para auto-alineación
 - **positions**: Jugadores agrupados por rol con prioridad
 - **field**: Configuración inicial del campo (no se usa en runtime, solo referencia)
@@ -71,12 +78,12 @@ TORNEO DE FUTBOL/
 ### Variables Globales
 
 ```javascript
-var rosterData = null;              // Datos cargados desde JSON
-var currentLineup = [];             // Alineación actual en campo
-var convocatoria = new Set();       // IDs de jugadores convocados
-var draggedPlayerId = null;         // ID del jugador siendo arrastrado
-var draggedFromConvocatoria = false;// Flag de origen del drag
-var savedConvocatorias = [];        // Convocatorias guardadas
+var rosterData = null; // Datos cargados desde JSON
+var currentLineup = []; // Alineación actual en campo
+var convocatoria = new Set(); // IDs de jugadores convocados
+var draggedPlayerId = null; // ID del jugador siendo arrastrado
+var draggedFromConvocatoria = false; // Flag de origen del drag
+var savedConvocatorias = []; // Convocatorias guardadas
 ```
 
 ### Flujo de Inicialización
@@ -109,12 +116,10 @@ var savedConvocatorias = [];        // Convocatorias guardadas
 - **`getFormationConfig(formation)`**: Retorna configuración de posiciones para cada formación
   - Formaciones: `1-2-2-1`, `1-2-1-1`, `2-1-2`, `1-3-2`, `1-2-3`, `1-4-1`
   - Retorna array de objetos: `{ class, style, id }`
-  
 - **`updateFieldDisplay()`**: Renderiza campo con jugadores actuales
   - Crea slots vacíos o con jugadores
   - Aplica drag & drop listeners
   - Agrega botones de remover
-  
 - **`assignPlayerToPosition(posIndex, playerId)`**: Asigna jugador a posición
 - **`removePlayerFromPosition(posIndex)`**: Quita jugador de posición
 - **`changeFormation(formation)`**: Cambia formación (preserva jugadores)
@@ -141,6 +146,11 @@ var savedConvocatorias = [];        // Convocatorias guardadas
   - Carga html2canvas dinámicamente si no existe
   - Genera imagen con formación y jugadores
   - Descarga automática con timestamp
+
+#### Sistema de Popovers
+
+- **`showPlayerPopover(playerId, anchorElement)`**: Crea y muestra panel de detalles (rating/habilidades) sobre un jugador en el campo.
+- **`hidePlayerPopover()`**: Oculta y elimina el popover activo con transición suave.
 
 #### Notificaciones
 
@@ -172,21 +182,10 @@ var savedConvocatorias = [];        // Convocatorias guardadas
 
 ```css
 /* Primarios */
---azul-principal: #1e3c72
---azul-secundario: #2a5298
---naranja: #ff9800
-
-/* Por Posición */
---portero: #1e88e5 (azul)
---defensa: #43a047 (verde)
---medio: #fb8c00 (naranja)
---delantero: #e53935 (rojo)
-
-/* Estados */
---success: #4caf50
---error: #e53935
---warning: #ff9800
---info: #2196f3
+--azul-principal: #1e3c72 --azul-secundario: #2a5298 --naranja: #ff9800
+  /* Por Posición */ --portero: #1e88e5 (azul) --defensa: #43a047 (verde)
+  --medio: #fb8c00 (naranja) --delantero: #e53935 (rojo) /* Estados */
+  --success: #4caf50 --error: #e53935 --warning: #ff9800 --info: #2196f3;
 ```
 
 ### Responsive Breakpoints
@@ -234,13 +233,15 @@ Drag desde convocatoria → dragstart (draggedPlayerId = id)
 → updateFieldDisplay() → validateLineup()
 ```
 
-### 4. Alineación Automática
+### 4. Alineación Automática v2.0
 
 ```
 Click "Auto" → autoLineup()
-→ Iterar currentLineup → determinar positionKey por class
-→ Filtrar jugadores convocados disponibles
-→ Ordenar por priority → asignar primero de la lista
+→ Generar puntuación para cada jugador:
+  Score = (Prioridad de Rol * 10) + Rating + (Veterano ? 500 : 0)
+→ Iterar currentLineup → determinar slotRoleKey
+→ Buscar jugador no asignado con mayor Score para ese rol
+→ Si el rol no tiene candidatos → asignar mejor jugador restante
 → updateFieldDisplay() → validateLineup()
 ```
 
@@ -271,14 +272,17 @@ Click "PNG" → exportLineupToPNG()
 ### Estructura
 
 ```javascript
-localStorage.setItem('convocatorias', JSON.stringify([
-  {
-    id: 1234567890,
-    name: "Partido vs Equipo X",
-    date: "2026-01-27T10:30:00.000Z",
-    players: ["1", "3", "7", "8"]
-  }
-]))
+localStorage.setItem(
+  "convocatorias",
+  JSON.stringify([
+    {
+      id: 1234567890,
+      name: "Partido vs Equipo X",
+      date: "2026-01-27T10:30:00.000Z",
+      players: ["1", "3", "7", "8"],
+    },
+  ]),
+);
 ```
 
 ### Persistencia
@@ -318,14 +322,14 @@ Orden: porteros → defensas → medio → delanteros
 ## 🔌 API Pública (window)
 
 ```javascript
-window.changeFormation(formation)
-window.autoLineup()
-window.clearLineup()
-window.selectAllPlayers()
-window.clearConvocatoria()
-window.saveConvocatoria()
-window.loadConvocatoria(id)
-window.exportLineupToPNG()
+window.changeFormation(formation);
+window.autoLineup();
+window.clearLineup();
+window.selectAllPlayers();
+window.clearConvocatoria();
+window.saveConvocatoria();
+window.loadConvocatoria(id);
+window.exportLineupToPNG();
 ```
 
 ---
@@ -336,8 +340,8 @@ window.exportLineupToPNG()
 
 ```javascript
 // En consola del navegador:
-console.log(rosterData);        // Datos cargados
-console.log(currentLineup);     // Alineación actual
+console.log(rosterData); // Datos cargados
+console.log(currentLineup); // Alineación actual
 console.log(Array.from(convocatoria)); // Jugadores convocados
 console.log(savedConvocatorias); // Convocatorias guardadas
 ```
@@ -474,27 +478,31 @@ console.log(savedConvocatorias); // Convocatorias guardadas
 ### Tareas Comunes
 
 **Modificar jugador:**
+
 ```javascript
 rosterData.players["1"].name = "Nuevo Nombre";
 renderFullRoster();
 ```
 
 **Agregar jugador:**
+
 ```javascript
 var newId = String(Object.keys(rosterData.players).length + 1);
 rosterData.players[newId] = {
   name: "Nombre",
   number: "99",
-  veteran: false
+  veteran: false,
 };
 ```
 
 **Cambiar formación programáticamente:**
+
 ```javascript
-window.changeFormation('1-3-2');
+window.changeFormation("1-3-2");
 ```
 
 **Exportar sin interacción:**
+
 ```javascript
 window.exportLineupToPNG();
 ```
@@ -530,6 +538,6 @@ window.exportLineupToPNG();
 
 ---
 
-**Última actualización**: Enero 27, 2026
-**Versión**: 2.0
+**Última actualización**: Enero 30, 2026
+**Versión**: 2.1
 **Mantenedor**: Sistema de Gestión de Fútbol 6

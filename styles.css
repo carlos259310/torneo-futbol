@@ -132,40 +132,80 @@ section { margin-bottom: 2rem; }
 h2, h3 { color: var(--text-main); font-weight: 700; margin-bottom: 1rem; }
 h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
 
-/* Roster Grid */
 .roster-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
 }
+
+@media (max-width: 600px) {
+    .roster-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Roster Grid */
 .roster-card {
     background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1rem; display: flex; align-items: center; gap: 1rem;
-    box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;
+    padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;
+    box-shadow: var(--shadow-sm); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; overflow: hidden; cursor: pointer;
 }
-.roster-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+.roster-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+.roster-card.expanded { gap: 1rem; padding-bottom: 1.25rem; }
+
+.roster-header {
+    display: flex; align-items: center; gap: 1rem;
+}
 
 .player-number-badge {
     background: var(--primary); color: white; font-weight: 700;
     width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
     border-radius: 50%; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    flex-shrink: 0;
 }
 
+.player-rating-badge {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    background: var(--accent); color: var(--text-main); font-weight: 800;
+    padding: 2px 8px; border-radius: 6px; font-size: 0.75rem;
+    display: flex; align-items: center; gap: 4px;
+    box-shadow: var(--shadow-sm); z-index: 5;
+}
+.player-rating-badge i { color: #854d0e; font-size: 0.65rem; }
+
 .roster-info { flex: 1; min-width: 0; }
-.roster-name { display: block; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+.roster-name { display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
 .roster-name.veteran::after { content: "★"; color: var(--accent); margin-left: 4px; font-size: 0.8rem; }
+
+.roster-details {
+    max-height: 0; opacity: 0; overflow: hidden;
+    display: flex; flex-direction: column; gap: 0.75rem;
+    padding-top: 0; border-top: 0 solid transparent;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.roster-card.expanded .roster-details {
+    max-height: 300px; opacity: 1; padding-top: 0.75rem; border-top: 1px solid var(--border);
+}
+
+.detail-group { display: flex; flex-direction: column; gap: 2px; }
+.detail-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em; }
+.detail-content { color: var(--text-main); line-height: 1.4; display: flex; flex-wrap: wrap; gap: 4px; padding-top: 2px; }
+.detail-tag { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.75rem; }
+.dark-mode .detail-tag { background: #334155; border-color: #475569; }
+
+.improvement-tag { border-left: 2px solid var(--danger); }
+.strength-tag { border-left: 2px solid var(--success); }
 
 .roster-positions { display: flex; gap: 4px; flex-wrap: wrap; }
 .roster-pos-badge, .pos-badge {
-    font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-    color: white; /* Solid badges */
+    font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    color: white;
 }
 
-/* Modern Uniform Palette for Positions */
-.roster-pos-badge.pos-porteros, .pos-badge.pos-porteros { background: var(--col-portero); box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2); }
-.roster-pos-badge.pos-defensas, .pos-badge.pos-defensas { background: var(--col-defensa); box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2); }
-.roster-pos-badge.pos-medio,    .pos-badge.pos-medio    { background: var(--col-medio);   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
-.roster-pos-badge.pos-delanteros, .pos-badge.pos-delanteros{ background: var(--col-delan);   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2); }
-
-.roster-total { text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+.roster-total { text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 600; }
 
 /* Positions Columns */
 .positions-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
@@ -218,8 +258,18 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .stat-badge { background: var(--text-main); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; }
 
 .convocatoria-list { 
-    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; 
+    flex: 1; overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem; 
+    padding: 0.5rem;
     padding-right: 4px; /* Space for scrollbar */
+}
+
+@media (max-width: 480px) {
+    .convocatoria-list {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Custom Scrollbar for list */
@@ -228,8 +278,9 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .convocatoria-list::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 20px; }
 
 .convocado-item {
-    background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem;
-    display: flex; align-items: center; gap: 0.75rem; cursor: grab; transition: border-color 0.2s, transform 0.1s;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem; cursor: grab; transition: all 0.2s;
+    min-width: 0; /* Prevents overflow in grid */
 }
 .convocado-item:hover { border-color: var(--primary); background: white; transform: translateX(2px); }
 .convocado-item.dragging { opacity: 0.5; border-style: dashed; }
@@ -530,4 +581,117 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     color: white;
     text-shadow: 0 1px 2px rgba(0,0,0,0.8); /* Shadow for legibility on green */
     font-weight: 600;
+}
+
+/* Player Detail Popover */
+.player-popover {
+    position: absolute;
+    bottom: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 200px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -2px rgba(0,0,0,0.1);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.player-popover.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+/* Tooltip Arrow */
+.player-popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: var(--bg-card) transparent transparent transparent;
+}
+
+.popover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+}
+
+.popover-name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.popover-rating {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.popover-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.popover-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.popover-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.popover-tag {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.popover-tag.strength {
+    background: rgba(34, 197, 94, 0.1);
+    color: #166534;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.popover-tag.improvement {
+    background: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.dark-mode .popover-tag.strength {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+}
+
+.dark-mode .popover-tag.improvement {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.field-slot.occupied-slot:hover {
+    z-index: 1001; /* Ensure popover stays above other players */
 }

@@ -23,19 +23,19 @@ if (!Array.from) {
 // DATOS EMBEBIDOS PARA EVITAR PROBLEMAS DE CARGA LOCAL (CORS)
 var rosterData = {
     "players": {
-        "1": { "name": "Fernando Almeida", "number": "99", "veteran": false },
-        "2": { "name": "Gregorio", "number": "17", "veteran": true },
-        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false },
-        "4": { "name": "Fredual", "number": "2", "veteran": false },
-        "5": { "name": "Fernando Senior", "number": "7", "veteran": true },
-        "6": { "name": "Javier", "number": "27", "veteran": false },
-        "7": { "name": "Harold", "number": "9", "veteran": false },
-        "8": { "name": "Jhon Villamizar", "number": "22", "veteran": false },
-        "9": { "name": "Carlos Medina", "number": "94", "veteran": false },
-        "10": { "name": "Juan Duarte", "number": "10", "veteran": false },
-        "11": { "name": "Cristian", "number": "4", "veteran": false },
-        "12": { "name": "Ingeniero John", "number": "3", "veteran": false },
-        "13": { "name": "Juan Velandia", "number": "23", "veteran": false }
+        "1": { "name": "Fernando (Nuevo)", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Reflejos bajo los tres palos", "Capacidad de respuesta en 1v1"], "improvements": ["Mejores achiques", "Salida con balón más segura"] },
+        "2": { "name": "Gregorio", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Ida y vuelta constante", "Cumple en ataque y defensa"], "improvements": ["Incrementar despliegue físico", "Seguridad en salida"] },
+        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false, "rating": 4.2, "strengths": ["Anticipación defensiva", "Corte de líneas de pase"], "improvements": ["Salida limpia desde atrás", "Participar más en circulación", "Dosificación del esfuerzo"] },
+        "4": { "name": "Fredual Guevara", "number": "2", "veteran": false, "rating": 3.6, "strengths": ["Asociaciones ofensivas", "Buena ocupación de espacios"], "improvements": ["Regularidad en el rendimiento", "Mayor agresividad defensiva"] },
+        "5": { "name": "Fernando (Señor)", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Lectura táctica del juego", "Liderazgo en cancha"], "improvements": ["Precisión en ejecución", "Mejorar resistencia física"] },
+        "6": { "name": "Javier", "number": "27", "veteran": false, "rating": 4.3, "strengths": ["Creación ofensiva", "Visión de último pase", "Definición"], "improvements": ["Intensidad en marca", "Mayor aporte defensivo"] },
+        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.5, "strengths": ["Liderazgo táctico", "Organización del juego", "Pase filtrado"], "improvements": ["Control emocional en momentos de presión"] },
+        "8": { "name": "Jhon Vill", "number": "22", "veteran": false, "rating": 4.1, "strengths": ["Presión alta efectiva", "Polivalencia defensiva", "Juego colectivo"], "improvements": ["Definición en el último tercio"] },
+        "9": { "name": "Carlos Medina", "number": "94", "veteran": false, "rating": 3.9, "strengths": ["Visión periférica", "Juego asociado por momentos"], "improvements": ["Mejorar finalización de jugadas", "Mayor intensidad en marca"] },
+        "10": { "name": "Juan Duarte", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Velocidad y cambio de ritmo", "Remate de media distancia"], "improvements": ["Juego asociado", "Presión tras pérdida"] },
+        "11": { "name": "Cristian", "number": "4", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones en ataque", "Mejorar condición física"] },
+        "12": { "name": "Ingeniero John", "number": "3", "veteran": false, "rating": 3.3, "strengths": ["Apoyo defensivo", "Orden táctico"], "improvements": ["Ejecución técnica básica", "Intensidad defensiva"] },
+        "13": { "name": "Juan (SENA)", "number": "23", "veteran": false, "rating": 3.6, "strengths": ["Desmarque ofensivo", "Toque corto en ataque"], "improvements": ["Definición", "Primer control", "Compromiso en repliegue"] }
     },
     "positions": {
         "porteros": [
@@ -140,16 +140,38 @@ function renderPositionList(positionKey, container) {
         var info = document.createElement('div');
         info.className = 'player-info';
 
+        var namePart = document.createElement('div');
+        namePart.style.display = 'flex';
+        namePart.style.flexDirection = 'column';
+
         var name = document.createElement('span');
         name.className = 'player-name' + (playerRef.veteran ? ' veteran' : '');
         name.textContent = playerRef.name;
+
+        var subInfo = document.createElement('div');
+        subInfo.style.display = 'flex';
+        subInfo.style.gap = '8px';
+        subInfo.style.alignItems = 'center';
 
         var number = document.createElement('span');
         number.className = 'player-number';
         number.textContent = playerRef.number ? ('N° ' + playerRef.number) : 'S/N';
 
-        info.appendChild(name);
-        info.appendChild(number);
+        subInfo.appendChild(number);
+
+        if (playerRef.rating) {
+            var rating = document.createElement('span');
+            rating.className = 'player-rating-mini';
+            rating.innerHTML = '<i class="fas fa-star" style="color:var(--accent); font-size:0.7rem;"></i> ' + playerRef.rating;
+            rating.style.fontSize = '0.75rem';
+            rating.style.fontWeight = '700';
+            subInfo.appendChild(rating);
+        }
+
+        namePart.appendChild(name);
+        namePart.appendChild(subInfo);
+        info.appendChild(namePart);
+        
         item.appendChild(info);
         container.appendChild(item);
     });
@@ -171,6 +193,18 @@ function renderFullRoster() {
         var p = rosterData.players[id];
         var card = document.createElement('div');
         card.className = 'roster-card';
+
+        // Rating prominence
+        if (p.rating) {
+            var ratingBadge = document.createElement('div');
+            ratingBadge.className = 'player-rating-badge';
+            ratingBadge.innerHTML = '<i class="fas fa-star"></i> ' + p.rating;
+            card.appendChild(ratingBadge);
+        }
+
+        // Header Section
+        var header = document.createElement('div');
+        header.className = 'roster-header';
 
         var badge = document.createElement('div');
         badge.className = 'player-number-badge';
@@ -197,8 +231,45 @@ function renderFullRoster() {
 
         info.appendChild(name);
         info.appendChild(positionsDiv);
-        card.appendChild(badge);
-        card.appendChild(info);
+        header.appendChild(badge);
+        header.appendChild(info);
+        card.appendChild(header);
+
+        // Details Section
+        var detailsDiv = document.createElement('div');
+        detailsDiv.className = 'roster-details';
+
+        if (p.strengths && p.strengths.length > 0) {
+            var sGroup = document.createElement('div');
+            sGroup.className = 'detail-group';
+            sGroup.innerHTML = '<span class="detail-label">Habilidades:</span>' +
+                '<div class="detail-content">' + 
+                p.strengths.map(function(s) { return '<span class="detail-tag strength-tag">' + s + '</span>'; }).join('') + 
+                '</div>';
+            detailsDiv.appendChild(sGroup);
+        }
+
+        if (p.improvements && p.improvements.length > 0) {
+            var iGroup = document.createElement('div');
+            iGroup.className = 'detail-group';
+            iGroup.innerHTML = '<span class="detail-label">A mejorar:</span>' +
+                '<div class="detail-content">' + 
+                p.improvements.map(function(i) { return '<span class="detail-tag improvement-tag">' + i + '</span>'; }).join('') + 
+                '</div>';
+            detailsDiv.appendChild(iGroup);
+        }
+
+        card.appendChild(detailsDiv);
+
+        // Toggle Expand Logic
+        card.onclick = function() {
+            // Close others if open (optional UI preference)
+            document.querySelectorAll('.roster-card.expanded').forEach(function(c) {
+                if (c !== card) c.classList.remove('expanded');
+            });
+            card.classList.toggle('expanded');
+        };
+
         grid.appendChild(card);
     });
     
@@ -298,6 +369,11 @@ function renderConvocatoria() {
         nameSpan.className = 'convocado-name' + (player.veteran ? ' veteran' : '');
         nameSpan.textContent = player.name;
         
+        var subInfoDiv = document.createElement('div');
+        subInfoDiv.style.display = 'flex';
+        subInfoDiv.style.alignItems = 'center';
+        subInfoDiv.style.gap = '8px';
+
         var positionsDiv = document.createElement('div');
         positionsDiv.className = 'player-positions-badges';
         
@@ -309,9 +385,21 @@ function renderConvocatoria() {
             posBadge.title = pos.full + ' - ' + pos.priority;
             positionsDiv.appendChild(posBadge);
         });
+
+        subInfoDiv.appendChild(positionsDiv);
+
+        if (player.rating) {
+            var ratingSpan = document.createElement('span');
+            ratingSpan.className = 'convocado-rating';
+            ratingSpan.innerHTML = '<i class="fas fa-star"></i> ' + player.rating;
+            ratingSpan.style.fontSize = '0.7rem';
+            ratingSpan.style.fontWeight = '800';
+            ratingSpan.style.color = 'var(--accent)';
+            subInfoDiv.appendChild(ratingSpan);
+        }
         
         infoContainer.appendChild(nameSpan);
-        infoContainer.appendChild(positionsDiv);
+        infoContainer.appendChild(subInfoDiv);
         
         // Drag handlers simplified
         item.ondragstart = function(e) {
@@ -561,12 +649,21 @@ function createFieldSlot(pos, index) {
         slot.appendChild(removeBtn);
         
         // Interaction
+        slot.onmouseenter = function() { showPlayerPopover(pos.id, slot); };
+        slot.onmouseleave = hidePlayerPopover;
+        
         slot.onclick = function(e) {
             if (slot.classList.contains('dragging')) return;
             e.stopPropagation(); // Prevent bubbling
-            // Mobile: maybe ask to remove or replace?
-            // For now, removing is consistent
-            removePlayerFromPosition(index);
+            
+            // Toggle fixed popover on click if preferred, 
+            // or just use click to remove as before but with a delay/long-press?
+            // The prompt asks for hover/click to show details.
+            showPlayerPopover(pos.id, slot);
+            
+            // To maintain "click to remove" functionality, 
+            // maybe we only remove if they click the "X" specifically?
+            // The existing code has a removeBtn.
         };
         
         // Allow Swap Drop
@@ -575,6 +672,79 @@ function createFieldSlot(pos, index) {
         slot.ondrop = function(e) { handleSlotDrop(e, index); };
     }
     return slot;
+}
+
+// ============================================================================
+// POPOVER LOGIC
+// ============================================================================
+
+var activePopover = null;
+
+function showPlayerPopover(playerId, anchorElement) {
+    hidePlayerPopover();
+    
+    var p = rosterData.players[playerId];
+    if (!p) return;
+    
+    var popover = document.createElement('div');
+    popover.className = 'player-popover';
+    
+    var html = '<div class="popover-header">' +
+               '  <span class="popover-name">' + p.name + '</span>' +
+               (p.rating ? '  <span class="popover-rating"><i class="fas fa-star"></i> ' + p.rating + '</span>' : '') +
+               '</div>';
+               
+    if (p.strengths && p.strengths.length > 0) {
+        html += '<div class="popover-section">' +
+                '  <span class="popover-label">Habilidades:</span>' +
+                '  <div class="popover-tags">' +
+                p.strengths.map(function(s) { return '<span class="popover-tag strength">' + s + '</span>'; }).join('') +
+                '  </div>' +
+                '</div>';
+    }
+    
+    if (p.improvements && p.improvements.length > 0) {
+        html += '<div class="popover-section">' +
+                '  <span class="popover-label">A mejorar:</span>' +
+                '  <div class="popover-tags">' +
+                p.improvements.map(function(i) { return '<span class="popover-tag improvement">' + i + '</span>'; }).join('') +
+                '  </div>' +
+                '</div>';
+    }
+    
+    popover.innerHTML = html;
+    anchorElement.appendChild(popover);
+    
+    // Force reflow for animation
+    setTimeout(function() {
+        popover.classList.add('show');
+    }, 10);
+    
+    activePopover = popover;
+}
+
+function hidePlayerPopover() {
+    if (activePopover) {
+        var p = activePopover;
+        p.classList.remove('show');
+        activePopover = null;
+        // Immediate pointer-events disabling
+        p.style.pointerEvents = 'none';
+        
+        // Remove from DOM after transition
+        setTimeout(function() {
+            if (p && p.parentNode) p.parentNode.removeChild(p);
+        }, 200);
+    }
+    
+    // Safety check: remove any stale popovers that might have been lost in race conditions
+    document.querySelectorAll('.player-popover:not(.show)').forEach(function(stale) {
+        if (!activePopover || stale !== activePopover) {
+            setTimeout(function() {
+                if (stale.parentNode) stale.parentNode.removeChild(stale);
+            }, 250);
+        }
+    });
 }
 
 // Shared Drag Handlers to minimize function creation
@@ -823,53 +993,100 @@ function clearLineup() {
 }
 
 function autoLineup() {
-    if (!rosterData || !rosterData.positions) {
-        showNotification('Error: Datos no cargados', 'error');
-        return;
-    }
-    
     showConfirm(
         'Alineación automática',
-        '¿Rellenar posiciones vacías con los mejores jugadores disponibles?',
+        '¿Deseas generar la mejor alineación posible priorizando veteranos y nivel de juego?',
         function() {
-            // Get all player IDs as "available"
-            var allPlayerIds = Object.keys(rosterData.players);
+            // 1. Clear current lineup to start fresh if needed, or just fill empty?
+            // User said "rellene", usually implies filling empty, but "mejores posiciones" 
+            // works best if we re-evaluate everything. Let's fill empty slots first,
+            // but prioritize veterans even if they aren't in the lineup yet.
             
-            currentLineup.forEach(function(position) {
-                // Skip if already filled
-                if (position.id) return;
+            var players = rosterData.players;
+            var positions = rosterData.positions;
+            
+            // Helpful mapping
+            var classToKey = {
+                'goalkeeper': 'porteros',
+                'defender': 'defensas',
+                'midfielder': 'medio',
+                'forward': 'delanteros'
+            };
 
-                var positionKey = null;
-                var posClass = position.class;
-                
-                if (posClass.includes('goalkeeper')) positionKey = 'porteros';
-                else if (posClass.includes('defender')) positionKey = 'defensas';
-                else if (posClass.includes('midfielder')) positionKey = 'medio';
-                else if (posClass.includes('forward')) positionKey = 'delanteros';
-                
-                if (!positionKey) return;
-                
-                // Find candidates for this specific position role
-                var candidates = (rosterData.positions[positionKey] || []).filter(function(entry) {
-                    // Must not be already in the lineup
-                    return !currentLineup.some(function(p) { return p.id === entry.id; });
+            var priorityScore = { 'high-priority': 100, 'medium-priority': 50, 'low-priority': 10 };
+
+            // Get all players andleur potential scores for each role they can play
+            var availablePlayers = Object.keys(players).map(function(id) {
+                var p = players[id];
+                var roles = [];
+                Object.keys(positions).forEach(function(roleKey) {
+                    var entry = positions[roleKey].find(function(e) { return e.id === id; });
+                    if (entry) {
+                        roles.push({
+                            key: roleKey,
+                            score: priorityScore[entry.priority] + (p.rating || 0) + (p.veteran ? 500 : 0)
+                        });
+                    }
                 });
-                
-                // Sort by priority (high first)
-                candidates.sort(function(a, b) {
-                    var priorityOrder = { 'high-priority': 0, 'medium-priority': 1, 'low-priority': 2 };
-                    return (priorityOrder[a.priority] || 99) - (priorityOrder[b.priority] || 99);
-                });
-                
-                // Assign best candidate
-                if (candidates.length > 0) {
-                    position.id = candidates[0].id;
+                return { id: id, roles: roles, veteran: p.veteran, assigned: false };
+            });
+
+            // Re-order availableSlots to prioritize filling specific roles if needed
+            // For now, standard iteration
+            currentLineup.forEach(function(slot) {
+                if (slot.id) {
+                    // Mark as assigned if already there
+                    var ap = availablePlayers.find(function(p) { return p.id === slot.id; });
+                    if (ap) ap.assigned = true;
                 }
             });
-            
+
+            // Fill empty slots
+            currentLineup.forEach(function(slot) {
+                if (slot.id) return; // Skip occupied
+                
+                var slotRoleKey = null;
+                Object.keys(classToKey).forEach(function(cls) {
+                    if (slot.class.includes(cls)) slotRoleKey = classToKey[cls];
+                });
+                
+                if (!slotRoleKey) return;
+
+                // Find best candidate for this role
+                var bestCandidate = null;
+                var maxScore = -1;
+
+                availablePlayers.filter(function(p) { return !p.assigned; }).forEach(function(p) {
+                    var roleInfo = p.roles.find(function(r) { return r.key === slotRoleKey; });
+                    if (roleInfo) {
+                        if (roleInfo.score > maxScore) {
+                            maxScore = roleInfo.score;
+                            bestCandidate = p;
+                        }
+                    }
+                });
+
+                // If no one is listed for this role, try any unassigned player as fallback
+                if (!bestCandidate) {
+                     var unassigned = availablePlayers.filter(function(p) { return !p.assigned; });
+                     // Sort unassigned by veteran and rating anyway
+                     unassigned.sort(function(a, b) {
+                         var scoreA = (a.veteran ? 500 : 0) + (players[a.id].rating || 0);
+                         var scoreB = (b.veteran ? 500 : 0) + (players[b.id].rating || 0);
+                         return scoreB - scoreA;
+                     });
+                     if (unassigned.length > 0) bestCandidate = unassigned[0];
+                }
+
+                if (bestCandidate) {
+                    slot.id = bestCandidate.id;
+                    bestCandidate.assigned = true;
+                }
+            });
+
             updateFieldDisplay();
             validateLineup();
-            showNotification('Alineación completada', 'success');
+            showNotification('Alineación optimizada generada', 'success');
         }
     );
 }
