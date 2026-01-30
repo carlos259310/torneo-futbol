@@ -298,16 +298,17 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 
 /* Slots */
 .field-slot {
-    position: absolute; width: 64px; height: 64px;
+    position: absolute; width: 55px; height: 55px; /* Slightly smaller circle, but clean */
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Only animate transform */
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
-    cursor: pointer;
+    cursor: grab; /* Better cursor */
     background: linear-gradient(135deg, #ffffff, #f0f2f5);
     border: 3px solid white;
     z-index: 10;
 }
+.field-slot:active { cursor: grabbing; }
 
 /* Position Colors on Field - USING VARS */
 .field-slot.goalkeeper { border-color: var(--col-portero); }
@@ -318,30 +319,41 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .field-slot.empty-slot {
     background: rgba(255,255,255,0.2); border: 2px dashed rgba(255,255,255,0.7); box-shadow: none;
 }
-.field-slot.empty-slot i { color: white; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.field-slot.empty-slot i { color: white; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
 .field-slot.drag-over { transform: scale(1.1); background: var(--success); border-color: white; }
 
-.field-slot.occupied-slot {
-    /* Enhanced occupied look */
-    background: white;
-}
+/* Occupied Slot Styling */
+.field-slot.occupied-slot { background: white; }
+
 .field-slot.occupied-slot .player-field-number {
-    background: var(--text-main); color: white;
-    width: 20px; height: 20px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; margin: 2px auto 0;
+    font-size: 1.1rem; font-weight: 800; color: #333; /* Large distinct number inside */
 }
 
-.field-slot.veteran-player { box-shadow: 0 0 0 3px var(--accent); /* Gold external ring */ }
+/* Player Info (Name) - NOW OUTSIDE */
+.player-content {
+    position: absolute;
+    bottom: -24px; /* Move below circle */
+    left: 50%; width: 120px; margin-left: -60px; /* Center horizontally */
+    text-align: center; pointer-events: none;
+    z-index: 20;
+}
 
-.player-content { text-align: center; line-height: 1.1; pointer-events: none; width: 100%;}
-.player-field-name { font-size: 0.7rem; font-weight: 700; color: #1e293b; display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px;}
+.player-field-name { 
+    font-size: 0.75rem; font-weight: 700; color: white; 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.4); /* Subtle backing for readability on grass */
+    padding: 2px 6px; border-radius: 8px;
+    display: inline-block; /* Hug text */
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+.field-slot.veteran-player { box-shadow: 0 0 0 3px var(--accent), 0 4px 6px rgba(0,0,0,0.3); }
 
 .remove-player-btn {
-    position: absolute; top: -8px; right: -8px; width: 22px; height: 22px;
+    position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
     background: var(--danger); color: white; border: 2px solid white; border-radius: 50%;
     font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; opacity: 1; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .remove-player-btn:hover { transform: scale(1.1); }
 

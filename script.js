@@ -458,141 +458,134 @@ function resetLineup() {
     showNotification('Posiciones restablecidas', 'info');
 }
 
+// DOM Caching for performance
+var fieldEl = document.getElementById('field');
+
 function updateFieldDisplay() {
-    var fieldEl = document.getElementById('field');
-    if (!fieldEl) return;
+    if (!fieldEl) {
+        fieldEl = document.getElementById('field'); // Try to get it again if null
+        if (!fieldEl) return;
+    }
     
-    fieldEl.innerHTML = '';
+    // Use DocumentFragment to batch DOM updates (improves performance / reduces reflows)
+    var fragment = document.createDocumentFragment();
     
     // Goal area
-    var hasGoalkeeper = currentLineup.some(function(p) { return p.class === 'goalkeeper'; });
+    var hasGoalkeeper = currentLineup.some(function(p) { return p.class && p.class.includes('goalkeeper'); });
     if (hasGoalkeeper) {
         var goal = document.createElement('div');
         goal.className = 'goal-area goal-left';
-        fieldEl.appendChild(goal);
+        fragment.appendChild(goal);
     }
     
     // Render positions
     currentLineup.forEach(function(pos, index) {
         if (!pos) return;
-        
-        var slot = document.createElement('div');
-        slot.className = 'field-slot ' + (pos.class || '');
-        slot.dataset.positionIndex = index;
-        slot.setAttribute('style', pos.style);
-        
-        if (!pos.id) {
-            // Empty slot
-            slot.classList.add('empty-slot');
-            slot.innerHTML = '<i class="fas fa-plus"></i>';
-            slot.title = 'Arrastra un jugador aquí o haz click para seleccionar';
-            
-            // Interaction: Click to open selection (Mobile friendly)
-            slot.onclick = function() {
-                openPlayerSelection(index);
-            };
-
-            // Drop target
-            slot.ondragover = function(e) {
-                e.preventDefault();
-                slot.classList.add('drag-over');
-            };
-            
-            slot.ondragleave = function() {
-                slot.classList.remove('drag-over');
-            };
-            
-            slot.ondrop = function(e) {
-                e.preventDefault();
-                slot.classList.remove('drag-over');
-                handleSlotDrop(e, index);
-            };
-        } else {
-            // Occupied slot
-            var player = rosterData.players[pos.id];
-            if (!player) return;
-            
-            slot.classList.add('occupied-slot');
-            if (player.veteran) slot.classList.add('veteran-player');
-            
-            // MAKE DRAGGABLE FOR FREE MOVE
-            slot.draggable = true;
-            slot.ondragstart = function(e) {
-                e.dataTransfer.setData('text/plain', JSON.stringify({ 
-                    type: 'field-move', 
-                    index: index, 
-                    playerId: pos.id,
-                    offsetX: e.offsetX, 
-                    offsetY: e.offsetY
-                }));
-                e.dataTransfer.effectAllowed = "move";
-                slot.classList.add('dragging');
-                setTimeout(() => slot.classList.add('invisible-drag'), 0);
-            };
-            
-            slot.ondragend = function() {
-                slot.classList.remove('dragging');
-                slot.classList.remove('invisible-drag');
-            };
-
-            var content = document.createElement('div');
-            content.className = 'player-content';
-            content.innerHTML = 
-                '<span class="player-field-name">' + player.name + '</span>' +
-                (player.number ? '<span class="player-field-number">#' + player.number + '</span>' : '');
-            
-            var removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-player-btn';
-            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            removeBtn.title = 'Quitar';
-            removeBtn.onclick = function(e) {
-                e.stopPropagation();
-                removePlayerFromPosition(index);
-            };
-            // Prevent drag when clicking remove
-            removeBtn.ondragstart = function(e) { e.preventDefault(); e.stopPropagation(); };
-            
-            slot.appendChild(content);
-            slot.appendChild(removeBtn);
-            
-            // Allow drop on occupied slot (Swap)
-            slot.ondragover = function(e) {
-                e.preventDefault();
-                slot.classList.add('drag-over');
-            };
-            slot.ondragleave = function() { slot.classList.remove('drag-over'); };
-            slot.ondrop = function(e) {
-                 e.preventDefault();
-                 slot.classList.remove('drag-over');
-                 handleSlotDrop(e, index);
-            };
-            
-            // Click to remove (or open menu eventually)
-            slot.addEventListener('click', function(e) {
-                // If it was a drag, don't trigger click
-                if (slot.classList.contains('dragging')) return;
-                
-                // Confirm removal on click for better UX (prevent accidental)
-                // Or just remove as currently implemented.
-                // Let's stick to simple remove but ensure propagation is stopped if needed
-                e.stopPropagation();
-                removePlayerFromPosition(index);
-            });
-        }
-        
-        fieldEl.appendChild(slot);
+        var slot = createFieldSlot(pos, index);
+        fragment.appendChild(slot);
     });
     
-    // Field Container Drop Zone (For Free positioning)
-    fieldEl.ondragover = function(e) {
-        e.preventDefault();
-    };
+    // Clear and Append in one go
+    fieldEl.innerHTML = '';
+    fieldEl.appendChild(fragment);
     
-    fieldEl.ondrop = function(e) {
-        e.preventDefault();
-        handleFieldFreeDrop(e, fieldEl);
-    };
+    // Re-bind container events (since innerHTML cleared them? No, container events stay on fieldEl)
+    // But good to double check fieldEl events aren't lost. 
+    // Actually, fieldEl keys are global, so we don't need to re-add them if we don't replace fieldEl itself.
+    // However, innerHTML = '' is safe for children.
 }
+
+function createFieldSlot(pos, index) {
+    var slot = document.createElement('div');
+    slot.className = 'field-slot ' + (pos.class || '');
+    slot.dataset.positionIndex = index;
+    slot.setAttribute('style', pos.style);
+    
+    if (!pos.id) {
+        // --- EMPTY SLOT ---
+        slot.classList.add('empty-slot');
+        slot.innerHTML = '<i class="fas fa-plus"></i>';
+        slot.title = 'Seleccionar jugador';
+        
+        slot.onclick = function() { openPlayerSelection(index); };
+    
+        // Drag Events
+        slot.ondragover = handleDragOver;
+        slot.ondragleave = handleDragLeave;
+        slot.ondrop = function(e) { handleSlotDrop(e, index); };
+        
+    } else {
+        // --- OCCUPIED SLOT ---
+        var player = rosterData.players[pos.id];
+        if (!player) return slot; // Should not happen
+        
+        slot.classList.add('occupied-slot');
+        if (player.veteran) slot.classList.add('veteran-player');
+        
+        // Draggable
+        slot.draggable = true;
+        slot.ondragstart = function(e) {
+            e.dataTransfer.setData('text/plain', JSON.stringify({ 
+                type: 'field-move', index: index, playerId: pos.id,
+                offsetX: e.offsetX, offsetY: e.offsetY
+            }));
+            e.dataTransfer.effectAllowed = "move";
+            slot.classList.add('dragging');
+            // Timeout hack for ghost image
+            setTimeout(function() { slot.classList.add('invisible-drag'); }, 0);
+        };
+        
+        slot.ondragend = function() {
+            slot.classList.remove('dragging');
+            slot.classList.remove('invisible-drag');
+        };
+
+        // DOM Content
+        var content = document.createElement('div');
+        content.className = 'player-content';
+        // Only show number in circle, name outside
+        content.innerHTML = 
+            (player.number ? '<div class="player-field-number">' + player.number + '</div>' : '') +
+            '<div class="player-field-name">' + player.name + '</div>';
+        
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-player-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            removePlayerFromPosition(index);
+        };
+        removeBtn.ondragstart = function(e) { e.preventDefault(); e.stopPropagation(); };
+        
+        slot.appendChild(content);
+        slot.appendChild(removeBtn);
+        
+        // Interaction
+        slot.onclick = function(e) {
+            if (slot.classList.contains('dragging')) return;
+            e.stopPropagation(); // Prevent bubbling
+            // Mobile: maybe ask to remove or replace?
+            // For now, removing is consistent
+            removePlayerFromPosition(index);
+        };
+        
+        // Allow Swap Drop
+        slot.ondragover = handleDragOver;
+        slot.ondragleave = handleDragLeave;
+        slot.ondrop = function(e) { handleSlotDrop(e, index); };
+    }
+    return slot;
+}
+
+// Shared Drag Handlers to minimize function creation
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
 
 function handleSlotDrop(e, targetIndex) {
     try {
@@ -1154,6 +1147,19 @@ document.addEventListener('DOMContentLoaded', function() {
         formationSelect.addEventListener('change', function(e) {
             changeFormation(e.target.value);
         });
+    }
+
+    // Field Container Drop Zone (For Free positioning)
+    var fieldEl = document.getElementById('field');
+    if (fieldEl) {
+        fieldEl.ondragover = function(e) {
+            e.preventDefault();
+        };
+        
+        fieldEl.ondrop = function(e) {
+            e.preventDefault();
+            handleFieldFreeDrop(e, fieldEl);
+        };
     }
     
     function bindBtn(id, handler) {
