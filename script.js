@@ -997,90 +997,98 @@ function autoLineup() {
         'Alineación automática',
         '¿Deseas generar la mejor alineación posible priorizando veteranos y nivel de juego?',
         function() {
-            // 1. Clear current lineup to start fresh if needed, or just fill empty?
-            // User said "rellene", usually implies filling empty, but "mejores posiciones" 
-            // works best if we re-evaluate everything. Let's fill empty slots first,
-            // but prioritize veterans even if they aren't in the lineup yet.
-            
             var players = rosterData.players;
             var positions = rosterData.positions;
+            var formation = currentLineup;
             
-            // Helpful mapping
-            var classToKey = {
-                'goalkeeper': 'porteros',
-                'defender': 'defensas',
-                'midfielder': 'medio',
-                'forward': 'delanteros'
-            };
-
-            var priorityScore = { 'high-priority': 100, 'medium-priority': 50, 'low-priority': 10 };
-
-            // Get all players andleur potential scores for each role they can play
-            var availablePlayers = Object.keys(players).map(function(id) {
+            // 1. Obtener todos los jugadores con sus datos procesados
+            var pool = Object.keys(players).map(function(id) {
                 var p = players[id];
-                var roles = [];
-                Object.keys(positions).forEach(function(roleKey) {
-                    var entry = positions[roleKey].find(function(e) { return e.id === id; });
-                    if (entry) {
-                        roles.push({
-                            key: roleKey,
-                            score: priorityScore[entry.priority] + (p.rating || 0) + (p.veteran ? 500 : 0)
-                        });
-                    }
-                });
-                return { id: id, roles: roles, veteran: p.veteran, assigned: false };
+                return { 
+                    id: id, 
+                    rating: parseFloat(p.rating) || 0, 
+                    veteran: p.veteran || false
+                };
             });
 
-            // Re-order availableSlots to prioritize filling specific roles if needed
-            // For now, standard iteration
-            currentLineup.forEach(function(slot) {
-                if (slot.id) {
-                    // Mark as assigned if already there
-                    var ap = availablePlayers.find(function(p) { return p.id === slot.id; });
-                    if (ap) ap.assigned = true;
-                }
-            });
+            // 2. SELECCIÓN: Priorizar EXACTAMENTE un Veterano y luego los mejores Ratings
+            // Ordenar veteranos por rating para elegir al mejor como obligatorio
+            var veterans = pool.filter(function(p) { return p.veteran; });
+            veterans.sort(function(a, b) { return b.rating - a.rating; });
 
-            // Fill empty slots
-            currentLineup.forEach(function(slot) {
-                if (slot.id) return; // Skip occupied
-                
-                var slotRoleKey = null;
-                Object.keys(classToKey).forEach(function(cls) {
-                    if (slot.class.includes(cls)) slotRoleKey = classToKey[cls];
+            var nonChosen = pool.filter(function(p) { return true; }); // Copia de todos los jugadores
+
+            var chosenPlayers = [];
+            
+            // Elegir al mejor veterano disponible como obligatorio
+            if (veterans.length > 0) {
+                chosenPlayers.push(veterans[0]);
+                // Eliminarlo de la bolsa de no elegidos
+                nonChosen = nonChosen.filter(function(p) { return p.id !== veterans[0].id; });
+            }
+
+            // Ordenar el resto por rating descendente para completar los 6
+            nonChosen.sort(function(a, b) { return b.rating - a.rating; });
+
+            // Rellenar hasta tener 6 jugadores en total
+            chosenPlayers = chosenPlayers.concat(nonChosen.slice(0, 6 - chosenPlayers.length));
+            
+            // Marcar como no asignados para el paso de ubicación en el campo
+            chosenPlayers.forEach(function(p) { p.assigned = false; });
+
+            // 3. ASIGNACIÓN AL CAMPO (Priorizar especialidades)
+            formation.forEach(function(slot) { slot.id = null; });
+
+            var classToKey = { 'goalkeeper': 'porteros', 'defender': 'defensas', 'midfielder': 'medio', 'forward': 'delanteros' };
+            var priorityMap = { 'high-priority': 500, 'medium-priority': 200, 'low-priority': 50 };
+
+            // Paso A: Asignar Portero primero (el más específico)
+            var gkIdx = -1;
+            for(var i=0; i<formation.length; i++) { if(formation[i].class.indexOf('goalkeeper') !== -1) { gkIdx = i; break; } }
+            
+            if (gkIdx !== -1) {
+                chosenPlayers.sort(function(a, b) {
+                    var aScore = (function() {
+                        var list = positions.porteros || [];
+                        for(var j=0; j<list.length; j++) { if(list[j].id === a.id) return priorityMap[list[j].priority] + a.rating; }
+                        return a.rating;
+                    })();
+                    var bScore = (function() {
+                        var list = positions.porteros || [];
+                        for(var j=0; j<list.length; j++) { if(list[j].id === b.id) return priorityMap[list[j].priority] + b.rating; }
+                        return b.rating;
+                    })();
+                    return bScore - aScore;
                 });
-                
-                if (!slotRoleKey) return;
+                formation[gkIdx].id = chosenPlayers[0].id;
+                chosenPlayers[0].assigned = true;
+            }
 
-                // Find best candidate for this role
-                var bestCandidate = null;
-                var maxScore = -1;
+            // Paso B: Asignar el resto buscando afinidad con el slot
+            formation.forEach(function(slot, sIdx) {
+                if (slot.id) return; // Saltamos el portero ya asignado
 
-                availablePlayers.filter(function(p) { return !p.assigned; }).forEach(function(p) {
-                    var roleInfo = p.roles.find(function(r) { return r.key === slotRoleKey; });
-                    if (roleInfo) {
-                        if (roleInfo.score > maxScore) {
-                            maxScore = roleInfo.score;
-                            bestCandidate = p;
-                        }
-                    }
+                var slotRole = null;
+                for(var key in classToKey) { if (slot.class.indexOf(key) !== -1) { slotRole = classToKey[key]; break; } }
+
+                var candidates = chosenPlayers.filter(function(p) { return !p.assigned; });
+                candidates.sort(function(a, b) {
+                    var aScore = (function() {
+                        var list = positions[slotRole] || [];
+                        for(var j=0; j<list.length; j++) { if(list[j].id === a.id) return priorityMap[list[j].priority] + a.rating; }
+                        return a.rating;
+                    })();
+                    var bScore = (function() {
+                        var list = positions[slotRole] || [];
+                        for(var j=0; j<list.length; j++) { if(list[j].id === b.id) return priorityMap[list[j].priority] + b.rating; }
+                        return b.rating;
+                    })();
+                    return bScore - aScore;
                 });
 
-                // If no one is listed for this role, try any unassigned player as fallback
-                if (!bestCandidate) {
-                     var unassigned = availablePlayers.filter(function(p) { return !p.assigned; });
-                     // Sort unassigned by veteran and rating anyway
-                     unassigned.sort(function(a, b) {
-                         var scoreA = (a.veteran ? 500 : 0) + (players[a.id].rating || 0);
-                         var scoreB = (b.veteran ? 500 : 0) + (players[b.id].rating || 0);
-                         return scoreB - scoreA;
-                     });
-                     if (unassigned.length > 0) bestCandidate = unassigned[0];
-                }
-
-                if (bestCandidate) {
-                    slot.id = bestCandidate.id;
-                    bestCandidate.assigned = true;
+                if (candidates.length > 0) {
+                    formation[sIdx].id = candidates[0].id;
+                    for(var i=0; i<chosenPlayers.length; i++) { if(chosenPlayers[i].id === candidates[0].id) { chosenPlayers[i].assigned = true; break; } }
                 }
             });
 
@@ -1138,11 +1146,11 @@ function validateLineup() {
     });
     
     var veteransInLineup = currentLineup.filter(function(p) {
-        return p.id && veteranIds.indexOf(p.id) !== -1;
+        return p.id && rosterData.players[p.id].veteran;
     }).length;
     
-    if (veteransInLineup < veteranIds.length && filledCount > 0) {
-        issues.push({ type: 'error', icon: 'star', text: 'Faltan ' + (veteranIds.length - veteransInLineup) + ' veterano(s)' });
+    if (veteransInLineup < 1 && filledCount > 0) {
+        issues.push({ type: 'error', icon: 'star', text: 'Se requiere al menos 1 veterano en cancha' });
     }
     
     if (issues.length === 0 && filledCount === currentLineup.length) {
