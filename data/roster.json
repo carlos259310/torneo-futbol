@@ -5,80 +5,80 @@
       "number": "99",
       "veteran": false,
       "rating": 4.2,
-      "strengths": ["Reflejos bajo los tres palos", "Capacidad de respuesta en 1v1"],
-      "improvements": ["Mejores achiques", "Salida con balón más segura"]
+      "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"],
+      "improvements": ["Salida con los pies", "A veces mide mal las salidas"]
     },
     "2": {
       "name": "Gregorio",
       "number": "17",
       "veteran": true,
       "rating": 3.8,
-      "strengths": ["Visión de juego", "Cumple en ataque y defensa"],
-      "improvements": ["Incrementar despliegue físico", "Seguridad en salida"]
+      "strengths": ["Visión de juego", "Equilibrio"],
+      "improvements": ["Estado físico", "Constancia en el juego"]
     },
     "3": {
       "name": "Carlos Daniel",
       "number": "15",
       "veteran": false,
       "rating": 4.2,
-      "strengths": ["Anticipación defensiva", "Corte de líneas de pase"],
-      "improvements": ["Salida limpia desde atrás", "Participar más en circulación", "Dosificación del esfuerzo"]
+      "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"],
+      "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"]
     },
     "4": {
       "name": "Fredual Guevara",
       "number": "2",
       "veteran": false,
       "rating": 3.6,
-      "strengths": ["Asociaciones ofensivas", "Buena ocupación de espacios"],
-      "improvements": ["Regularidad en el rendimiento", "Mayor agresividad defensiva"]
+      "strengths": ["Juego asociativo", "Ubicación en ataque"],
+      "improvements": ["Constancia en el juego", "Agresividad en marca"]
     },
     "5": {
       "name": "Fernando (Señor)",
       "number": "7",
       "veteran": true,
       "rating": 3.5,
-      "strengths": ["Lectura táctica del juego", "Liderazgo en cancha"],
-      "improvements": ["Precisión en ejecución", "Mejorar resistencia física"]
+      "strengths": ["Inteligencia táctica", "Liderazgo"],
+      "improvements": ["Precisión en pases", "Estado físico"]
     },
     "6": {
       "name": "Javier",
       "number": "27",
       "veteran": false,
       "rating": 4.3,
-      "strengths": ["Creación ofensiva", "Visión de último pase", "Definición"],
-      "improvements": ["Intensidad en marca", "Mayor aporte defensivo"]
+      "strengths": ["Creatividad", "Pase filtrado", "Definición"],
+      "improvements": ["Intensidad en marca", "Apoyo defensivo"]
     },
     "7": {
       "name": "Harold Charris",
       "number": "9",
       "veteran": false,
       "rating": 4.5,
-      "strengths": ["Liderazgo táctico", "Organización del juego", "Pase filtrado"],
-      "improvements": ["Control emocional en momentos de presión"]
+      "strengths": ["Liderazgo", "Organización", "Pase filtrado"],
+      "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"]
     },
     "8": {
       "name": "Jhon Vill",
       "number": "22",
       "veteran": false,
-      "rating": 4.1,
-      "strengths": ["Presión alta efectiva", "Polivalencia defensiva", "Juego colectivo"],
-      "improvements": ["Definición en el último tercio"]
+      "rating": 4.2,
+      "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"],
+      "improvements": ["Definición", "Juego asociativo en ataque"]
     },
     "9": {
       "name": "Carlos Medina",
       "number": "94",
       "veteran": false,
       "rating": 3.9,
-      "strengths": ["Visión periférica", "Juego asociado por momentos"],
-      "improvements": ["Mejorar finalización de jugadas", "Mayor intensidad en marca"]
+      "strengths": ["Visión de juego", "Juego asociativo"],
+      "improvements": ["Definición", "Intensidad en marca"]
     },
     "10": {
       "name": "Juan Duarte",
       "number": "10",
       "veteran": false,
       "rating": 3.9,
-      "strengths": ["Velocidad y cambio de ritmo", "Remate de media distancia"],
-      "improvements": ["Juego asociado", "Presión tras pérdida"]
+      "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"],
+      "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"]
     },
     "11": {
       "name": "Cristian",
@@ -86,177 +86,74 @@
       "veteran": false,
       "rating": 3.8,
       "strengths": ["Marca intensa", "Recuperación de balón"],
-      "improvements": ["Toma de decisiones en ataque", "Mejorar condición física"]
+      "improvements": ["Toma de decisiones", "Estado físico"]
     },
     "12": {
       "name": "Ingeniero John",
       "number": "3",
-      "veteran": false,
+      "veteran": true,
       "rating": 3.3,
       "strengths": ["Apoyo defensivo", "Orden táctico"],
-      "improvements": ["Ejecución técnica básica", "Intensidad defensiva"]
+      "improvements": ["Técnica básica", "Intensidad en marca"]
     },
     "13": {
       "name": "Juan (SENA)",
       "number": "23",
       "veteran": false,
       "rating": 3.6,
-      "strengths": ["Desmarque ofensivo", "Toque corto en ataque"],
-      "improvements": ["Definición", "Primer control", "Compromiso en repliegue"]
+      "strengths": ["Desmarque", "Juego en corto"],
+      "improvements": ["Definición", "Control de balón", "Compromiso en marca"]
     }
   },
   "positions": {
     "porteros": [
-      {
-        "id": "1",
-        "priority": "high-priority"
-      },
-      {
-        "id": "2",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "3",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "4",
-        "priority": "low-priority"
-      },
-      {
-        "id": "7",
-        "priority": "low-priority"
-      }
+      { "id": "1", "priority": "high-priority" },
+      { "id": "2", "priority": "medium-priority" },
+      { "id": "3", "priority": "medium-priority" },
+      { "id": "4", "priority": "low-priority" },
+      { "id": "7", "priority": "low-priority" }
     ],
     "defensas": [
-      {
-        "id": "3",
-        "priority": "high-priority"
-      },
-      {
-        "id": "2",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "11",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "4",
-        "priority": "low-priority"
-      },
-      {
-        "id": "5",
-        "priority": "low-priority"
-      },
-      {
-        "id": "6",
-        "priority": "low-priority"
-      },
-      {
-        "id": "12",
-        "priority": "high-priority"
-      }
+      { "id": "3", "priority": "high-priority" },
+      { "id": "2", "priority": "medium-priority" },
+      { "id": "11", "priority": "medium-priority" },
+      { "id": "4", "priority": "low-priority" },
+      { "id": "5", "priority": "low-priority" },
+      { "id": "6", "priority": "low-priority" },
+      { "id": "12", "priority": "high-priority" }
     ],
     "medio": [
-      {
-        "id": "7",
-        "priority": "high-priority"
-      },
-      {
-        "id": "8",
-        "priority": "high-priority"
-      },
-      {
-        "id": "6",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "9",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "2",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "3",
-        "priority": "low-priority"
-      },
-      {
-        "id": "12",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "13",
-        "priority": "medium-priority"
-      }
+      { "id": "7", "priority": "high-priority" },
+      { "id": "8", "priority": "high-priority" },
+      { "id": "6", "priority": "medium-priority" },
+      { "id": "9", "priority": "medium-priority" },
+      { "id": "2", "priority": "medium-priority" },
+      { "id": "3", "priority": "low-priority" },
+      { "id": "12", "priority": "medium-priority" },
+      { "id": "13", "priority": "medium-priority" }
     ],
     "delanteros": [
-      {
-        "id": "10",
-        "priority": "high-priority"
-      },
-      {
-        "id": "8",
-        "priority": "medium-priority"
-      },
-      {
-        "id": "7",
-        "priority": "low-priority"
-      },
-      {
-        "id": "13",
-        "priority": "high-priority"
-      }
+      { "id": "10", "priority": "high-priority" },
+      { "id": "8", "priority": "medium-priority" },
+      { "id": "7", "priority": "low-priority" },
+      { "id": "13", "priority": "high-priority" }
     ]
   },
   "captains": [
-    {
-      "order": 1,
-      "id": "7"
-    },
-    {
-      "order": 2,
-      "id": "3"
-    },
-    {
-      "order": 3,
-      "id": "8"
-    },
-    {
-      "order": 4,
-      "id": "1"
-    }
+    { "order": 1, "id": "7" },
+    { "order": 2, "id": "3" },
+    { "order": 3, "id": "8" },
+    { "order": 4, "id": "1" }
   ],
   "dt": {
     "id": "5"
   },
   "field": [
-    {
-      "class": "goalkeeper",
-      "id": "1",
-      "side": "left"
-    },
-    {
-      "class": "defender-1",
-      "id": "2"
-    },
-    {
-      "class": "defender-2",
-      "id": "3"
-    },
-    {
-      "class": "midfielder-1",
-      "id": "6"
-    },
-    {
-      "class": "midfielder-2",
-      "id": "7"
-    },
-    {
-      "class": "forward",
-      "id": "8"
-    }
+    { "class": "goalkeeper", "id": "1", "side": "left" },
+    { "class": "defender-1", "id": "2" },
+    { "class": "defender-2", "id": "3" },
+    { "class": "midfielder-1", "id": "6" },
+    { "class": "midfielder-2", "id": "7" },
+    { "class": "forward", "id": "8" }
   ]
 }

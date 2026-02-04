@@ -16,102 +16,91 @@ if (!Array.from) {
 // GLOBAL STATE
 // ============================================================================
 
-// ============================================================================
-// GLOBAL STATE
-// ============================================================================
-
-// DATOS EMBEBIDOS PARA EVITAR PROBLEMAS DE CARGA LOCAL (CORS)
-var rosterData = {
-    "players": {
-        "1": { "name": "Fernando (Nuevo)", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Reflejos bajo los tres palos", "Capacidad de respuesta en 1v1"], "improvements": ["Mejores achiques", "Salida con balón más segura"] },
-        "2": { "name": "Gregorio", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Ida y vuelta constante", "Cumple en ataque y defensa"], "improvements": ["Incrementar despliegue físico", "Seguridad en salida"] },
-        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false, "rating": 4.2, "strengths": ["Anticipación defensiva", "Corte de líneas de pase"], "improvements": ["Salida limpia desde atrás", "Participar más en circulación", "Dosificación del esfuerzo"] },
-        "4": { "name": "Fredual Guevara", "number": "2", "veteran": false, "rating": 3.6, "strengths": ["Asociaciones ofensivas", "Buena ocupación de espacios"], "improvements": ["Regularidad en el rendimiento", "Mayor agresividad defensiva"] },
-        "5": { "name": "Fernando (Señor)", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Lectura táctica del juego", "Liderazgo en cancha"], "improvements": ["Precisión en ejecución", "Mejorar resistencia física"] },
-        "6": { "name": "Javier", "number": "27", "veteran": false, "rating": 4.3, "strengths": ["Creación ofensiva", "Visión de último pase", "Definición"], "improvements": ["Intensidad en marca", "Mayor aporte defensivo"] },
-        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.5, "strengths": ["Liderazgo táctico", "Organización del juego", "Pase filtrado"], "improvements": ["Control emocional en momentos de presión"] },
-        "8": { "name": "Jhon Vill", "number": "22", "veteran": false, "rating": 4.1, "strengths": ["Presión alta efectiva", "Polivalencia defensiva", "Juego colectivo"], "improvements": ["Definición en el último tercio"] },
-        "9": { "name": "Carlos Medina", "number": "94", "veteran": false, "rating": 3.9, "strengths": ["Visión periférica", "Juego asociado por momentos"], "improvements": ["Mejorar finalización de jugadas", "Mayor intensidad en marca"] },
-        "10": { "name": "Juan Duarte", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Velocidad y cambio de ritmo", "Remate de media distancia"], "improvements": ["Juego asociado", "Presión tras pérdida"] },
-        "11": { "name": "Cristian", "number": "4", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones en ataque", "Mejorar condición física"] },
-        "12": { "name": "Ingeniero John", "number": "3", "veteran": false, "rating": 3.3, "strengths": ["Apoyo defensivo", "Orden táctico"], "improvements": ["Ejecución técnica básica", "Intensidad defensiva"] },
-        "13": { "name": "Juan (SENA)", "number": "23", "veteran": false, "rating": 3.6, "strengths": ["Desmarque ofensivo", "Toque corto en ataque"], "improvements": ["Definición", "Primer control", "Compromiso en repliegue"] }
-    },
-    "positions": {
-        "porteros": [
-            { "id": "1", "priority": "high-priority" },
-            { "id": "2", "priority": "medium-priority" },
-            { "id": "3", "priority": "medium-priority" },
-            { "id": "4", "priority": "low-priority" },
-            { "id": "7", "priority": "low-priority" }
-        ],
-        "defensas": [
-            { "id": "3", "priority": "high-priority" },
-            { "id": "2", "priority": "medium-priority" },
-            { "id": "11", "priority": "medium-priority" },
-            { "id": "4", "priority": "low-priority" },
-            { "id": "5", "priority": "low-priority" },
-            { "id": "6", "priority": "low-priority" },
-            { "id": "12", "priority": "high-priority" }
-        ],
-        "medio": [
-            { "id": "7", "priority": "high-priority" },
-            { "id": "8", "priority": "high-priority" },
-            { "id": "6", "priority": "medium-priority" },
-            { "id": "9", "priority": "medium-priority" },
-            { "id": "2", "priority": "medium-priority" },
-            { "id": "3", "priority": "low-priority" },
-            { "id": "12", "priority": "medium-priority" },
-            { "id": "13", "priority": "medium-priority" }
-        ],
-        "delanteros": [
-            { "id": "10", "priority": "high-priority" },
-            { "id": "8", "priority": "medium-priority" },
-            { "id": "7", "priority": "low-priority" },
-            { "id": "13", "priority": "high-priority" }
-        ]
-    },
-    "captains": [
-        { "order": 1, "id": "7" },
-        { "order": 2, "id": "3" },
-        { "order": 3, "id": "8" },
-        { "order": 4, "id": "1" }
-    ],
-    "dt": { "id": "5" }
-};
-
+var rosterData = {}; // Will be populated from JSON
 var currentLineup = []; // Empieza vacío
-var convocatoria = new Set(); // Ya no se usa para restringir, pero mantenemos compatibilidad básica si se necesita
 var draggedPlayerId = null;
-// Removed draggedFromConvocatoria flag as we allow dragging from main roster directly now contextually
 
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
 
+document.addEventListener('DOMContentLoaded', initRoster);
+
+// Fallback data for file:// access where fetch is blocked
+const FALLBACK_DATA = {
+    "players": {
+        "1": { "name": "Fernando (Nuevo)", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"], "improvements": ["Salida con los pies", "A veces mide mal las salidas"] },
+        "2": { "name": "Gregorio", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Visión de juego", "Equilibrio"], "improvements": ["Estado físico", "Constancia en el juego"] },
+        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false, "rating": 4.2, "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"], "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"] },
+        "4": { "name": "Fredual Guevara", "number": "2", "veteran": false, "rating": 3.6, "strengths": ["Juego asociativo", "Ubicación en ataque"], "improvements": ["Constancia en el juego", "Agresividad en marca"] },
+        "5": { "name": "Fernando (Señor)", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Inteligencia táctica", "Liderazgo"], "improvements": ["Precisión en pases", "Estado físico"] },
+        "6": { "name": "Javier", "number": "27", "veteran": false, "rating": 4.3, "strengths": ["Creatividad", "Pase filtrado", "Definición"], "improvements": ["Intensidad en marca", "Apoyo defensivo"] },
+        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.5, "strengths": ["Liderazgo", "Organización", "Pase filtrado"], "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"] },
+        "8": { "name": "Jhon Vill", "number": "22", "veteran": false, "rating": 4.2, "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"], "improvements": ["Definición", "Juego asociativo en ataque"] },
+        "9": { "name": "Carlos Medina", "number": "94", "veteran": false, "rating": 3.9, "strengths": ["Visión de juego", "Juego asociativo"], "improvements": ["Definición", "Intensidad en marca"] },
+        "10": { "name": "Juan Duarte", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"], "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"] },
+        "11": { "name": "Cristian", "number": "4", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones", "Estado físico"] },
+        "12": { "name": "Ingeniero John", "number": "3", "veteran": true, "rating": 3.3, "strengths": ["Apoyo defensivo", "Orden táctico"], "improvements": ["Técnica básica", "Intensidad en marca"] },
+        "13": { "name": "Juan (SENA)", "number": "23", "veteran": false, "rating": 3.6, "strengths": ["Desmarque", "Juego en corto"], "improvements": ["Definición", "Control de balón", "Compromiso en marca"] }
+    },
+    "positions": {
+        "porteros": [ { "id": "1", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "7", "priority": "low-priority" } ],
+        "defensas": [ { "id": "3", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "11", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "5", "priority": "low-priority" }, { "id": "6", "priority": "low-priority" }, { "id": "12", "priority": "high-priority" } ],
+        "medio": [ { "id": "7", "priority": "high-priority" }, { "id": "8", "priority": "high-priority" }, { "id": "6", "priority": "medium-priority" }, { "id": "9", "priority": "medium-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "low-priority" }, { "id": "12", "priority": "medium-priority" }, { "id": "13", "priority": "medium-priority" } ],
+        "delanteros": [ { "id": "10", "priority": "high-priority" }, { "id": "8", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" }, { "id": "13", "priority": "high-priority" } ]
+    },
+    "captains": [ { "order": 1, "id": "7" }, { "order": 2, "id": "3" }, { "order": 3, "id": "8" }, { "order": 4, "id": "1" } ],
+    "dt": { "id": "5" },
+    "field": [
+        { "class": "goalkeeper", "id": "1", "side": "left" },
+        { "class": "defender-1", "id": "2" },
+        { "class": "defender-2", "id": "3" },
+        { "class": "midfielder-1", "id": "6" },
+        { "class": "midfielder-2", "id": "7" },
+        { "class": "forward", "id": "8" }
+    ]
+};
+
 function initRoster() {
-    console.log('Iniciando carga del roster...');
-    
-    // Usamos los datos embebidos directamente
+    console.log('Iniciando carga del sistema...');
+
+    // Prioridad 1: Fetch desde roster.json
+    fetch('./data/roster.json')
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP error ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('Datos cargados vía Fetch:', data);
+            rosterData = data;
+            initializeApp();
+        })
+        .catch(function(err) {
+            console.warn('Fetch falló, usando datos fallback:', err);
+            
+            // Prioridad 2: Fallback embebido
+            rosterData = FALLBACK_DATA;
+            initializeApp();
+            
+            showNotification('Modo sin conexión: Datos internos', 'info');
+        });
+}
+
+function initializeApp() {
     try {
-        console.log('Cargando datos embebidos...');
-        
-        // Auto-fill convocatoria logic removed for simplicity - all players available
-        
         // Render sections
         renderPositionLists();
         renderFullRoster();
         renderDT();
         renderCaptains();
-        renderConvocatoria(); // Renamed internally to "Available Players" logic
+        renderConvocatoria();
         initializeEmptyLineup();
         updateConvocatoriaStats();
-        highlightVeterans();
+        // highlightVeterans(); // Removed as it might not be needed or function missing in snippet
         
         console.log('Renderizado completado');
     } catch (err) {
-        console.error('Error:', err);
-        showNotification('Error al cargar datos', 'error');
+        console.error('Error durante la inicialización de la app:', err);
     }
 }
 
@@ -285,17 +274,19 @@ function renderDT() {
     var player = rosterData.players[dtEntry.id];
     if (!player) return;
 
-    var nameEl = document.createElement('span');
-    nameEl.className = 'dt-name';
-    nameEl.textContent = player.name;
-    dtContainer.appendChild(nameEl);
-
-    if (player.number) {
-        var numEl = document.createElement('span');
-        numEl.className = 'dt-number';
-        numEl.textContent = 'N° ' + player.number;
-        dtContainer.appendChild(numEl);
-    }
+    var dtCard = document.createElement('div');
+    dtCard.className = 'dt-card-display';
+    dtCard.innerHTML = 
+        '<div class="dt-icon-wrapper"><i class="fas fa-user-tie"></i></div>' +
+        '<div class="dt-details">' +
+        '  <span class="dt-role-label">Director Técnico</span>' +
+        '  <div class="dt-main-info">' +
+        '    <span class="dt-name">' + player.name + '</span>' +
+        (player.number ? '    <span class="dt-number">N° ' + player.number + '</span>' : '') +
+        '  </div>' +
+        '</div>';
+        
+    dtContainer.appendChild(dtCard);
 }
 
 function renderCaptains() {
@@ -629,12 +620,28 @@ function createFieldSlot(pos, index) {
         };
 
         // DOM Content
+        if (player.number) {
+            var numDiv = document.createElement('div');
+            numDiv.className = 'player-field-number';
+            numDiv.textContent = player.number;
+            slot.appendChild(numDiv);
+        }
+
         var content = document.createElement('div');
         content.className = 'player-content';
-        // Only show number in circle, name outside
-        content.innerHTML = 
-            (player.number ? '<div class="player-field-number">' + player.number + '</div>' : '') +
-            '<div class="player-field-name">' + player.name + '</div>';
+        
+        var nameHTML = '<div class="player-field-name ' + (player.veteran ? 'veteran' : '') + '">' + 
+            player.name + (player.veteran ? ' <i class="fas fa-star" style="color:var(--accent); font-size:0.75em;"></i>' : '') + 
+            '</div>';
+        
+        var ratingHTML = '';
+        if (player.rating) {
+            ratingHTML = '<div class="player-field-rating">' + player.rating.toFixed(1) + '</div>';
+        }
+        
+        content.innerHTML = nameHTML + ratingHTML;
+        
+        slot.appendChild(content);
         
         var removeBtn = document.createElement('button');
         removeBtn.className = 'remove-player-btn';
@@ -1141,6 +1148,8 @@ function validateLineup() {
         issues.push({ type: 'warning', icon: 'exclamation-triangle', text: emptyCount + ' posición(es) sin asignar' });
     }
     
+    if (!rosterData || !rosterData.players) return [];
+
     var veteranIds = Object.keys(rosterData.players).filter(function(id) {
         return rosterData.players[id].veteran;
     });

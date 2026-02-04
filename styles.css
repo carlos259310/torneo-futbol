@@ -8,16 +8,17 @@
     --success: #22c55e;
     
     /* Semantic Position Colors (Vibrant & Consistent) */
-    --col-portero: #6366f1; /* Indigo */
+    --col-portero: #8b5cf6; /* Violet */
     --col-defensa: #3b82f6; /* Blue */
     --col-medio:   #10b981; /* Emerald */
-    --col-delan:   #ef4444; /* Red (Requested) */
+    --col-delan:   #f43f5e; /* Rose */
     
-    --bg-body: #f8fafc;
+    --bg-body: #f1f5f9;
     --bg-card: #ffffff;
     --border: #e2e8f0;
-    --text-main: #0f172a;
+    --text-main: #1e293b;
     --text-muted: #64748b;
+
     
     --radius: 12px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
@@ -134,24 +135,34 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 
 .roster-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    align-items: flex-start; /* Prevent row stretching when card expands */
 }
 
 @media (max-width: 600px) {
     .roster-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 }
 
 /* Roster Grid */
 .roster-card {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;
-    box-shadow: var(--shadow-sm); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius);
+    padding: 1.25rem; 
+    display: flex; flex-direction: column; gap: 0.75rem;
+    box-shadow: var(--shadow-sm); 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative; overflow: hidden; cursor: pointer;
 }
-.roster-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+.roster-card:hover { 
+    transform: translateY(-4px); 
+    border-color: var(--primary); 
+    box-shadow: var(--shadow-md); 
+}
 .roster-card.expanded { gap: 1rem; padding-bottom: 1.25rem; }
 
 .roster-header {
@@ -247,11 +258,15 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 
 /* Sidebar */
 .convocatoria-panel {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1rem; display: flex; flex-direction: column; 
-    height: calc(100vh - 120px); /* Fill viewport minus header/nav */
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius);
+    padding: 1.25rem; 
+    display: flex; flex-direction: column; 
+    height: calc(100vh - 100px); /* Fill viewport minus header/nav */
     max-height: 800px;
     position: sticky; top: 80px; /* Keep sidebar in view if strict layout */
+    box-shadow: var(--shadow-sm);
 }
 .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0; }
 .panel-header h3 { font-size: 1rem; margin: 0; color: var(--text-main); }
@@ -278,12 +293,21 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .convocatoria-list::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 20px; }
 
 .convocado-item {
-    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem;
-    display: flex; align-items: center; gap: 0.5rem; cursor: grab; transition: all 0.2s;
+    background: white; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    padding: 0.75rem;
+    display: flex; align-items: center; gap: 0.75rem; 
+    cursor: grab; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 0; /* Prevents overflow in grid */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-.convocado-item:hover { border-color: var(--primary); background: white; transform: translateX(2px); }
-.convocado-item.dragging { opacity: 0.5; border-style: dashed; }
+.convocado-item:hover { 
+    border-color: var(--primary); 
+    transform: translateX(4px); 
+    box-shadow: var(--shadow-sm);
+}
+.convocado-item.dragging { opacity: 0.6; background: #f8fafc; border-style: dashed; transform: scale(0.98); }
 
 .player-badge-mini {
     background: var(--text-main); color: white; width: 24px; height: 24px; border-radius: 50%;
@@ -303,14 +327,19 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 
 /* Main Field Panel */
 .alineacion-panel {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1rem; display: flex; flex-direction: column; height: 100%;
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius);
+    padding: 1.25rem; 
+    display: flex; flex-direction: column; height: 100%;
     /* Sticky Field */
     position: sticky; top: 80px; 
+    box-shadow: var(--shadow-sm);
 }
 .formation-selector-compact { display: flex; align-items: center; gap: 0.5rem; }
 .formation-selector-compact select {
     padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem;
+    background: var(--bg-card); color: var(--text-main);
 }
 .lineup-actions { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
 
@@ -398,6 +427,16 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
 
+.player-field-rating {
+    margin-top: 2px;
+    font-size: 0.7rem; font-weight: 800; color: white;
+    background: var(--accent); 
+    padding: 1px 6px; border-radius: 6px;
+    display: inline-block;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
 .field-slot.veteran-player { box-shadow: 0 0 0 3px var(--accent), 0 4px 6px rgba(0,0,0,0.3); }
 
 .remove-player-btn {
@@ -412,7 +451,7 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .color-legend-compact {
     margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;
     font-size: 0.8rem; color: var(--text-muted); font-weight: 500;
-    background: white; padding: 10px; border-radius: 50px; display: inline-flex;
+    background: var(--bg-card); padding: 10px; border-radius: 50px; display: inline-flex;
     box-shadow: var(--shadow-sm); align-self: center;
 }
 .color-legend-compact span { display: flex; align-items: center; gap: 6px; }
@@ -573,9 +612,13 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
     font-weight: 800;
 }
+.dark-mode .field-container {
+    background: #0f172a; /* Match body bg */
+    border-color: #334155;
+}
 .dark-mode .field-slot.occupied-slot {
    background: #1e293b; /* Dark background for the slot circle itself */
-   border-color: #cbd5e1; /* Lighter border to stand out against green field */
+   /* border-color removed to keep position colors */
 }
 .dark-mode .player-field-name {
     color: white;
@@ -695,3 +738,39 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
 .field-slot.occupied-slot:hover {
     z-index: 1001; /* Ensure popover stays above other players */
 }
+
+/* DT Card Display */
+.dt-card-display {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 1rem 1.5rem; border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s;
+}
+.dt-card-display:hover { transform: translateY(-2px); border-color: var(--primary); }
+
+.dt-icon-wrapper {
+    width: 48px; height: 48px; background: var(--bg-body); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: var(--text-muted); border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.dt-details { display: flex; flex-direction: column; }
+
+.dt-role-label {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); font-weight: 700; margin-bottom: 2px;
+}
+
+.dt-main-info { display: flex; align-items: baseline; gap: 8px; }
+
+.dt-name { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+
+.dt-number { 
+    background: var(--primary); color: white; padding: 2px 6px; 
+    border-radius: 4px; font-size: 0.75rem; font-weight: 700; 
+}
+
+.dark-mode .dt-icon-wrapper { background: #0f172a; color: #94a3b8; }
+
