@@ -201,6 +201,58 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
     max-height: 300px; opacity: 1; padding-top: 0.75rem; border-top: 1px solid var(--border);
 }
 
+.card-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.card-toggle .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.roster-card.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.roster-card:hover .card-toggle {
+    color: var(--primary-dark);
+}
+
+.card-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.card-toggle .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.roster-card.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.roster-card:hover .card-toggle {
+    color: var(--primary-dark);
+}
+
 .detail-group { display: flex; flex-direction: column; gap: 2px; }
 .detail-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em; }
 .detail-content { color: var(--text-main); line-height: 1.4; display: flex; flex-wrap: wrap; gap: 4px; padding-top: 2px; }

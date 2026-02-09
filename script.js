@@ -250,13 +250,28 @@ function renderFullRoster() {
 
         card.appendChild(detailsDiv);
 
+        // Explicit Toggle
+        var toggleDiv = document.createElement('div');
+        toggleDiv.className = 'card-toggle';
+        toggleDiv.innerHTML = '<span class="toggle-text">Ver detalles</span> <i class="fas fa-chevron-down toggle-icon"></i>';
+        card.appendChild(toggleDiv);
+
         // Toggle Expand Logic
         card.onclick = function() {
             // Close others if open (optional UI preference)
             document.querySelectorAll('.roster-card.expanded').forEach(function(c) {
-                if (c !== card) c.classList.remove('expanded');
+                if (c !== card) {
+                    c.classList.remove('expanded');
+                    var txt = c.querySelector('.toggle-text');
+                    if (txt) txt.textContent = 'Ver detalles';
+                }
             });
-            card.classList.toggle('expanded');
+            
+            var isExpanded = card.classList.toggle('expanded');
+            var toggleText = card.querySelector('.toggle-text');
+            if (toggleText) {
+                toggleText.textContent = isExpanded ? 'Ocultar' : 'Ver detalles';
+            }
         };
 
         grid.appendChild(card);

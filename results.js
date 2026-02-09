@@ -60,10 +60,18 @@ function renderResults(matches) {
                     </div>
                 </div>
             </div>
+            <div class="details-toggle">
+                <span class="toggle-text">Ver detalles</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
         `;
 
         card.onclick = () => {
-            card.classList.toggle('expanded');
+            const isExpanded = card.classList.toggle('expanded');
+            const toggleText = card.querySelector('.toggle-text');
+            if (toggleText) {
+                toggleText.textContent = isExpanded ? 'Ocultar' : 'Ver detalles';
+            }
         };
 
         grid.appendChild(card);

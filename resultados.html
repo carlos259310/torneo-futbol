@@ -25,6 +25,32 @@
         .strength-item::before { content: "\f00c"; color: var(--success); }
         .improvement-item { border-left: 3px solid var(--danger); }
         .improvement-item::before { content: "\f06a"; color: var(--danger); }
+        
+        .details-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .match-card.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .match-card:hover .details-toggle {
+            color: var(--primary-dark);
+        }
     </style>
 </head>
 <body>
