@@ -340,6 +340,10 @@ function renderConvocatoria() {
     });
     
     ids.forEach(function(id) {
+        // Filtrar si ya está en la alineación
+        var isAssigned = currentLineup.some(function(slot) { return slot.id === id; });
+        if (isAssigned) return;
+
         var player = rosterData.players[id];
         
         var item = document.createElement('div');
@@ -395,12 +399,16 @@ function renderConvocatoria() {
         // Drag handlers simplified
         item.ondragstart = function(e) {
             draggedPlayerId = id;
+            e.dataTransfer.setData('text/plain', JSON.stringify({ 
+                type: 'roster-add', playerId: id 
+            }));
             item.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         };
         
         item.ondragend = function() {
             item.classList.remove('dragging');
+            draggedPlayerId = null;
         };
         
         item.appendChild(badge);
@@ -534,6 +542,7 @@ function resetLineup() {
     
     currentLineup = newLineup;
     updateFieldDisplay();
+    renderConvocatoria(); // Sincronizar lista
     showNotification('Posiciones restablecidas', 'info');
 }
 
@@ -765,10 +774,14 @@ function handleDragLeave(e) {
 
 
 function handleSlotDrop(e, targetIndex) {
+    e.preventDefault();
+    e.stopPropagation(); // IMPORTANTE: Evitar que el campo recoja el drop como movimiento libre
+    
     try {
         var data = e.dataTransfer.getData('text/plain');
-        if (!data) {
-             // Fallback if draggedPlayerId is set global
+        var source = data ? JSON.parse(data) : null;
+        
+        if (!source) {
              if (draggedPlayerId) {
                  assignPlayerToPosition(targetIndex, draggedPlayerId);
                  draggedPlayerId = null;
@@ -776,9 +789,8 @@ function handleSlotDrop(e, targetIndex) {
              return;
         }
         
-        var source = JSON.parse(data);
         if (source.type === 'field-move') {
-            // Swap logic
+            // Intercambiar Field <-> Field
             var fromIndex = source.index;
             if (fromIndex === targetIndex) return;
             
@@ -787,11 +799,26 @@ function handleSlotDrop(e, targetIndex) {
             currentLineup[fromIndex].id = temp;
             
             updateFieldDisplay();
+            
+            // Animación de intercambio
+            var slots = document.querySelectorAll('.field-slot');
+            slots.forEach(function(s) {
+                var idx = s.dataset.positionIndex;
+                if (idx == targetIndex || idx == fromIndex) {
+                    s.classList.add('swapping');
+                    setTimeout(function() { s.classList.remove('swapping'); }, 400);
+                }
+            });
+            
             validateLineup();
             showNotification('Posiciones intercambiadas', 'success');
+            
+        } else if (source.type === 'roster-add') {
+            // Asignar desde Roster
+            assignPlayerToPosition(targetIndex, source.playerId);
         }
     } catch(err) { 
-        // If JSON parse fails, it might be from the roster
+        console.error('Error en drop:', err);
         if (draggedPlayerId) {
              assignPlayerToPosition(targetIndex, draggedPlayerId);
              draggedPlayerId = null; 
@@ -838,6 +865,7 @@ function assignPlayerToPosition(positionIndex, playerId) {
     currentLineup[positionIndex].id = playerId;
     updateFieldDisplay();
     validateLineup();
+    renderConvocatoria(); // Sincronizar lista
     
     var player = rosterData.players[playerId];
     showNotification(player.name + ' agregado', 'success');
@@ -852,6 +880,7 @@ function removePlayerFromPosition(positionIndex) {
     
     updateFieldDisplay();
     validateLineup();
+    renderConvocatoria(); // Sincronizar lista
     showNotification(player.name + ' quitado', 'info');
 }
 
@@ -917,6 +946,7 @@ function openPlayerSelection(slotIndex) {
         item.onclick = function() {
             assignPlayerToPosition(currentSlotIndex, id);
             closePlayerModal();
+            renderConvocatoria(); // Sincronizar lista
         };
         
         var badge = document.createElement('div');
@@ -972,6 +1002,7 @@ function changeFormation(formation) {
         
         updateFieldDisplay();
         validateLineup();
+        renderConvocatoria(); // Sincronizar lista
         showNotification('Formación cambiada a ' + formation, 'success');
     };
     
@@ -994,6 +1025,7 @@ function clearLineup() {
             currentLineup.forEach(function(pos) { pos.id = null; });
             updateFieldDisplay();
             validateLineup();
+            renderConvocatoria(); // Sincronizar lista
             showNotification('Alineación vaciada', 'info');
         }
     );
@@ -1101,6 +1133,7 @@ function autoLineup() {
 
             updateFieldDisplay();
             validateLineup();
+            renderConvocatoria(); // Sincronizar lista
             showNotification('Alineación optimizada generada', 'success');
         }
     );

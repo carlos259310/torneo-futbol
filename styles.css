@@ -307,7 +307,13 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
     transform: translateX(4px); 
     box-shadow: var(--shadow-sm);
 }
-.convocado-item.dragging { opacity: 0.6; background: #f8fafc; border-style: dashed; transform: scale(0.98); }
+.convocado-item.dragging { opacity: 0.4; background: #f8fafc; border-style: dashed; transform: scale(0.95); }
+.convocado-item { animation: slideInList 0.3s ease-out; }
+
+@keyframes slideInList {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
 
 .player-badge-mini {
     background: var(--text-main); color: white; width: 24px; height: 24px; border-radius: 50%;
@@ -400,7 +406,41 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
     background: rgba(255,255,255,0.2); border: 2px dashed rgba(255,255,255,0.7); box-shadow: none;
 }
 .field-slot.empty-slot i { color: white; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-.field-slot.drag-over { transform: scale(1.1); background: var(--success); border-color: white; }
+.field-slot.drag-over { transform: scale(1.15); background: var(--success); border-color: white; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); z-index: 20; }
+
+/* Visual feedback for swap */
+.field-slot.occupied-slot.drag-over { 
+    background: var(--primary); 
+    border-color: white; 
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.6); 
+}
+.field-slot.occupied-slot.drag-over::after {
+    content: '\f362'; /* FontAwesome exchange-alt icon */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    font-size: 1.5rem;
+    color: white;
+    z-index: 100;
+}
+.field-slot.occupied-slot.drag-over .player-field-number,
+.field-slot.occupied-slot.drag-over .player-content {
+    opacity: 0.2;
+}
+
+.field-slot.swapping {
+    animation: swapPulse 0.4s ease-out;
+}
+
+@keyframes swapPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); box-shadow: 0 0 20px var(--primary); }
+    100% { transform: scale(1); }
+}
+
+.field-slot.invisible-drag {
+    opacity: 0.3;
+}
 
 /* Occupied Slot Styling */
 .field-slot.occupied-slot { background: white; }
