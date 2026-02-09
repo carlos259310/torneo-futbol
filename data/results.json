@@ -1,0 +1,25 @@
+{
+    "matches": [
+        {
+            "id": 1,
+            "date": "2026-02-08",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "Auto Aprender",
+            "homeScore": 1,
+            "awayScore": 2,
+            "status": "Finalizado",
+            "strengths": [
+                "Buena Marca durante casi todo el partido",
+                "Al final se llego varias veces al arco rival",
+                "Se compitió durante todo el partido"
+            ],
+            "improvements": [
+                "Falta de contundencia en la definición (Javier,Juan,Harold,Jhon)",
+                "Saque del portero(Fernando)",
+                "Marcar con menos fuerza para evitar faltas innecesarias(Carlos)",
+                "Mejorar la condición física para poder competir mejor(Todos)",
+                "Organización de la rotación para que todos jueguen pero no se pierda el orden del equipo(Todos)"
+            ]
+        }
+    ]
+}
