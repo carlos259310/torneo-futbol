@@ -5,6 +5,8 @@ import path from 'node:path';
 import type { APIRoute } from 'astro';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Groq from 'groq-sdk';
+import rosterSeed from '../../data/roster.json';
+import resultsSeed from '../../data/results.json';
 
 // Helper to load data
 const loadData = () => {
@@ -13,15 +15,15 @@ const loadData = () => {
     const rosterPath = path.join(dataDir, 'roster.json');
     const resultsPath = path.join(dataDir, 'results.json');
 
-    const roster = fs.existsSync(rosterPath) ? JSON.parse(fs.readFileSync(rosterPath, 'utf-8')) : {};
-    const results = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf-8')) : {};
+    const roster = fs.existsSync(rosterPath) ? JSON.parse(fs.readFileSync(rosterPath, 'utf-8')) : (rosterSeed || {});
+    const results = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf-8')) : (resultsSeed || {});
     const memoryPath = path.join(dataDir, 'ai_memory.json');
     const memory = fs.existsSync(memoryPath) ? JSON.parse(fs.readFileSync(memoryPath, 'utf-8')) : [];
     
     return { roster, results, memory };
   } catch (e) {
     console.error("Error loading data:", e);
-    return { roster: {}, results: {}, memory: [] };
+    return { roster: rosterSeed || {}, results: resultsSeed || {}, memory: [] };
   }
 };
 
