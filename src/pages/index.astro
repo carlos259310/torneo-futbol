@@ -1,3 +1,5 @@
+---
+---
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +9,7 @@
     <title>Tránsito de Girón - Torneo C.E.A</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/53/53283.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css?v=3.0">
+    <link rel="stylesheet" href="/styles.css?v=3.0">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
@@ -18,7 +20,7 @@
             <a href="#posiciones" class="nav-link"><i class="fas fa-th"></i> Posiciones</a>
             <a href="#dt-capitanes" class="nav-link"><i class="fas fa-user-tie"></i> DT & Capitanes</a>
             <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Alineación</a>
-            <a href="resultados.html" class="nav-link"><i class="fas fa-poll"></i> Resultados</a>
+            <a href="/resultados.html" class="nav-link"><i class="fas fa-poll"></i> Resultados</a>
             <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" style="background:none; border:none; cursor:pointer;">
                 <i class="fas fa-moon" id="theme-icon"></i>
             </button>
@@ -109,8 +111,6 @@
                                 </span>
                             </div>
                         </div>
-                        
-                        <!-- Controls removed for simplicity as requested -->
                         
                         <div class="convocatoria-list" id="convocatoria-list"></div>
                         
@@ -218,7 +218,7 @@
                     <span>Asistente DT - IA</span>
                 </div>
                 <div class="chat-header-actions">
-                    <button id="ai-chat-config" title="Configurar API Key"><i class="fas fa-cog"></i></button>
+                    <!-- Config button removed as API key is now server-side or env managed -->
                     <button id="ai-chat-close"><i class="fas fa-times"></i></button>
                 </div>
             </div>
@@ -234,35 +234,8 @@
         </div>
     </div>
 
-    <!-- API Config Modal -->
-    <div id="ai-config-modal" class="modal-overlay hidden">
-        <div class="modal-content config-modal">
-            <div class="modal-header">
-                <h3>Configuración de IA</h3>
-                <button class="modal-close" id="close-config-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <label for="ai-provider">Proveedor:</label>
-                <select id="ai-provider">
-                    <option value="gemini">Google Gemini (2.0 Flash Exp)</option>
-                    <option value="groq">Groq (Llama 3.3 - Gratis)</option>
-                    <option value="ollama">Ollama (Local)</option>
-                </select>
-                
-                <label for="ai-api-key">API Key:</label>
-                <input type="password" id="ai-api-key" placeholder="Pega tu llave aquí...">
-                <p class="config-help">Tu llave se guarda solo en este navegador.</p>
-                
-                <div class="modal-actions">
-                    <button class="btn btn-blue" id="save-ai-config">Guardar Configuración</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
-    <script src="script.js?v=3.0"></script>
-    <script src="data/config.js?v=3.0"></script>
-    <script src="ai-chat.js?v=3.0"></script>
+    <script is:inline src="/script.js?v=3.0"></script>
+    <script is:inline src="/ai-chat.js?v=3.0"></script>
 </body>
 </html>

@@ -1,0 +1,23 @@
+{
+  "name": "torneo-futbol-astro",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^8.0.0",
+    "@astrojs/node": "^9.0.2",
+    "@google/generative-ai": "^0.24.1",
+    "astro": "^5.2.3",
+    "dotenv": "^16.4.7",
+    "groq-sdk": "^0.37.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3"
+  }
+}

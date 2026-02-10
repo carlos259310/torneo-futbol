@@ -6,7 +6,7 @@
     <title>Sist. Gestión - Resultados</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/53/53283.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3.0">
     <style>
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
         .match-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm); transition: all 0.3s ease; cursor: pointer; position: relative; }
@@ -69,7 +69,62 @@
         <main><div id="results-grid" class="results-grid"></div></main>
         <footer><p>Equipo de Fútbol 6 - Sistema de Gestión v2.0</p></footer>
     </div>
-    <script src="results.js"></script>
+
+    <!-- AI Chat Box -->
+    <div id="ai-chat-container" class="ai-chat-container">
+        <button id="ai-chat-toggle" class="ai-chat-toggle" title="Asistente de IA">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="ai-chat-window" class="ai-chat-window hidden">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <i class="fas fa-robot"></i>
+                    <span>Asistente DT - IA</span>
+                </div>
+                <div class="chat-header-actions">
+                    <button id="ai-chat-config" title="Configurar API Key"><i class="fas fa-cog"></i></button>
+                    <button id="ai-chat-close"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div id="ai-chat-messages" class="chat-messages">
+                <div class="message assistant">
+                    ¡Hola! Soy tu asistente de IA. Puedo ayudarte con alineaciones de fútbol 6, jugadores y resultados. ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <textarea id="ai-chat-input" placeholder="Pregúntame algo..." rows="1"></textarea>
+                <button id="ai-chat-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Config Modal -->
+    <div id="ai-config-modal" class="modal-overlay hidden">
+        <div class="modal-content config-modal">
+            <div class="modal-header">
+                <h3>Configuración de IA</h3>
+                <button class="modal-close" id="close-config-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <label for="ai-provider">Proveedor:</label>
+                <select id="ai-provider">
+                    <option value="openai">OpenAI (GPT-4o-mini)</option>
+                    <option value="gemini">Google Gemini (2.0 Flash)</option>
+                </select>
+                
+                <label for="ai-api-key">API Key:</label>
+                <input type="password" id="ai-api-key" placeholder="Pega tu llave aquí...">
+                <p class="config-help">Tu llave se envía en cada petición y se guarda en data/config.js.</p>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-blue" id="save-ai-config">Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ai-chat.js?v=3.0"></script>
+    <script src="results.js?v=3.0"></script>
     <script>
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');

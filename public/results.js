@@ -1,9 +1,15 @@
 document.addEventListener('DOMContentLoaded', initResults);
 
 function initResults() {
+    if (window.matchResults && window.matchResults.length > 0) {
+        renderResults(window.matchResults);
+        return;
+    }
+
     fetch('./data/results.json')
         .then(response => response.json())
         .then(data => {
+            window.matchResults = data.matches;
             renderResults(data.matches);
         })
         .catch(err => {
@@ -12,7 +18,7 @@ function initResults() {
             renderResults([
                 {
                     "id": 1,
-                    "date": "2026-02-07",
+                    "date": "2026-02-08",
                     "homeTeam": "Tránsito de Girón",
                     "awayTeam": "Auto Aprender",
                     "homeScore": 1,
@@ -66,11 +72,26 @@ function renderResults(matches) {
             </div>
         `;
 
+        // Initialize globally if not exists
+        if (typeof activeResultsCard === 'undefined') window.activeResultsCard = null;
+
         card.onclick = () => {
+             // Optimization: Use a variable instead of querySelectorAll
+            if (window.activeResultsCard && window.activeResultsCard !== card) {
+                window.activeResultsCard.classList.remove('expanded');
+                const prevTxt = window.activeResultsCard.querySelector('.toggle-text');
+                if (prevTxt) prevTxt.textContent = 'Ver detalles';
+            }
+
             const isExpanded = card.classList.toggle('expanded');
             const toggleText = card.querySelector('.toggle-text');
-            if (toggleText) {
-                toggleText.textContent = isExpanded ? 'Ocultar' : 'Ver detalles';
+            
+            if (isExpanded) {
+                window.activeResultsCard = card;
+                if (toggleText) toggleText.textContent = 'Ocultar';
+            } else {
+                window.activeResultsCard = null;
+                if (toggleText) toggleText.textContent = 'Ver detalles';
             }
         };
 
