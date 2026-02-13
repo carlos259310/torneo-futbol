@@ -115,7 +115,18 @@ const extractPlayers = (text: string, roster: any) => {
 };
 
 const addMemoryEntry = async (userText: string, assistantText: string, roster: any) => {
-  if (!shouldStoreMemory(userText) || !supabaseAdmin) return;
+  console.log('[Memory] Checking if should store. User text:', userText?.substring(0, 50));
+  console.log('[Memory] supabaseAdmin exists:', !!supabaseAdmin);
+  console.log('[Memory] shouldStore(user):', shouldStoreMemory(userText));
+  console.log('[Memory] shouldStore(assistant):', shouldStoreMemory(assistantText));
+  
+  // Store if EITHER user query OR AI response contains relevant keywords
+  const shouldStore = shouldStoreMemory(userText) || shouldStoreMemory(assistantText);
+  
+  if (!shouldStore || !supabaseAdmin) {
+    console.log('[Memory] SKIPPED - shouldStore:', shouldStore, ', hasAdmin:', !!supabaseAdmin);
+    return;
+  }
   
   try {
     const entry = {
@@ -124,12 +135,14 @@ const addMemoryEntry = async (userText: string, assistantText: string, roster: a
       players: extractPlayers(userText + ' ' + assistantText, roster)
     };
 
+    console.log('[Memory] Inserting entry:', JSON.stringify(entry).substring(0, 100));
     const { error } = await supabaseAdmin.from('ai_memory').insert([entry]);
     if (error) {
       console.error('[Supabase] Memory insert failed:', error.message);
+    } else {
+      console.log('[Memory] ✅ Successfully saved to Supabase');
     }
   } catch (dbError: any) {
-    // Don't throw - we don't want to break the chat response if DB fails
     console.error('[Supabase] Exception during memory insert:', dbError.message);
   }
 };
