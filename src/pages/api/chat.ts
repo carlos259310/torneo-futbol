@@ -5,25 +5,58 @@ import path from 'node:path';
 import type { APIRoute } from 'astro';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Groq from 'groq-sdk';
+import { createClient } from '@supabase/supabase-js';
 import rosterSeed from '../../data/roster.json';
 import resultsSeed from '../../data/results.json';
+import tournamentInfo from '../../data/tournament_info.json';
+
+// Supabase Setup: Cliente para lectura (público) y escritura (privado/seguro)
+const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Cliente público (solo lectura)
+const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+// Cliente privado del servidor (puede escribir con seguridad)
+const supabaseAdmin = (supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Helper to load data
-const loadData = () => {
+const loadData = async () => {
   try {
     const dataDir = path.join(process.cwd(), 'public', 'data');
     const rosterPath = path.join(dataDir, 'roster.json');
     const resultsPath = path.join(dataDir, 'results.json');
+    const tournamentPath = path.join(dataDir, 'tournament_info.json');
 
     const roster = fs.existsSync(rosterPath) ? JSON.parse(fs.readFileSync(rosterPath, 'utf-8')) : (rosterSeed || {});
     const results = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf-8')) : (resultsSeed || {});
-    const memoryPath = path.join(dataDir, 'ai_memory.json');
-    const memory = fs.existsSync(memoryPath) ? JSON.parse(fs.readFileSync(memoryPath, 'utf-8')) : [];
+    const tournament = fs.existsSync(tournamentPath) ? JSON.parse(fs.readFileSync(tournamentPath, 'utf-8')) : (tournamentInfo || {});
     
-    return { roster, results, memory };
+    // Memory: Fetch from Supabase (with graceful fallback)
+    let memory = [];
+    if (supabase) {
+        try {
+            const { data, error } = await supabase
+                .from('ai_memory')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+            
+            if (error) {
+                console.error('[Supabase] Failed to fetch memory:', error.message);
+            } else {
+                memory = (data || []).reverse();
+            }
+        } catch (dbError: any) {
+            console.error('[Supabase] Exception during memory fetch:', dbError.message);
+        }
+    }
+    
+    return { roster, results, tournament, memory };
   } catch (e) {
     console.error("Error loading data:", e);
-    return { roster: rosterSeed || {}, results: resultsSeed || {}, memory: [] };
+    return { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {}, memory: [] };
   }
 };
 
@@ -31,37 +64,37 @@ const MEMORY_LIMIT = 200;
 const MEMORY_CONTEXT_LIMIT = 20;
 const MEMORY_MAX_CHARS = 280;
 
-const readMemory = () => {
-  try {
-    const memoryPath = path.join(process.cwd(), 'public', 'data', 'ai_memory.json');
-    if (!fs.existsSync(memoryPath)) return [];
-    const raw = fs.readFileSync(memoryPath, 'utf-8');
-    return JSON.parse(raw || '[]');
-  } catch {
-    return [];
-  }
-};
-
-const writeMemory = (entries: any[]) => {
-  try {
-    const memoryPath = path.join(process.cwd(), 'public', 'data', 'ai_memory.json');
-    fs.writeFileSync(memoryPath, JSON.stringify(entries, null, 2), 'utf-8');
-  } catch (e) {
-    console.warn('Memory write failed:', e);
-  }
-};
-
 const normalizeText = (s: string) => s.toLowerCase();
 
 const shouldStoreMemory = (text: string) => {
   if (!text || text.trim().length < 6) return false;
   const t = normalizeText(text);
-  const keywords = [
-    'alineacion','alineacion','jugador','jugadores','partido','resultado','fortalezas','mejoras',
+  
+  // Keywords relevantes del equipo/torneo que SÍ queremos guardar
+  const relevantKeywords = [
+    'alineacion','alineación','jugador','jugadores','partido','resultado','fortalezas','mejoras',
     'rating','portero','defensa','defensas','mediocampo','medio','delantero','convocatoria',
-    'capitan','capit?n','dt','director tecnico','director t?cnico'
+    'capitan','capitán','dt','director tecnico','director técnico','entrenamiento','táctica',
+    'tactica','formacion','formación','rival','proximo','próximo','torneo','fecha','horario'
   ];
-  return keywords.some(k => t.includes(k));
+  
+  // Palabras que indican preguntas genéricas/irrelevantes que NO queremos guardar
+  const irrelevantPatterns = [
+    'hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'como estas', 'cómo estás',
+    'gracias', 'ok', 'vale', 'bien', 'perfecto', 'entendido', 'test', 'prueba',
+    'ayuda', 'que puedes hacer', 'qué puedes hacer', 'quien eres', 'quién eres'
+  ];
+  
+  // Si contiene patrones irrelevantes y es muy corto, NO guardar
+  const isIrrelevant = irrelevantPatterns.some(pattern => {
+    const regex = new RegExp(`\\b${pattern}\\b`, 'i');
+    return regex.test(t);
+  });
+  
+  if (isIrrelevant && text.trim().length < 30) return false;
+  
+  // Solo guardar si contiene keywords relevantes
+  return relevantKeywords.some(k => t.includes(k));
 };
 
 const trimForMemory = (text: string) => {
@@ -81,30 +114,33 @@ const extractPlayers = (text: string, roster: any) => {
   return Array.from(new Set(names));
 };
 
-const addMemoryEntry = (userText: string, assistantText: string, roster: any) => {
-  if (!shouldStoreMemory(userText)) return;
-  const entries = readMemory();
-  const entry = {
-    id: Date.now().toString(),
-    ts: new Date().toISOString(),
-    q: trimForMemory(userText),
-    a: trimForMemory(assistantText),
-    players: extractPlayers(userText + ' ' + assistantText, roster)
-  };
-  entries.push(entry);
-  if (entries.length > MEMORY_LIMIT) {
-    entries.splice(0, entries.length - MEMORY_LIMIT);
+const addMemoryEntry = async (userText: string, assistantText: string, roster: any) => {
+  if (!shouldStoreMemory(userText) || !supabaseAdmin) return;
+  
+  try {
+    const entry = {
+      user_query: trimForMemory(userText),
+      ai_response: trimForMemory(assistantText),
+      players: extractPlayers(userText + ' ' + assistantText, roster)
+    };
+
+    const { error } = await supabaseAdmin.from('ai_memory').insert([entry]);
+    if (error) {
+      console.error('[Supabase] Memory insert failed:', error.message);
+    }
+  } catch (dbError: any) {
+    // Don't throw - we don't want to break the chat response if DB fails
+    console.error('[Supabase] Exception during memory insert:', dbError.message);
   }
-  writeMemory(entries);
 };
 
 const buildMemoryContext = (memory: any[]) => {
   if (!Array.isArray(memory) || memory.length === 0) return '';
   const recent = memory.slice(-MEMORY_CONTEXT_LIMIT);
   const lines = recent.map((m: any) => {
-    const date = (m.ts || '').slice(0, 10);
+    const date = (m.created_at || '').slice(0, 10);
     const players = (m.players && m.players.length) ? ` (jugadores: ${m.players.join(', ')})` : '';
-    return `- [${date}] Q: ${m.q} | A: ${m.a}${players}`;
+    return `- [${date}] Q: ${m.user_query} | A: ${m.ai_response}${players}`;
   });
   return `\nMEMORIA (notas relevantes):\n${lines.join('\n')}\n`;
 };
@@ -116,30 +152,29 @@ export const POST: APIRoute = async ({ request }) => {
     let modelUsed = model;
 
     // Load Data Context
-    const teamData = loadData();
+    const teamData = await loadData();
     const memoryContext = buildMemoryContext(teamData?.memory || []);
     const systemContext = `
-    ROL: Eres el Asistente Técnico Inteligente (DT IA) del equipo de fútbol "Tránsito de Girón".
-    OBJETIVO: Ayudar al DT a tomar decisiones basadas EXCLUSIVAMENTE en los datos del equipo.
+    ROL: Eres el Asistente Técnico Inteligente (DT IA) del equipo "Tránsito de Girón" en el Torneo CEA Fútbol 6 (6ta Edición 2026).
+    OBJETIVO: Ayudar al DT a tomar decisiones basadas EXCLUSIVAMENTE en los datos del equipo y del torneo.
     
     DATOS DEL EQUIPO (NO INVENTES JUGADORES):
     ${JSON.stringify(teamData?.roster || {}, null, 2)}
     
     RESULTADOS RECIENTES:
     ${JSON.stringify(teamData?.results || {}, null, 2)}
+    
+    REGLAMENTO Y FIXTURE DEL TORNEO:
+    ${JSON.stringify(teamData?.tournament || {}, null, 2)}
     ${memoryContext}
     INSTRUCCIONES CLAVE:
     1. Responde de forma técnica pero motivadora.
     2. Usa los NOMBRES EXACTOS de los jugadores en el JSON.
-    3. ALINEACIONES: Cuando sugieras una alineación, SOLO lista Posición: Nombre. NO agregues descripción ni explicación en cada jugador.
-       Ejemplo:
-       - Portero: Fernando
-       - Defensa: Gregorio
-       (Hazlo simple y directo en la lista).
-    4. Menciona las fortalezas y mejoras de los partidos pasados solo si te preguntan por analisis.
-    5. Este equipo juega Futbol 6: una alineacion completa tiene 6 jugadores (incluye portero).
-    6. Responde breve y claro. Si no te preguntan por alineacion, no la propongas.
-    7. NO hables de otros equipos o temas generales de futbol a menos que sirvan de ejemplo tactico.
+    3. ALINEACIONES: Cuando sugieras una alineación, SOLO lista Posición: Nombre. Hazlo simple y directo.
+    4. Futbol 6: 6 jugadores (incluye portero). Veterano de 40+ años obligatorio. Sustituciones ILIMITADAS.
+    5. Partidos: 2 tiempos de 20 minutos. Mínimo 4 jugadores en cancha.
+    6. Si preguntan sobre reglas, fixture, equipos rivales o costos de tarjetas, usa el REGLAMENTO DEL TORNEO.
+    7. Responde breve y claro.
     `;
 
     // Prepend System Message
@@ -150,11 +185,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     const lastUserMessage = [...messages].reverse().find((m: any) => m.role === 'user')?.content || '';
 
-    const respond = (text: string, modelLabel: string, extraNote?: string) => {
+    const respond = async (text: string, modelLabel: string, extraNote?: string) => {
         const finalText = extraNote ? `${text}
 
 ${extraNote}` : text;
-        addMemoryEntry(lastUserMessage, text, teamData?.roster);
+        await addMemoryEntry(lastUserMessage, text, teamData?.roster);
         return new Response(JSON.stringify({ content: finalText, modelUsed: modelLabel }), { status: 200 });
     };
 
@@ -212,7 +247,7 @@ ${extraNote}` : text;
     // 3. Provider routing
     if (requestedProvider === 'groq') {
         const text = await runGroq(refinedMessages, apiKey);
-        return respond(text, `Groq (${modelUsed})`);
+        return await respond(text, `Groq (${modelUsed})`);
     }
 
     // Default to Gemini with Groq fallback
@@ -230,7 +265,7 @@ ${extraNote}` : text;
         for (const useModel of geminiCandidates) {
             try {
                 const text = await runGemini(useModel);
-                return respond(text, `Gemini (${useModel})`);
+                return await respond(text, `Gemini (${useModel})`);
             } catch (e: any) {
                 lastError = e;
                 console.warn(`Gemini model failed (${useModel})`, e.message);
@@ -242,7 +277,7 @@ ${extraNote}` : text;
         console.warn("All Gemini attempts failed. Trying Groq fallback...", geminiFinalError.message);
         try {
             const text = await runGroq(refinedMessages, apiKey);
-            return respond(text, `Groq Fallback (${modelUsed})`, 'Respuesta generada via Groq por fallo en Gemini');
+            return await respond(text, `Groq Fallback (${modelUsed})`, 'Respuesta generada via Groq por fallo en Gemini');
         } catch (groqError: any) {
             return new Response(JSON.stringify({ error: `All providers failed. Gemini: ${geminiFinalError.message}. Groq: ${groqError.message}` }), { status: 500 });
         }
