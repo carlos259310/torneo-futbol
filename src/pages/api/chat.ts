@@ -10,16 +10,23 @@ import rosterSeed from '../../data/roster.json';
 import resultsSeed from '../../data/results.json';
 import tournamentInfo from '../../data/tournament_info.json';
 
-// Supabase Setup: Cliente para lectura (público) y escritura (privado/seguro)
-const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Helper to get Supabase clients lazily (important for Serverless/Vercel env vars)
+const getSupabase = () => {
+    const url = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
+    const anon = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!url || !anon) return null;
+    return createClient(url, anon);
+};
 
-// Cliente público (solo lectura)
-const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, supabaseAnonKey) : null;
-
-// Cliente privado del servidor (puede escribir con seguridad)
-const supabaseAdmin = (supabaseUrl && supabaseServiceKey) ? createClient(supabaseUrl, supabaseServiceKey) : null;
+const getSupabaseAdmin = () => {
+    const url = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
+    const key = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+        console.warn('[Memory] Missing Supabase Admin credentials');
+        return null;
+    }
+    return createClient(url, key);
+};
 
 // Helper to load data
 const loadData = async () => {
@@ -35,9 +42,10 @@ const loadData = async () => {
     
     // Memory: Fetch from Supabase (with graceful fallback)
     let memory = [];
-    if (supabase) {
+    const client = getSupabase();
+    if (client) {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await client
                 .from('ai_memory')
                 .select('*')
                 .order('created_at', { ascending: false })
@@ -70,30 +78,30 @@ const shouldStoreMemory = (text: string) => {
   if (!text || text.trim().length < 6) return false;
   const t = normalizeText(text);
   
-  // Keywords relevantes del equipo/torneo que SÍ queremos guardar
+  // Keywords relevantes del equipo/torneo
   const relevantKeywords = [
     'alineacion','alineación','jugador','jugadores','partido','resultado','fortalezas','mejoras',
     'rating','portero','defensa','defensas','mediocampo','medio','delantero','convocatoria',
     'capitan','capitán','dt','director tecnico','director técnico','entrenamiento','táctica',
-    'tactica','formacion','formación','rival','proximo','próximo','torneo','fecha','horario'
+    'tactica','formacion','formación','rival','proximo','próximo','torneo','fecha','horario',
+    'puntos','tabla','reglas','reglamento','costo','tarjeta','amarilla','roja','leonardo','fernando',
+    'gregorio','jhon','alexander','julian','julio','henry','edgar','cesar','diego','duvan',
+    'manuel','yeison','vladimir','oscar','pedro','sergio','wilmer'
   ];
   
-  // Palabras que indican preguntas genéricas/irrelevantes que NO queremos guardar
   const irrelevantPatterns = [
     'hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'como estas', 'cómo estás',
     'gracias', 'ok', 'vale', 'bien', 'perfecto', 'entendido', 'test', 'prueba',
     'ayuda', 'que puedes hacer', 'qué puedes hacer', 'quien eres', 'quién eres'
   ];
   
-  // Si contiene patrones irrelevantes y es muy corto, NO guardar
   const isIrrelevant = irrelevantPatterns.some(pattern => {
     const regex = new RegExp(`\\b${pattern}\\b`, 'i');
     return regex.test(t);
   });
   
-  if (isIrrelevant && text.trim().length < 30) return false;
+  if (isIrrelevant && text.trim().length < 40) return false;
   
-  // Solo guardar si contiene keywords relevantes
   return relevantKeywords.some(k => t.includes(k));
 };
 
@@ -115,17 +123,12 @@ const extractPlayers = (text: string, roster: any) => {
 };
 
 const addMemoryEntry = async (userText: string, assistantText: string, roster: any) => {
-  console.log('[Memory] Checking if should store. User text:', userText?.substring(0, 50));
-  console.log('[Memory] supabaseAdmin exists:', !!supabaseAdmin);
-  console.log('[Memory] shouldStore(user):', shouldStoreMemory(userText));
-  console.log('[Memory] shouldStore(assistant):', shouldStoreMemory(assistantText));
-  
-  // Store if EITHER user query OR AI response contains relevant keywords
+  const admin = getSupabaseAdmin();
   const shouldStore = shouldStoreMemory(userText) || shouldStoreMemory(assistantText);
   
-  if (!shouldStore || !supabaseAdmin) {
-    console.log('[Memory] SKIPPED - shouldStore:', shouldStore, ', hasAdmin:', !!supabaseAdmin);
-    return;
+  if (!shouldStore || !admin) {
+    console.log('[Memory] SKIPPED - shouldStore:', shouldStore, ', hasAdmin:', !!admin);
+    return { success: false, reason: !admin ? 'no_admin_client' : 'filtered' };
   }
   
   try {
@@ -135,15 +138,16 @@ const addMemoryEntry = async (userText: string, assistantText: string, roster: a
       players: extractPlayers(userText + ' ' + assistantText, roster)
     };
 
-    console.log('[Memory] Inserting entry:', JSON.stringify(entry).substring(0, 100));
-    const { error } = await supabaseAdmin.from('ai_memory').insert([entry]);
+    const { error } = await admin.from('ai_memory').insert([entry]);
     if (error) {
       console.error('[Supabase] Memory insert failed:', error.message);
-    } else {
-      console.log('[Memory] ✅ Successfully saved to Supabase');
+      return { success: false, reason: error.message };
     }
+    console.log('[Memory] ✅ Saved to Supabase');
+    return { success: true };
   } catch (dbError: any) {
     console.error('[Supabase] Exception during memory insert:', dbError.message);
+    return { success: false, reason: dbError.message };
   }
 };
 
@@ -202,8 +206,13 @@ export const POST: APIRoute = async ({ request }) => {
         const finalText = extraNote ? `${text}
 
 ${extraNote}` : text;
-        await addMemoryEntry(lastUserMessage, text, teamData?.roster);
-        return new Response(JSON.stringify({ content: finalText, modelUsed: modelLabel }), { status: 200 });
+        const memoryResult = await addMemoryEntry(lastUserMessage, text, teamData?.roster);
+        return new Response(JSON.stringify({ 
+          content: finalText, 
+          modelUsed: modelLabel,
+          memorySaved: memoryResult?.success || false,
+          memoryNote: memoryResult?.reason || 'OK'
+        }), { status: 200 });
     };
 
     // 1. Define Keys & Helpers
