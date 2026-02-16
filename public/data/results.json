@@ -20,6 +20,28 @@
                 "Mejorar la condición física para poder competir mejor(Todos)",
                 "Organización de la rotación para que todos jueguen pero no se pierda el orden del equipo(Todos)"
             ]
-        }
+        },
+        {
+            "id": 2,
+            "date": "2026-02-15",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "CDA Lebrija",
+            "homeScore": 3,
+            "awayScore": 4,
+            "status": "Finalizado",
+            "strengths": [
+                "Se remonto un resultado adverso",
+                "Se mejoro la definicion",
+                "A pesar de recibir mas goles, se mejoraron aspectos defensivos",
+                "Se mejoro la rotacion y todos jugaron"
+            ],
+            "improvements": [
+                "Continuar mejorando el orden defensivo y marca",
+                "Continuar mejorando la definicion",
+                "Salida con el balon (Carlos Daniel)",
+                "Mantener el marcador , si remontaron no pueden dejarse hacer mas goles",
+                "Mejorar la condición física para poder competir mejor(Todos)",
+                "Protestar mas con respecto a las decisiones arbitrales , con respeto pero no dejar que el arbitro influya en el partido"   ] 
+            }
     ]
 }

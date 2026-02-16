@@ -12,7 +12,7 @@
       "name": "Gregorio",
       "number": "17",
       "veteran": true,
-      "rating": 3.8,
+      "rating": 3.9,
       "strengths": ["Visión de juego", "Equilibrio"],
       "improvements": ["Estado físico", "Constancia en el juego"]
     },
@@ -93,7 +93,7 @@
       "number": "3",
       "veteran": true,
       "rating": 3.3,
-      "strengths": ["Apoyo defensivo", "Orden táctico"],
+      "strengths": ["Apoyo defensivo"],
       "improvements": ["Técnica básica", "Intensidad en marca"]
     },
     "13": {
