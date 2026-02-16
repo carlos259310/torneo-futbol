@@ -42,7 +42,7 @@ function renderResults(matches) {
         
         card.innerHTML = `
             <div class="match-header">
-                <span class="match-date">${new Date(match.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span class="match-date">${new Date(match.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 <div class="scoreboard">
                     <span class="team">${match.homeTeam}</span>
                     <span class="score">${match.homeScore}</span>
