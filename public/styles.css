@@ -374,8 +374,11 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 }
 
 .player-badge-mini {
-    background: var(--text-main); color: white; width: 24px; height: 24px; border-radius: 50%;
+    background: #1e293b; color: white; width: 24px; height: 24px; border-radius: 50%;
     font-size: 0.7rem; font-weight: 700; display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+}
+.dark-mode .player-badge-mini {
+    background: var(--primary);
 }
 .convocado-info { flex: 1; overflow: hidden; }
 .convocado-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
@@ -746,23 +749,20 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
 .dark-mode .custom-modal-header h3 { color: white; }
 .dark-mode .custom-modal-body { color: #cbd5e1; }
 .dark-mode .btn-cancel { background: #1e293b; border-color: #334155; color: #94a3b8; }
-.dark-mode .btn-cancel:hover { background: #334155; color: white; }
-
 .dark-mode .team-rules { background: #1e293b; border-color: #334155; }
 .dark-mode .team-rules-list li { color: #cbd5e1; }
-.dark-mode .team-rules-list li i { color: #60a5fa; } /* Brighter blue for dark mode */
+.dark-mode .team-rules-list li i { color: #60a5fa; }
 
 /* Fix: Make field numbers visible in dark mode */
-.dark-mode .field-slot.occupied-slot .player-field-number {
-    background: white; 
-    color: #0f172a !important; /* Force dark text on white background */
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
-    font-weight: 800;
+.dark-mode .player-field-number {
+    color: white !important;
 }
+
 .dark-mode .field-container {
-    background: #0f172a; /* Match body bg */
+    background: #0f172a;
     border-color: #334155;
 }
+
 .dark-mode .field-slot.occupied-slot {
    background: #1e293b; /* Dark background for the slot circle itself */
    /* border-color removed to keep position colors */

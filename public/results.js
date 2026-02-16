@@ -76,22 +76,20 @@ function renderResults(matches) {
         if (typeof activeResultsCard === 'undefined') window.activeResultsCard = null;
 
         card.onclick = () => {
-            // Close all other cards
+            const wasExpanded = card.classList.contains('expanded');
+            
+            // Close all cards first (including this one if it was open)
             document.querySelectorAll('.match-card').forEach(c => {
-                if (c !== card) {
-                    c.classList.remove('expanded');
-                    const txt = c.querySelector('.toggle-text');
-                    if (txt) txt.textContent = 'Ver detalles';
-                }
+                c.classList.remove('expanded');
+                const txt = c.querySelector('.toggle-text');
+                if (txt) txt.textContent = 'Ver detalles';
             });
 
-            const isExpanded = card.classList.toggle('expanded');
-            const toggleText = card.querySelector('.toggle-text');
-            
-            if (isExpanded) {
+            // If it wasn't expanded before, expand it now
+            if (!wasExpanded) {
+                card.classList.add('expanded');
+                const toggleText = card.querySelector('.toggle-text');
                 if (toggleText) toggleText.textContent = 'Ocultar';
-            } else {
-                if (toggleText) toggleText.textContent = 'Ver detalles';
             }
         };
 
