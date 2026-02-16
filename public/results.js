@@ -76,21 +76,21 @@ function renderResults(matches) {
         if (typeof activeResultsCard === 'undefined') window.activeResultsCard = null;
 
         card.onclick = () => {
-             // Optimization: Use a variable instead of querySelectorAll
-            if (window.activeResultsCard && window.activeResultsCard !== card) {
-                window.activeResultsCard.classList.remove('expanded');
-                const prevTxt = window.activeResultsCard.querySelector('.toggle-text');
-                if (prevTxt) prevTxt.textContent = 'Ver detalles';
-            }
+            // Close all other cards
+            document.querySelectorAll('.match-card').forEach(c => {
+                if (c !== card) {
+                    c.classList.remove('expanded');
+                    const txt = c.querySelector('.toggle-text');
+                    if (txt) txt.textContent = 'Ver detalles';
+                }
+            });
 
             const isExpanded = card.classList.toggle('expanded');
             const toggleText = card.querySelector('.toggle-text');
             
             if (isExpanded) {
-                window.activeResultsCard = card;
                 if (toggleText) toggleText.textContent = 'Ocultar';
             } else {
-                window.activeResultsCard = null;
                 if (toggleText) toggleText.textContent = 'Ver detalles';
             }
         };
