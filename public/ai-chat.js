@@ -57,12 +57,68 @@ class AIChat {
             // Minimal fallback for local dev
             this.apiKey = localStorage.getItem('ai_api_key') || '';
             this.provider = localStorage.getItem('ai_provider') || 'groq';
-            this.model = 'llama-3.3-70b-versatile';
+            this.model = localStorage.getItem('ai_model') || 'llama-3.3-70b-versatile'; // Load model from localStorage
         }
 
         // Apply to modal fields
         if (document.getElementById('ai-api-key')) document.getElementById('ai-api-key').value = this.apiKey;
-        if (document.getElementById('ai-provider')) document.getElementById('ai-provider').value = this.provider;
+        
+        const providerSelect = document.getElementById('ai-provider');
+        if (providerSelect) {
+            providerSelect.value = this.provider;
+            providerSelect.onchange = () => this.updateModelSelector();
+        }
+        
+        this.updateModelSelector();
+    }
+
+    updateModelSelector() {
+        const provider = document.getElementById('ai-provider').value;
+        const modelSelect = document.getElementById('ai-model');
+        if (!modelSelect) return;
+
+        const models = {
+            'gemini': [
+                { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Gratis)' },
+                { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
+                { id: 'gemini-2.0-flash-exp', name: 'Gemini 2.0 Flash' }
+            ],
+            'deepseek': [
+                { id: 'deepseek-chat', name: 'DeepSeek Chat (V3)' },
+                { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner (R1)' }
+            ],
+            'groq': [
+                { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Gratis)' },
+                { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B (Gratis)' }
+            ],
+            'ollama': [
+                { id: 'llama3', name: 'Llama 3 (Local)' },
+                { id: 'mistral', name: 'Mistral (Local)' }
+            ]
+        };
+
+        modelSelect.innerHTML = '';
+        (models[provider] || []).forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = m.name;
+            modelSelect.appendChild(opt);
+        });
+
+        // Restore saved model if it belongs to this provider
+        const savedModel = localStorage.getItem('ai_model');
+        if (savedModel && models[provider]?.some(m => m.id === savedModel)) {
+            modelSelect.value = savedModel;
+            this.model = savedModel;
+        } else if (models[provider]?.length > 0) {
+            // If no saved model or saved model not in current provider's list,
+            // default to the first model for the current provider.
+            modelSelect.value = models[provider][0].id;
+            this.model = models[provider][0].id;
+        } else {
+            // No models available for this provider
+            this.model = '';
+        }
     }
 
     toggleChat(show) {
@@ -88,22 +144,22 @@ class AIChat {
     saveConfig() {
         const key = document.getElementById('ai-api-key').value.trim();
         const provider = document.getElementById('ai-provider').value;
+        const model = document.getElementById('ai-model').value;
         
-        if (!key) {
-            alert('Por favor ingresa una API Key válida.');
-            return;
-        }
-
         this.apiKey = key;
         this.provider = provider;
+        this.model = model;
+
         localStorage.setItem('ai_api_key', key);
         localStorage.setItem('ai_provider', provider);
+        localStorage.setItem('ai_model', model);
         
         this.toggleConfig(false);
-        this.addMessage('assistant', '¡Configuración guardada! Ahora puedes hacerme preguntas sobre tu equipo.');
+        const keyMsg = key ? '(usando tu API Key)' : '(usando configuración del servidor)';
+        this.addMessage('assistant', `¡Configuración guardada! Usando **${provider}** con el modelo **${model}** ${keyMsg}.`, true);
     }
 
-    addMessage(role, text) {
+    addMessage(role, text, skipHistory = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${role}`;
         if (role === 'assistant') {
@@ -115,11 +171,13 @@ class AIChat {
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
         
         // Store in history
-        this.messages.push({ role, content: text });
-        
-        // Pruning: Keep only last N messages to save tokens
-        if (this.messages.length > this.maxHistory) {
-            this.messages = this.messages.slice(-this.maxHistory);
+        if (!skipHistory) {
+            this.messages.push({ role, content: text });
+            
+            // Pruning: Keep only last N messages to save tokens
+            if (this.messages.length > this.maxHistory) {
+                this.messages = this.messages.slice(-this.maxHistory);
+            }
         }
     }
 
@@ -148,7 +206,7 @@ class AIChat {
             }
         } catch (error) {
             this.removeTypingIndicator();
-            this.addMessage('assistant', `❌ Error: ${error.message}. Por favor verifica la consola (F12) para más detalles.`);
+            this.addMessage('assistant', `❌ Error: ${error.message}. Por favor verifica la consola (F12) para más detalles.`, true);
             console.error('AI Error Detailed:', error);
         } finally {
             this.isTyping = false;
@@ -212,8 +270,7 @@ REGLAS:
         // Send full history + new message to server
         const messages = [
             { role: 'system', content: this.getSystemPrompt() },
-            ...this.messages,
-            { role: 'user', content: userText }
+            ...this.messages
         ];
 
         const provider = this.provider || 'gemini'; // 'gemini' or 'ollama'
@@ -225,7 +282,8 @@ REGLAS:
                 body: JSON.stringify({
                     messages: messages,
                     provider: provider,
-                    model: this.model
+                    model: this.model,
+                    apiKey: this.apiKey
                 })
             });
 

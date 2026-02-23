@@ -8,6 +8,9 @@
             "homeScore": 1,
             "awayScore": 2,
             "status": "Finalizado",
+            "scorers": [
+                { "playerId": "8", "goals": 1 }
+            ],
             "strengths": [
                 "Buena Marca durante casi todo el partido",
                 "Al final se llego varias veces al arco rival",
@@ -19,6 +22,60 @@
                 "Marcar con menos fuerza para evitar faltas innecesarias(Carlos)",
                 "Mejorar la condición física para poder competir mejor(Todos)",
                 "Organización de la rotación para que todos jueguen pero no se pierda el orden del equipo(Todos)"
+            ]
+        },
+        {
+            "id": 2,
+            "date": "2026-02-15",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "CDA Lebrija",
+            "homeScore": 3,
+            "awayScore": 4,
+            "status": "Finalizado",
+            "scorers": [
+                { "playerId": "7", "goals": 3 }
+            ],
+            "strengths": [
+                "Se remonto un resultado adverso",
+                "Se mejoro la definicion",
+                "A pesar de recibir mas goles, se mejoraron aspectos defensivos",
+                "Se mejoro la rotacion y todos jugaron"
+            ],
+            "improvements": [
+                "Continuar mejorando el orden defensivo y marca",
+                "Continuar mejorando la definicion",
+                "Salida con el balon (Carlos Daniel)",
+                "Mantener el marcador , si remontaron no pueden dejarse hacer mas goles",
+                "Mejorar la condición física para poder competir mejor(Todos)",
+                "Protestar mas con respecto a las decisiones arbitrales , con respeto pero no dejar que el arbitro influya en el partido"
+            ]
+        },
+        {
+            "id": 3,
+            "date": "2026-02-15",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "Auto Girón",
+            "homeScore": 3,
+            "awayScore": 1,
+            "status": "Finalizado",
+            "scorers": [
+                { "playerId": "8", "goals": 2 },
+                { "playerId": "13", "goals": 1 }
+            ],
+            "strengths": [
+                "Se mantuvo el orden defensivo durante casi todo el partido",
+                "Se mejoro la definicion",
+                "Todos los que entraron corrieron y aportaron al equipo",
+                "Todos jugaron y rotaron",
+                "El arquero tuvo una gran actuacion con voz de mando y atajando varias opciones claras de gol",
+                "Los delanteros estuvieron bien ubicados para hacer los goles Jhon y Juan Sena",
+                "Javier Arriba supo aguantar el balon al final del partido"
+            ],
+            "improvements": [
+                "Por momentos sobretodo al principio se perdio el orden defensivo y se concedieron opciones claras de gol",
+                "Continuar mejorando la definicion ya que se fallaron opciones claras de gol para el 4-1",
+                "Por momentos se dejaron provocar por los jugadores rivales(Cristian y Carlos Daniel) y pudo generar amarillas o faltas en contra",
+                "Mejorar la condición física para poder competir mejor(Todos)"
             ]
         }
     ]

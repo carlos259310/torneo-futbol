@@ -225,7 +225,6 @@ ${extraNote}` : text;
         if (!gKey) throw new Error("Missing GROQ_API_KEY");
         
         const groq = new Groq({ apiKey: gKey });
-        // Use confirmed working model
         const finalModel = "llama-3.3-70b-versatile"; 
         modelUsed = finalModel;
         
@@ -236,10 +235,26 @@ ${extraNote}` : text;
         return completion.choices[0]?.message?.content || "";
     };
 
+    // Helper: DeepSeek
+    const runDeepSeek = async (msgs: any[], userKey?: string) => {
+        const dsKey = userKey || import.meta.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY;
+        if (!dsKey) throw new Error("Missing DEEPSEEK_API_KEY");
+        
+        const openai = new Groq({ apiKey: dsKey, baseURL: 'https://api.deepseek.com' }); 
+        const finalModel = model || "deepseek-chat";
+        modelUsed = finalModel;
+        
+        // @ts-ignore
+        const completion = await openai.chat.completions.create({
+            messages: msgs,
+            model: finalModel,
+        });
+        return completion.choices[0]?.message?.content || "";
+    };
+
     // Helper: Gemini
     const runGemini = async (modelName: string) => {
         if (!geminiKey) throw new Error("No Gemini Key");
-        // @ts-ignore
         const genAI = new GoogleGenerativeAI(geminiKey);
         modelUsed = modelName;
         
@@ -248,28 +263,48 @@ ${extraNote}` : text;
             systemInstruction: systemContext,
         });
 
-        // Convert history for Gemini (strict user/model roles)
         const conversation = messages.filter((m: any) => m.role !== 'system').map((m: any) => ({
             role: m.role === 'assistant' ? 'model' : 'user',
             parts: [{ text: m.content }]
         }));
 
-        // Start chat with history
-        const chat = geminiModel.startChat({ history: conversation.slice(0, -1) });
-        const lastMessage = conversation[conversation.length - 1].parts[0].text;
-        const result = await chat.sendMessage(lastMessage);
-        return result.response.text();
+        // Gemini history MUST start with 'user' role
+        let history = conversation.length > 0 ? conversation.slice(0, -1) : [];
+        const firstUserIndex = history.findIndex((m: {role: string, parts: {text: string}[]}) => m.role === 'user');
+        
+        if (firstUserIndex === -1 && history.length > 0) {
+            console.log('[Gemini] History starts with model, clearing history to avoid error');
+            history = [];
+        } else if (firstUserIndex > 0) {
+            console.log(`[Gemini] Slicing history from index ${firstUserIndex} to find first user message`);
+            history = history.slice(firstUserIndex);
+        }
+
+        const chat = geminiModel.startChat({ history });
+        
+        const lastMessage = conversation.length > 0 
+            ? conversation[conversation.length - 1].parts[0].text 
+            : body.messages[body.messages.length - 1].content;
+
+        try {
+            console.log(`[Gemini] Sending message to ${modelName}...`);
+            const result = await chat.sendMessage(lastMessage);
+            return result.response.text();
+        } catch (sendError: any) {
+            console.error(`[Gemini] Send error (${modelName}):`, sendError.message);
+            throw sendError;
+        }
     };
 
-    // ... (Ollama / Groq handlers remain same)
-
-    // 3. Gemini Handler
-    // ...
-
-    // 3. Provider routing
+    // Provider routing
     if (requestedProvider === 'groq') {
         const text = await runGroq(refinedMessages, apiKey);
         return await respond(text, `Groq (${modelUsed})`);
+    }
+
+    if (requestedProvider === 'deepseek') {
+        const text = await runDeepSeek(refinedMessages, apiKey);
+        return await respond(text, `DeepSeek (${modelUsed})`);
     }
 
     // Default to Gemini with Groq fallback
@@ -278,9 +313,10 @@ ${extraNote}` : text;
 
         const geminiCandidates = [
             (model && model.includes('gemini')) ? model : null,
+            'gemini-2.0-flash',
             'gemini-1.5-flash',
-            'gemini-1.5-pro',
-            'gemini-2.0-flash'
+            'gemini-2.0-flash-exp',
+            'gemini-1.5-pro'
         ].filter(Boolean) as string[];
 
         let lastError: any = null;
@@ -291,6 +327,12 @@ ${extraNote}` : text;
             } catch (e: any) {
                 lastError = e;
                 console.warn(`Gemini model failed (${useModel})`, e.message);
+                // If it's a 429 or quota error, try next
+                if (e.message?.includes('429') || e.message?.includes('quota')) continue;
+                // If it's a 404 model not found, try next
+                if (e.message?.includes('404')) continue;
+                // Otherwise throw to trigger Groq fallback
+                throw e;
             }
         }
 
@@ -299,7 +341,7 @@ ${extraNote}` : text;
         console.warn("All Gemini attempts failed. Trying Groq fallback...", geminiFinalError.message);
         try {
             const text = await runGroq(refinedMessages, apiKey);
-            return await respond(text, `Groq Fallback (${modelUsed})`, 'Respuesta generada via Groq por fallo en Gemini');
+            return await respond(text, `Groq Fallback (${modelUsed})`, 'Respuesta generada via Groq por fallo en Gemini: ' + geminiFinalError.message);
         } catch (groqError: any) {
             return new Response(JSON.stringify({ error: `All providers failed. Gemini: ${geminiFinalError.message}. Groq: ${groqError.message}` }), { status: 500 });
         }

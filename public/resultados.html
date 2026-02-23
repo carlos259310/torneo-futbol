@@ -8,49 +8,137 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css?v=3.0">
     <style>
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-        .match-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm); transition: all 0.3s ease; cursor: pointer; position: relative; }
-        .match-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+        /* ── Grid: align-items start fixes row-stretch bug ── */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+            align-items: start;
+        }
+
+        /* ── Match Card ── */
+        .match-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .match-win  { border-left: 4px solid #22c55e; }
+        .match-draw { border-left: 4px solid #facc15; }
+        .match-loss { border-left: 4px solid #ef4444; }
+
+        /* ── Match header ── */
+        .match-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0.25rem; }
         .match-header { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
-        .match-date { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .match-date { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+        /* Result badge */
+        .result-badge { font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 20px; letter-spacing: .05em; text-transform: uppercase; }
+        .win-badge  { background: rgba(34,197,94,0.15);  color: #16a34a; border: 1px solid #22c55e40; }
+        .draw-badge { background: rgba(250,204,21,0.15); color: #b45309; border: 1px solid #facc1540; }
+        .loss-badge { background: rgba(239,68,68,0.12);  color: #dc2626; border: 1px solid #ef444440; }
+
+        /* Scoreboard */
         .scoreboard { display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%; }
-        .team { flex: 1; text-align: center; font-weight: 700; font-size: 0.95rem; }
-        .score { background: #1e293b; color: white; font-size: 1.5rem; font-weight: 800; padding: 0.4rem 0.8rem; border-radius: 8px; min-width: 3rem; text-align: center; }
+        .team  { flex: 1; text-align: center; font-weight: 700; font-size: 0.92rem; }
+        .score { background: #1e293b; color: white; font-size: 1.5rem; font-weight: 800; padding: 0.4rem 0.8rem; border-radius: 8px; min-width: 3rem; text-align: center; transition: background .2s; }
+        .score-win  { background: linear-gradient(135deg,#16a34a,#15803d) !important; }
+        .score-loss { background: linear-gradient(135deg,#dc2626,#b91c1c) !important; }
         .dark-mode .score { background: var(--primary); }
-        .match-details { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease; border-top: 0 solid transparent; }
-        .match-card.expanded .match-details { max-height: 500px; opacity: 1; padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--border); }
+
+        /* Details */
+        .match-details { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; border-top: 0 solid transparent; }
+        .match-card.expanded .match-details { max-height: 2000px; opacity: 1; padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--border); }
         .detail-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; }
         .detail-item { font-size: 0.8rem; padding: 4px 8px 4px 20px; border-radius: 4px; background: var(--bg-body); position: relative; margin-bottom: 4px; }
         .detail-item::before { font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 6px; font-size: 0.7rem; }
-        .strength-item { border-left: 3px solid var(--success); }
-        .strength-item::before { content: "\f00c"; color: var(--success); }
+        .strength-item   { border-left: 3px solid var(--success); }
+        .strength-item::before   { content: "\f00c"; color: var(--success); }
         .improvement-item { border-left: 3px solid var(--danger); }
         .improvement-item::before { content: "\f06a"; color: var(--danger); }
-        
-        .details-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 1rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid var(--border);
-            color: var(--primary);
-            font-size: 0.85rem;
-            font-weight: 700;
-            transition: all 0.2s;
+
+        /* Scorer chips inside match details */
+        .match-scorers-inline { margin-bottom: 0.75rem; }
+        .scorer-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .scorer-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.78rem; font-weight: 700;
+            background: linear-gradient(135deg,rgba(34,197,94,0.15),rgba(16,185,129,0.2));
+            border: 1px solid rgba(34,197,94,0.35);
+            color: #15803d; padding: 3px 10px; border-radius: 20px;
+        }
+        .dark-mode .scorer-chip { color: #4ade80; }
+
+        /* Toggle */
+        .details-toggle { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); color: var(--primary); font-size: 0.85rem; font-weight: 700; transition: color .2s; }
+        .toggle-icon { transition: transform 0.3s ease; }
+        .match-card.expanded .toggle-icon { transform: rotate(180deg); }
+        .match-card:hover .details-toggle { color: var(--primary-dark); }
+
+        /* ── Win Confetti ── */
+        .confetti-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .confetti-dot {
+            position: absolute; top: -12px; border-radius: 50%;
+            animation: confetti-fall 2.5s ease-in forwards;
+        }
+        @keyframes confetti-fall {
+            0%   { transform: translateY(0) rotate(0deg);   opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translateY(160px) rotate(540deg); opacity: 0; }
         }
 
-        .toggle-icon {
-            transition: transform 0.3s ease;
+        /* ── Scorers Table (standalone below grid) ── */
+        #scorers-section {
+            display: none;
+            margin-top: 2.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(34,197,94,0.3);
+            box-shadow: 0 4px 20px rgba(34,197,94,0.1);
         }
-
-        .match-card.expanded .toggle-icon {
-            transform: rotate(180deg);
+        .scorers-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0.85rem 1.2rem;
+            background: linear-gradient(135deg,#16a34a,#15803d);
+            color: #fff;
+            font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
         }
-
-        .match-card:hover .details-toggle {
-            color: var(--primary-dark);
+        @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        .spin-ball { animation: spin-slow 4s linear infinite; display: inline-block; }
+        .scorers-list { padding: 0.5rem 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; background: var(--bg-card); }
+        .scorer-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.55rem 0.75rem; border-radius: 8px;
+            background: var(--bg-body); transition: background .2s, transform .15s;
+            border: 1px solid transparent;
+        }
+        .scorer-row:hover { background: rgba(34,197,94,0.07); border-color: rgba(34,197,94,0.2); transform: translateX(3px); }
+        .scorer-row[data-rank="0"] { background: rgba(250,204,21,0.08); border-color: rgba(250,204,21,0.3); }
+        .scorer-left  { display: flex; align-items: center; gap: 10px; }
+        .scorer-right { display: flex; align-items: center; gap: 8px; }
+        .scorer-medal { font-size: 1.1rem; min-width: 1.6rem; text-align: center; }
+        .scorer-info  { display: flex; flex-direction: column; gap: 1px; }
+        .scorer-fullname { font-size: 0.88rem; font-weight: 700; }
+        .scorer-meta  { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .scorer-rating { color: #b45309; font-weight: 600; }
+        .vet-badge {
+            font-size: 0.58rem; font-weight: 800; padding: 1px 5px;
+            background: linear-gradient(135deg,#7c3aed,#6d28d9);
+            color: #fff; border-radius: 20px; vertical-align: middle;
+        }
+        .scorer-balls { font-size: 0.9rem; letter-spacing: 1px; }
+        .scorer-count {
+            font-size: 0.7rem; font-weight: 700; color: #fff;
+            background: linear-gradient(135deg,#16a34a,#15803d);
+            padding: 3px 10px; border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(22,163,74,.35);
         }
     </style>
 </head>
@@ -67,14 +155,17 @@
             <div class="futsal-badge"><i class="fas fa-trophy"></i> TORNEO C.E.A</div>
             <h1>Resultados</h1>
         </header>
-        <main><div id="results-grid" class="results-grid"></div></main>
+        <main>
+            <div id="results-grid" class="results-grid"></div>
+            <div id="scorers-section"></div>
+        </main>
         <footer><p>Equipo de Fútbol 6 - Sistema de Gestión v2.0</p></footer>
     </div>
 
-    <!-- AI Chat Box -->
     <div id="ai-chat-container" class="ai-chat-container">
         <button id="ai-chat-toggle" class="ai-chat-toggle" title="Asistente de IA">
             <i class="fas fa-robot"></i>
+            <span class="chat-toggle-text">Chat IA</span>
         </button>
         <div id="ai-chat-window" class="ai-chat-window hidden">
             <div class="chat-header">
@@ -94,14 +185,13 @@
             </div>
             <div class="chat-input-area">
                 <textarea id="ai-chat-input" placeholder="Pregúntame algo..." rows="1"></textarea>
-                <button id="ai-chat-send"><i class="fas fa-paper-plane"></i></button>
+                <button id="ai-chat-send" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- API Config Modal -->
-    <div id="ai-config-modal" class="modal-overlay hidden">
-        <div class="modal-content config-modal">
+    <div id="ai-config-modal" class="ai-config-modal-overlay hidden">
+        <div class="ai-config-modal-content">
             <div class="modal-header">
                 <h3>Configuración de IA</h3>
                 <button class="modal-close" id="close-config-modal"><i class="fas fa-times"></i></button>
@@ -109,13 +199,20 @@
             <div class="modal-body">
                 <label for="ai-provider">Proveedor:</label>
                 <select id="ai-provider">
-                    <option value="openai">OpenAI (GPT-4o-mini)</option>
-                    <option value="gemini">Google Gemini (2.0 Flash)</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="deepseek">DeepSeek</option>
+                    <option value="groq">Groq (Llama 3.3)</option>
+                    <option value="ollama">Ollama (Local)</option>
                 </select>
                 
-                <label for="ai-api-key">API Key:</label>
-                <input type="password" id="ai-api-key" placeholder="Pega tu llave aquí...">
-                <p class="config-help">Tu llave se envía en cada petición y se guarda en data/config.js.</p>
+                <label for="ai-model">Modelo:</label>
+                <select id="ai-model">
+                    <!-- Dinámico -->
+                </select>
+                
+                <label for="ai-api-key">API Key (Opcional):</label>
+                <input type="password" id="ai-api-key" placeholder="Usar llave del servidor o pega la tuya...">
+                <p class="config-help">Si se deja vacío, usará la configuración del servidor.</p>
                 
                 <div class="modal-actions">
                     <button class="btn btn-blue" id="save-ai-config">Guardar Configuración</button>
@@ -124,8 +221,8 @@
         </div>
     </div>
 
-    <script src="ai-chat.js?v=3.0"></script>
-    <script src="results.js?v=3.0"></script>
+    <script src="ai-chat.js?v=3.1"></script>
+    <script src="results.js?v=3.1"></script>
     <script>
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
