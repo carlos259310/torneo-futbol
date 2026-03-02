@@ -4,7 +4,7 @@
       "name": "Fernando (Nuevo)",
       "number": "99",
       "veteran": false,
-      "rating": 4.2,
+      "rating": 4.3,
       "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"],
       "improvements": ["Salida con los pies", "A veces mide mal las salidas"]
     },
@@ -12,8 +12,8 @@
       "name": "Gregorio",
       "number": "17",
       "veteran": true,
-      "rating": 3.9,
-      "strengths": ["Visión de juego", "Equilibrio"],
+      "rating": 4.0,
+      "strengths": ["Visión de juego", "Equilibrio","Buena marca"],
       "improvements": ["Estado físico", "Constancia en el juego"]
     },
     "3": {
@@ -36,7 +36,7 @@
       "name": "Fernando (Señor)",
       "number": "7",
       "veteran": true,
-      "rating": 3.5,
+      "rating": 3.6,
       "strengths": ["Inteligencia táctica", "Liderazgo"],
       "improvements": ["Precisión en pases", "Estado físico"]
     },
@@ -60,7 +60,7 @@
       "name": "Jhon Vill",
       "number": "22",
       "veteran": false,
-      "rating": 4.2,
+      "rating": 4.3,
       "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"],
       "improvements": ["Definición", "Juego asociativo en ataque"]
     },
@@ -88,19 +88,11 @@
       "strengths": ["Marca intensa", "Recuperación de balón"],
       "improvements": ["Toma de decisiones", "Estado físico"]
     },
-    "12": {
-      "name": "Ingeniero John",
-      "number": "3",
-      "veteran": true,
-      "rating": 3.3,
-      "strengths": ["Apoyo defensivo"],
-      "improvements": ["Técnica básica", "Intensidad en marca"]
-    },
     "13": {
       "name": "Juan (SENA)",
       "number": "23",
       "veteran": false,
-      "rating": 3.6,
+      "rating": 3.7,
       "strengths": ["Desmarque", "Juego en corto"],
       "improvements": ["Definición", "Control de balón", "Compromiso en marca"]
     }
