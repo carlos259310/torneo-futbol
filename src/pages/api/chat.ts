@@ -40,69 +40,91 @@ const loadData = async () => {
     const results = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf-8')) : (resultsSeed || {});
     const tournament = fs.existsSync(tournamentPath) ? JSON.parse(fs.readFileSync(tournamentPath, 'utf-8')) : (tournamentInfo || {});
     
-    // Memory: Fetch from Supabase (with graceful fallback)
-    let memory = [];
-    const client = getSupabase();
-    if (client) {
-        try {
-            const { data, error } = await client
-                .from('ai_memory')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
-            
-            if (error) {
-                console.error('[Supabase] Failed to fetch memory:', error.message);
-            } else {
-                memory = (data || []).reverse();
-            }
-        } catch (dbError: any) {
-            console.error('[Supabase] Exception during memory fetch:', dbError.message);
-        }
-    }
-    
-    return { roster, results, tournament, memory };
+    return { roster, results, tournament };
   } catch (e) {
     console.error("Error loading data:", e);
-    return { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {}, memory: [] };
+    return { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {} };
+  }
+};
+
+// Smart memory fetch: prioritizes entries mentioning players in the query,
+// falls back to most recent entries
+const fetchRelevantMemory = async (query: string, roster: any): Promise<any[]> => {
+  const client = getSupabase();
+  if (!client) return [];
+
+  try {
+    const players = extractPlayers(query, roster);
+
+    // If specific players mentioned → filter by those players first
+    if (players.length > 0) {
+      const { data, error } = await client
+        .from('ai_memory')
+        .select('*')
+        .overlaps('players', players)
+        .order('created_at', { ascending: false })
+        .limit(MEMORY_CONTEXT_LIMIT);
+
+      if (!error && data && data.length > 0) {
+        console.log(`[Memory] Smart fetch: ${data.length} entries for players: ${players.join(', ')}`);
+        return data.reverse();
+      }
+    }
+
+    // Fallback: most recent relevant entries
+    const { data, error } = await client
+      .from('ai_memory')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(MEMORY_CONTEXT_LIMIT);
+
+    if (error) {
+      console.error('[Supabase] Failed to fetch memory:', error.message);
+      return [];
+    }
+    return (data || []).reverse();
+  } catch (dbError: any) {
+    console.error('[Supabase] Exception during memory fetch:', dbError.message);
+    return [];
   }
 };
 
 const MEMORY_LIMIT = 200;
-const MEMORY_CONTEXT_LIMIT = 20;
-const MEMORY_MAX_CHARS = 280;
+const MEMORY_CONTEXT_LIMIT = 10;  // reduces tokens sent per request
+const MEMORY_MAX_CHARS = 200;
 
-const normalizeText = (s: string) => s.toLowerCase();
+// Normalize: lowercase + remove accents (fixes 'formación' → matches 'formacion')
+const normalizeText = (s: string) =>
+  s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+// Pre-normalized keywords (no accents) so they match normalizeText() output correctly
+const RELEVANT_KEYWORDS = [
+  'alineacion','jugador','jugadores','partido','resultado','fortalezas','mejoras',
+  'rating','portero','defensa','defensas','mediocampo','medio','delantero','convocatoria',
+  'capitan','dt','director tecnico','entrenamiento','tactica','formacion',
+  'rival','proximo','torneo','fecha','horario','puntos','tabla','reglas','reglamento',
+  'costo','tarjeta','amarilla','roja','gol','goles','anotador','arquero',
+  'leonardo','fernando','gregorio','jhon','alexander','julian','julio','henry','edgar',
+  'cesar','diego','duvan','manuel','yeison','vladimir','oscar','pedro','sergio','wilmer',
+  'javier','harold','carlos','fredual','juan'
+];
+
+const IRRELEVANT_PATTERNS = [
+  'hola','buenos dias','buenas tardes','buenas noches','como estas',
+  'gracias','ok','vale','bien','perfecto','entendido','test','prueba',
+  'ayuda','que puedes hacer','quien eres'
+];
 
 const shouldStoreMemory = (text: string) => {
   if (!text || text.trim().length < 6) return false;
-  const t = normalizeText(text);
-  
-  // Keywords relevantes del equipo/torneo
-  const relevantKeywords = [
-    'alineacion','alineación','jugador','jugadores','partido','resultado','fortalezas','mejoras',
-    'rating','portero','defensa','defensas','mediocampo','medio','delantero','convocatoria',
-    'capitan','capitán','dt','director tecnico','director técnico','entrenamiento','táctica',
-    'tactica','formacion','formación','rival','proximo','próximo','torneo','fecha','horario',
-    'puntos','tabla','reglas','reglamento','costo','tarjeta','amarilla','roja','leonardo','fernando',
-    'gregorio','jhon','alexander','julian','julio','henry','edgar','cesar','diego','duvan',
-    'manuel','yeison','vladimir','oscar','pedro','sergio','wilmer'
-  ];
-  
-  const irrelevantPatterns = [
-    'hola', 'buenos dias', 'buenas tardes', 'buenas noches', 'como estas', 'cómo estás',
-    'gracias', 'ok', 'vale', 'bien', 'perfecto', 'entendido', 'test', 'prueba',
-    'ayuda', 'que puedes hacer', 'qué puedes hacer', 'quien eres', 'quién eres'
-  ];
-  
-  const isIrrelevant = irrelevantPatterns.some(pattern => {
-    const regex = new RegExp(`\\b${pattern}\\b`, 'i');
-    return regex.test(t);
-  });
-  
+  const t = normalizeText(text);  // no accents, lowercase
+
+  // Short irrelevant greetings/acks → skip
+  const isIrrelevant = IRRELEVANT_PATTERNS.some(p => new RegExp(`\\b${p}\\b`).test(t));
   if (isIrrelevant && text.trim().length < 40) return false;
-  
-  return relevantKeywords.some(k => t.includes(k));
+
+  // Must contain at least one relevant keyword (all pre-normalized)
+  return RELEVANT_KEYWORDS.some(k => t.includes(k));
 };
 
 const trimForMemory = (text: string) => {
@@ -111,16 +133,26 @@ const trimForMemory = (text: string) => {
 };
 
 const extractPlayers = (text: string, roster: any) => {
-  if (!text || !roster || !roster.players) return [] as string[];
+  if (!text || !roster?.players) return [] as string[];
   const t = normalizeText(text);
   const names: string[] = [];
-  for (const id of Object.keys(roster.players)) {
-    const name = roster.players[id]?.name;
-    if (!name) continue;
-    if (t.includes(name.toLowerCase())) names.push(name);
+  for (const p of Object.values(roster.players) as any[]) {
+    if (!p?.name) continue;
+    const norm = normalizeText(p.name);
+    const firstName = norm.split(' ')[0];
+    // Match full normalized name OR first word (if long enough to avoid false positives)
+    if (t.includes(norm) || (firstName.length > 3 && t.includes(firstName))) {
+      names.push(p.name);
+    }
   }
   return Array.from(new Set(names));
 };
+
+// Compressed roster: only fields the AI needs to make decisions
+const buildRosterSummary = (roster: any) =>
+  Object.entries(roster?.players || {}).map(([id, p]: [string, any]) => ({
+    id, name: p.name, num: p.number, vet: p.veteran, rating: p.rating
+  }));
 
 const addMemoryEntry = async (userText: string, assistantText: string, roster: any) => {
   const admin = getSupabaseAdmin();
@@ -168,39 +200,29 @@ export const POST: APIRoute = async ({ request }) => {
     let { messages, provider, model, apiKey } = body;
     let modelUsed = model;
 
-    // Load Data Context
+    // Load Data + smart memory fetch after we know the user's question
     const teamData = await loadData();
-    const memoryContext = buildMemoryContext(teamData?.memory || []);
-    const systemContext = `
-    ROL: Eres el Asistente Técnico Inteligente (DT IA) del equipo "Tránsito de Girón" en el Torneo CEA Fútbol 6 (6ta Edición 2026).
-    OBJETIVO: Ayudar al DT a tomar decisiones basadas EXCLUSIVAMENTE en los datos del equipo y del torneo.
-    
-    DATOS DEL EQUIPO (NO INVENTES JUGADORES):
-    ${JSON.stringify(teamData?.roster || {}, null, 2)}
-    
-    RESULTADOS RECIENTES:
-    ${JSON.stringify(teamData?.results || {}, null, 2)}
-    
-    REGLAMENTO Y FIXTURE DEL TORNEO:
-    ${JSON.stringify(teamData?.tournament || {}, null, 2)}
-    ${memoryContext}
-    INSTRUCCIONES CLAVE:
-    1. Responde de forma técnica pero motivadora.
-    2. Usa los NOMBRES EXACTOS de los jugadores en el JSON.
-    3. ALINEACIONES: Cuando sugieras una alineación, SOLO lista Posición: Nombre. Hazlo simple y directo.
-    4. Futbol 6: 6 jugadores (incluye portero). Veterano de 40+ años obligatorio. Sustituciones ILIMITADAS.
-    5. Partidos: 2 tiempos de 20 minutos. Mínimo 4 jugadores en cancha.
-    6. Si preguntan sobre reglas, fixture, equipos rivales o costos de tarjetas, usa el REGLAMENTO DEL TORNEO.
-    7. Responde breve y claro.
-    `;
+    const lastUserMessage = [...messages].reverse().find((m: any) => m.role === 'user')?.content || '';
+    const memory = await fetchRelevantMemory(lastUserMessage, teamData?.roster);
+    const memoryContext = buildMemoryContext(memory);
+
+    // Compressed context: no pretty-print JSON, only essential roster fields → saves ~40% tokens
+    const systemContext = `ROL: Eres el Asistente Técnico (DT IA) de "Tránsito de Girón" en el Torneo CEA Fútbol 6 (2026).
+RESTRICCIÓN: Tu único tema es el torneo, el equipo Tránsito de Girón y sus jugadores. Si la pregunta no tiene ninguna relación con esto, responde amablemente: "Soy el asistente del equipo, solo puedo ayudarte con temas del torneo, partidos o jugadores. ¿Tienes alguna duda del equipo?"
+PLANTILLA:${JSON.stringify(buildRosterSummary(teamData?.roster))}
+RESULTADOS:${JSON.stringify((teamData?.results as any)?.matches || [])}
+TORNEO:${JSON.stringify(teamData?.tournament || {})}${memoryContext}
+REGLAS:
+1. Usa nombres EXACTOS del JSON. No inventes jugadores.
+2. Fútbol 6: 6 jugadores (portero incluido), veterano 40+ obligatorio, sustituciones ilimitadas.
+3. Partidos: 2×20 min. Mínimo 4 en cancha.
+4. Responde técnico, motivador, breve y claro.`;
 
     // Prepend System Message
     const refinedMessages = [
         { role: 'system', content: systemContext },
         ...messages.filter((m: any) => m.role !== 'system')
     ];
-
-    const lastUserMessage = [...messages].reverse().find((m: any) => m.role === 'user')?.content || '';
 
     const respond = async (text: string, modelLabel: string, extraNote?: string) => {
         const finalText = extraNote ? `${text}
@@ -261,6 +283,10 @@ ${extraNote}` : text;
         const geminiModel = genAI.getGenerativeModel({
             model: modelName,
             systemInstruction: systemContext,
+            generationConfig: {
+                maxOutputTokens: 800,
+                temperature: 0.7,
+            }
         });
 
         const conversation = messages.filter((m: any) => m.role !== 'system').map((m: any) => ({
@@ -311,12 +337,11 @@ ${extraNote}` : text;
     try {
         if (!geminiKey) throw new Error("No Gemini Key");
 
+        // Solo modelos confirmados disponibles con esta API key (gratuita)
         const geminiCandidates = [
             (model && model.includes('gemini')) ? model : null,
             'gemini-2.0-flash',
-            'gemini-1.5-flash',
-            'gemini-2.0-flash-exp',
-            'gemini-1.5-pro'
+            'gemini-2.0-flash-lite',
         ].filter(Boolean) as string[];
 
         let lastError: any = null;
@@ -341,7 +366,7 @@ ${extraNote}` : text;
         console.warn("All Gemini attempts failed. Trying Groq fallback...", geminiFinalError.message);
         try {
             const text = await runGroq(refinedMessages, apiKey);
-            return await respond(text, `Groq Fallback (${modelUsed})`, 'Respuesta generada via Groq por fallo en Gemini: ' + geminiFinalError.message);
+            return await respond(text, `Groq (${modelUsed})`);
         } catch (groqError: any) {
             return new Response(JSON.stringify({ error: `All providers failed. Gemini: ${geminiFinalError.message}. Groq: ${groqError.message}` }), { status: 500 });
         }

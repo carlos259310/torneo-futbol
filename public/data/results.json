@@ -9,7 +9,10 @@
             "awayScore": 2,
             "status": "Finalizado",
             "scorers": [
-                { "playerId": "8", "goals": 1 }
+                {
+                    "playerId": "8",
+                    "goals": 1
+                }
             ],
             "strengths": [
                 "Buena Marca durante casi todo el partido",
@@ -33,7 +36,10 @@
             "awayScore": 4,
             "status": "Finalizado",
             "scorers": [
-                { "playerId": "7", "goals": 3 }
+                {
+                    "playerId": "7",
+                    "goals": 3
+                }
             ],
             "strengths": [
                 "Se remonto un resultado adverso",
@@ -59,8 +65,14 @@
             "awayScore": 1,
             "status": "Finalizado",
             "scorers": [
-                { "playerId": "8", "goals": 2 },
-                { "playerId": "13", "goals": 1 }
+                {
+                    "playerId": "8",
+                    "goals": 2
+                },
+                {
+                    "playerId": "13",
+                    "goals": 1
+                }
             ],
             "strengths": [
                 "Se mantuvo el orden defensivo durante casi todo el partido",
@@ -76,6 +88,39 @@
                 "Continuar mejorando la definicion ya que se fallaron opciones claras de gol para el 4-1",
                 "Por momentos se dejaron provocar por los jugadores rivales(Cristian y Carlos Daniel) y pudo generar amarillas o faltas en contra",
                 "Mejorar la condición física para poder competir mejor(Todos)"
+            ]
+        },
+        {
+            "id": 4,
+            "date": "2026-03-01",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "Instructores",
+            "homeScore": 4,
+            "awayScore": 1,
+            "status": "Finalizado",
+            "scorers": [
+                {
+                    "playerId": "8",
+                    "goals": 2
+                },
+                {
+                    "playerId": "6",
+                    "goals": 2
+                }
+            ],
+            "strengths": [
+                "Defensivamente Carlos Daniel y Gregorio estuvieron muy bien en marca y recuperación de balón y juego aereo",
+                "En el segundo tiempo se mejoro la definición y se concretaron las opciones de gol",
+                "Se mantuvo el orden defensivo durante casi todo el partido",
+                "Todos los jugadores corrieron y aportaron al equipo",
+                "El arquero tuvo una gran actuacion con voz de mando  juego aéreo y atajando varias opciones claras de gol",
+                "A pesar de tener un solo cambio el equipo se mantuvo competitivo todo el partido"
+            ],
+            "improvements": [
+                "Por momentos sobretodo al principio se perdio el orden defensivo y se concedieron opciones claras de gol",
+                "Continuar mejorando la definicion ya que se fallaron muchas opciones en el primer tiempo",
+                "El gol del rival fue por un error defensivo de Carlos Daniel ,ya que subio en un corner y no bajo a tiempo para marcar al rival en la contra",
+                "Mejorar la condición física para poder competir mejor(Todos principlamente Juan que era el cambio y entraba un rato y pedia cambio de nuevo)"
             ]
         }
     ]
