@@ -4,7 +4,7 @@
       "name": "Fernando (Nuevo)",
       "number": "99",
       "veteran": false,
-      "rating": 4.2,
+      "rating": 4.5,
       "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"],
       "improvements": ["Salida con los pies", "A veces mide mal las salidas"]
     },
@@ -12,8 +12,8 @@
       "name": "Gregorio",
       "number": "17",
       "veteran": true,
-      "rating": 3.8,
-      "strengths": ["Visión de juego", "Equilibrio"],
+      "rating": 4.0,
+      "strengths": ["Visión de juego", "Equilibrio","Buena marca"],
       "improvements": ["Estado físico", "Constancia en el juego"]
     },
     "3": {
@@ -28,7 +28,7 @@
       "name": "Fredual Guevara",
       "number": "2",
       "veteran": false,
-      "rating": 3.6,
+      "rating": 3.8,
       "strengths": ["Juego asociativo", "Ubicación en ataque"],
       "improvements": ["Constancia en el juego", "Agresividad en marca"]
     },
@@ -36,7 +36,7 @@
       "name": "Fernando (Señor)",
       "number": "7",
       "veteran": true,
-      "rating": 3.5,
+      "rating": 3.6,
       "strengths": ["Inteligencia táctica", "Liderazgo"],
       "improvements": ["Precisión en pases", "Estado físico"]
     },
@@ -44,7 +44,7 @@
       "name": "Javier",
       "number": "27",
       "veteran": false,
-      "rating": 4.3,
+      "rating": 4.4,
       "strengths": ["Creatividad", "Pase filtrado", "Definición"],
       "improvements": ["Intensidad en marca", "Apoyo defensivo"]
     },
@@ -52,7 +52,7 @@
       "name": "Harold Charris",
       "number": "9",
       "veteran": false,
-      "rating": 4.5,
+      "rating": 4.4,
       "strengths": ["Liderazgo", "Organización", "Pase filtrado"],
       "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"]
     },
@@ -60,7 +60,7 @@
       "name": "Jhon Vill",
       "number": "22",
       "veteran": false,
-      "rating": 4.2,
+      "rating": 4.3,
       "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"],
       "improvements": ["Definición", "Juego asociativo en ataque"]
     },
@@ -88,19 +88,21 @@
       "strengths": ["Marca intensa", "Recuperación de balón"],
       "improvements": ["Toma de decisiones", "Estado físico"]
     },
+
     "12": {
-      "name": "Ingeniero John",
-      "number": "3",
+      "name": "Ronal",
+      "number": "19",
       "veteran": true,
-      "rating": 3.3,
-      "strengths": ["Apoyo defensivo", "Orden táctico"],
-      "improvements": ["Técnica básica", "Intensidad en marca"]
+      "rating": 3.9,
+      "strengths": ["Remate Fuerte media distancia","Buena definición", "Juego asociativo ofensivo"],
+      "improvements": ["Marca presion en salida", "Estado físico"]
     },
+
     "13": {
       "name": "Juan (SENA)",
       "number": "23",
       "veteran": false,
-      "rating": 3.6,
+      "rating": 3.7,
       "strengths": ["Desmarque", "Juego en corto"],
       "improvements": ["Definición", "Control de balón", "Compromiso en marca"]
     }
@@ -119,8 +121,8 @@
       { "id": "11", "priority": "medium-priority" },
       { "id": "4", "priority": "low-priority" },
       { "id": "5", "priority": "low-priority" },
-      { "id": "6", "priority": "low-priority" },
-      { "id": "12", "priority": "high-priority" }
+      { "id": "6", "priority": "low-priority" }
+
     ],
     "medio": [
       { "id": "7", "priority": "high-priority" },
@@ -129,14 +131,15 @@
       { "id": "9", "priority": "medium-priority" },
       { "id": "2", "priority": "medium-priority" },
       { "id": "3", "priority": "low-priority" },
-      { "id": "12", "priority": "medium-priority" },
+
       { "id": "13", "priority": "medium-priority" }
     ],
     "delanteros": [
       { "id": "10", "priority": "high-priority" },
       { "id": "8", "priority": "medium-priority" },
       { "id": "7", "priority": "low-priority" },
-      { "id": "13", "priority": "high-priority" }
+      { "id": "13", "priority": "high-priority" },
+         { "id": "12", "priority": "high-priority" }
     ]
   },
   "captains": [

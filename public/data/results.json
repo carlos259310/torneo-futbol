@@ -123,5 +123,40 @@
                 "Mejorar la condición física para competir con más intensidad. En especial Juan, quien entraba como cambio y pedía salir nuevamente al poco tiempo."
             ]
         }
+        ,
+        {
+            "id": 5,
+            "date": "2026-03-15",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "Gestoria Bga",
+            "homeScore": 2,
+            "awayScore": 1,
+            "status": "Finalizado",
+            "scorers": [
+                {
+                    "playerId": "4",
+                    "goals": 1
+                },
+                {
+                    "playerId": "10",
+                    "goals": 1
+                }
+            ],
+            "strengths": [
+                "Juan y Fredual estuvieron bien ubicados para marcar los goles.",
+                "Javier Hizo dos asistencias y junto a Harold aportarón con creacion de juego y tenencia de balon.",
+                "Todos los jugadores corrieron y aportaron al equipo.",
+                "El arquero tuvo una gran actuación, mostrando liderazgo, seguridad y atajando varias opciones claras de gol.",
+                "El equipo mostró resistencia y compromiso en el campo a pesar de los momentos adversos.",
+                "Carlos Daniel tuvo una buena actuación defensiva con buena marca y recuperación de balón."
+            ],
+            "improvements": [
+                "Ante la ausencia de Gregoria por lesión el equipo se desordeno mucho defensivamente, eso genero el gol del rival.",
+                "Seguir trabajando en la definición, ya que se desperdiciaron muchas opciones de gol.",
+                "El equipo debe organizarse mejor con Ronal quien aunque no tuvo su mejor desempeño, aportó en el juego y tiene potencial en la ofensiva.",
+                "Mejorar la condición física para competir con más intensidad.",
+                "Carlos Daniel hizo una falta innesesaria por la que le sacaron amarilla. Es importante mantener la calma, el resto del partido si marco bien y sin faltas."
+            ]
+        }
     ]
 }

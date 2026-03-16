@@ -7,7 +7,10 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync-data": "node ./scripts/sync-data.js",
+    "prebuild": "node ./scripts/sync-data.js",
+    "predev": "node ./scripts/sync-data.js"
   },
   "dependencies": {
     "@astrojs/node": "^9.0.2",
