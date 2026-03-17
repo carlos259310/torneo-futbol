@@ -1,0 +1,71 @@
+{
+  "tournament": {
+    "name": "Torneo CEA Fútbol 6 - 6ta Edición 2026",
+    "format": "Fútbol 6 (6 jugadores por equipo incluyendo portero)",
+    "team": "Tránsito de Girón",
+    "team_number": 4,
+    "location": "Cancha La Picadely",
+    "schedule": "Domingos de 3pm a 8pm"
+  },
+  "tournament_structure": {
+    "total_teams": 10,
+    "total_dates": 9,
+    "phase_1": "Todos contra todos (9 fechas)",
+    "phase_2": "Clasifican 5 ganadores y 3 perdedores con mejor ubicación. Luego sorteo para tercera, cuarta y quinta fase",
+    "teams": [
+      "1. CNT Principal",
+      "2. Gestorías BGA",
+      "3. Auto Aprender",
+      "4. Tránsito de Girón",
+      "5. Gestores",
+      "6. Instructores F.C",
+      "7. CMR Lebrija",
+      "8. CDA La 27 Tecnofull",
+      "9. Aprender",
+      "10. Auto Girón"
+    ]
+  },
+  "match_rules": {
+    "players_per_match": "6 vs 6",
+    "veteran_requirement": "Al menos 1 jugador veterano de 40 años cumplidos obligatorio",
+    "goalkeeper": "Portero libre de edad y labor",
+    "match_duration": "2 tiempos de 20 minutos",
+    "substitutions": "ILIMITADAS (jugadores pueden salir y ingresar de manera ilimitada)",
+    "minimum_players": "Mínimo 4 en cancha para iniciar partido",
+    "ball": "Balón #4"
+  },
+  "registration": {
+    "roster_modification": "Se puede modificar planilla hasta la tercera fecha",
+    "post_deadline": "Después no se pueden ingresar jugadores (solo por enfermedad o fuerza mayor)",
+    "uniform_requirement": "Todos los equipos deben estar completamente uniformados hasta la 3ra fecha. De lo contrario no podrá jugar",
+    "carnet_requirement": "Todos los jugadores deben tener el carnet sellado y laminado, de lo contrario no podrá hacer parte del juego"
+  },
+  "points_system": {
+    "win": 3,
+    "draw": 1,
+    "loss": 0,
+    "tiebreaker": [
+      "Diferencia de goles",
+      "Goles a favor",
+      "Enfrentamiento directo"
+    ]
+  },
+  "discipline": {
+    "yellow_card_cost": "$5,000",
+    "blue_card_cost": "$8,000",
+    "red_card_cost": "$12,000",
+    "red_card_suspension": "Toda tarjeta roja tiene suspensión de 1 fecha y podrá aumentar dependiendo de la gravedad. Será revisada por el comité de delegados (no participan los delegados de los equipos implicados)",
+    "two_walkover_penalty": "Equipo que pierda dos partidos por W.O quedará expulsado del torneo",
+    "walkover_arbitration": "Equipo que pierda por W.O deberá cancelar para la siguiente fecha el valor del arbitraje",
+    "protests": "Solo el capitán puede reclamar al árbitro"
+  },
+  "arbitration": {
+    "cost": "$55,000 pesos por equipo después de las 6pm",
+    "after_6pm": "$60,000 pesos",
+    "includes": "Cancha, árbitro, plantillero, balón y petos"
+  },
+  "special_rules": {
+    "holiday_schedule": "En puentes festivos no se programará fecha, en caso de necesidad de aplazar un partido deberá hacerse con una semana de anticipación",
+    "punctuality": "Llegada tardía de más de 10 minutos = partido perdido por W.O."
+  }
+}

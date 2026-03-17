@@ -3,377 +3,357 @@ export const prerender = false;
 import fs from 'node:fs';
 import path from 'node:path';
 import type { APIRoute } from 'astro';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import Groq from 'groq-sdk';
 import { createClient } from '@supabase/supabase-js';
-import rosterSeed from '../../data/roster.json';
-import resultsSeed from '../../data/results.json';
+import { GoogleGenAI } from '@google/genai';
+import rosterSeed     from '../../data/roster.json';
+import resultsSeed    from '../../data/results.json';
 import tournamentInfo from '../../data/tournament_info.json';
 
-// Helper to get Supabase clients lazily (important for Serverless/Vercel env vars)
+// ─── Config ───────────────────────────────────────────────────────────────────
+const DEFAULT_MODEL  = 'openrouter/free';
+const MAX_TOKENS     = 300;
+const TEMPERATURE    = 0.3;
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const MEMORY_LIMIT   = 3;
+const MEMORY_CHARS   = 180;
+const MEMORY_TIMEOUT = 600;
+
+// Modelos de fallback en orden — si el primero falla, prueba el siguiente
+const FREE_MODELS = [
+  'openrouter/free',
+  'qwen/qwen-2.5-7b-instruct:free',
+  'meta-llama/llama-3.2-3b-instruct:free',
+];
+
+// ─── Supabase singleton ───────────────────────────────────────────────────────
+let _sb: ReturnType<typeof createClient> | null = null;
 const getSupabase = () => {
-    const url = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
-    const anon = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-    if (!url || !anon) return null;
-    return createClient(url, anon);
+  if (_sb) return _sb;
+  const url = import.meta.env.SUPABASE_URL      || process.env.SUPABASE_URL;
+  const key = import.meta.env.SUPABASE_KEY      || process.env.SUPABASE_KEY
+           || import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+           || import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  _sb = createClient(url, key);
+  return _sb;
 };
 
-const getSupabaseAdmin = () => {
-    const url = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
-    const key = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) {
-        console.warn('[Memory] Missing Supabase Admin credentials');
-        return null;
-    }
-    return createClient(url, key);
-};
-
-// Helper to load data
-const loadData = async () => {
+// ─── Data cache ───────────────────────────────────────────────────────────────
+let _data: { roster: any; results: any; tournament: any } | null = null;
+const getData = () => {
+  if (_data) return _data;
   try {
-    const dataDir = path.join(process.cwd(), 'public', 'data');
-    const rosterPath = path.join(dataDir, 'roster.json');
-    const resultsPath = path.join(dataDir, 'results.json');
-    const tournamentPath = path.join(dataDir, 'tournament_info.json');
-
-    const roster = fs.existsSync(rosterPath) ? JSON.parse(fs.readFileSync(rosterPath, 'utf-8')) : (rosterSeed || {});
-    const results = fs.existsSync(resultsPath) ? JSON.parse(fs.readFileSync(resultsPath, 'utf-8')) : (resultsSeed || {});
-    const tournament = fs.existsSync(tournamentPath) ? JSON.parse(fs.readFileSync(tournamentPath, 'utf-8')) : (tournamentInfo || {});
-    
-    return { roster, results, tournament };
-  } catch (e) {
-    console.error("Error loading data:", e);
-    return { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {} };
+    const dir  = path.join(process.cwd(), 'public', 'data');
+    const read = (f: string, seed: any) => {
+      const p = path.join(dir, f);
+      return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf-8')) : seed;
+    };
+    _data = {
+      roster:     read('roster.json',          rosterSeed     || {}),
+      results:    read('results.json',         resultsSeed    || {}),
+      tournament: read('tournament_info.json', tournamentInfo || {})
+    };
+  } catch {
+    _data = { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {} };
   }
+  return _data;
 };
 
-// Smart memory fetch: prioritizes entries mentioning players in the query,
-// falls back to most recent entries
-const fetchRelevantMemory = async (query: string, roster: any): Promise<any[]> => {
-  const client = getSupabase();
-  if (!client) return [];
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const normalize  = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const trimText   = (s: string, max = MEMORY_CHARS) => s.replace(/\s+/g, ' ').trim().slice(0, max);
 
-  try {
-    const players = extractPlayers(query, roster);
-
-    // If specific players mentioned → filter by those players first
-    if (players.length > 0) {
-      const { data, error } = await client
-        .from('ai_memory')
-        .select('*')
-        .overlaps('players', players)
-        .order('created_at', { ascending: false })
-        .limit(MEMORY_CONTEXT_LIMIT);
-
-      if (!error && data && data.length > 0) {
-        console.log(`[Memory] Smart fetch: ${data.length} entries for players: ${players.join(', ')}`);
-        return data.reverse();
-      }
-    }
-
-    // Fallback: most recent relevant entries
-    const { data, error } = await client
-      .from('ai_memory')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(MEMORY_CONTEXT_LIMIT);
-
-    if (error) {
-      console.error('[Supabase] Failed to fetch memory:', error.message);
-      return [];
-    }
-    return (data || []).reverse();
-  } catch (dbError: any) {
-    console.error('[Supabase] Exception during memory fetch:', dbError.message);
-    return [];
-  }
-};
-
-const MEMORY_LIMIT = 200;
-const MEMORY_CONTEXT_LIMIT = 10;  // reduces tokens sent per request
-const MEMORY_MAX_CHARS = 200;
-
-// Normalize: lowercase + remove accents (fixes 'formación' → matches 'formacion')
-const normalizeText = (s: string) =>
-  s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-// Pre-normalized keywords (no accents) so they match normalizeText() output correctly
-const RELEVANT_KEYWORDS = [
-  'alineacion','jugador','jugadores','partido','resultado','fortalezas','mejoras',
-  'rating','portero','defensa','defensas','mediocampo','medio','delantero','convocatoria',
-  'capitan','dt','director tecnico','entrenamiento','tactica','formacion',
-  'rival','proximo','torneo','fecha','horario','puntos','tabla','reglas','reglamento',
-  'costo','tarjeta','amarilla','roja','gol','goles','anotador','arquero',
-  'leonardo','fernando','gregorio','jhon','alexander','julian','julio','henry','edgar',
-  'cesar','diego','duvan','manuel','yeison','vladimir','oscar','pedro','sergio','wilmer',
-  'javier','harold','carlos','fredual','juan'
-];
-
-const IRRELEVANT_PATTERNS = [
-  'hola','buenos dias','buenas tardes','buenas noches','como estas',
-  'gracias','ok','vale','bien','perfecto','entendido','test','prueba',
-  'ayuda','que puedes hacer','quien eres'
-];
-
-const shouldStoreMemory = (text: string) => {
-  if (!text || text.trim().length < 6) return false;
-  const t = normalizeText(text);  // no accents, lowercase
-
-  // Short irrelevant greetings/acks → skip
-  const isIrrelevant = IRRELEVANT_PATTERNS.some(p => new RegExp(`\\b${p}\\b`).test(t));
-  if (isIrrelevant && text.trim().length < 40) return false;
-
-  // Must contain at least one relevant keyword (all pre-normalized)
-  return RELEVANT_KEYWORDS.some(k => t.includes(k));
-};
-
-const trimForMemory = (text: string) => {
-  const cleaned = text.replace(/\s+/g, ' ').trim();
-  return cleaned.length > MEMORY_MAX_CHARS ? cleaned.slice(0, MEMORY_MAX_CHARS) + '...' : cleaned;
-};
-
-const extractPlayers = (text: string, roster: any) => {
-  if (!text || !roster?.players) return [] as string[];
-  const t = normalizeText(text);
-  const names: string[] = [];
+const extractPlayers = (text: string, roster: any): string[] => {
+  if (!text || !roster?.players) return [];
+  const t = normalize(text);
+  const found = new Set<string>();
   for (const p of Object.values(roster.players) as any[]) {
     if (!p?.name) continue;
-    const norm = normalizeText(p.name);
-    const firstName = norm.split(' ')[0];
-    // Match full normalized name OR first word (if long enough to avoid false positives)
-    if (t.includes(norm) || (firstName.length > 3 && t.includes(firstName))) {
-      names.push(p.name);
-    }
+    const norm = normalize(p.name);
+    const first = norm.split(' ')[0];
+    if (t.includes(norm) || (first.length > 3 && t.includes(first))) found.add(p.name);
   }
-  return Array.from(new Set(names));
+  return [...found];
 };
 
-// Compressed roster: only fields the AI needs to make decisions
-const buildRosterSummary = (roster: any) =>
-  Object.entries(roster?.players || {}).map(([id, p]: [string, any]) => ({
-    id, name: p.name, num: p.number, vet: p.veteran, rating: p.rating
+const KEYWORDS = ['jugador','partido','resultado','rating','portero','defensa','mediocampo',
+  'delantero','convocatoria','tactica','formacion','rival','torneo','gol','tarjeta',
+  'alineacion','veterano','capitan','fortaleza','mejora','arquero',
+  'leonardo','fernando','gregorio','jhon','alexander','julian','julio','henry','edgar',
+  'cesar','diego','duvan','manuel','yeison','vladimir','oscar','pedro','sergio','wilmer',
+  'javier','harold','carlos','fredual','juan'];
+const SKIP = ['hola','buenos','gracias','ok','bien','perfecto','entendido','test','prueba'];
+
+const isRelevant = (text: string) => {
+  if (!text || text.trim().length < 6) return false;
+  const t = normalize(text);
+  if (SKIP.some(k => t.includes(k)) && text.trim().length < 40) return false;
+  return KEYWORDS.some(k => t.includes(k));
+};
+
+// ─── Memoria Supabase ─────────────────────────────────────────────────────────
+const fetchMemory = async (query: string, roster: any): Promise<string> => {
+  if (!isRelevant(query)) return '';
+  const sb = getSupabase();
+  if (!sb) return '';
+  try {
+    const players = extractPlayers(query, roster);
+    const base    = sb.from('ai_memory').select('user_query,ai_response');
+    const q       = players.length
+      ? base.overlaps('players', players).order('created_at', { ascending: false }).limit(MEMORY_LIMIT)
+      : base.order('created_at', { ascending: false }).limit(MEMORY_LIMIT);
+
+    const { data } = await Promise.race([
+      q,
+      new Promise<any>(r => setTimeout(() => r({ data: null }), MEMORY_TIMEOUT))
+    ]);
+
+    if (!data?.length) return '';
+    const lines = [...data].reverse().map((m: any) => `P:${m.user_query} R:${m.ai_response}`);
+    return `\nCONTEXTO PREVIO:\n${lines.join('\n')}`;
+  } catch { return ''; }
+};
+
+const saveMemory = (userText: string, aiText: string, roster: any) => {
+  if (!isRelevant(userText) && !isRelevant(aiText)) return;
+  const sb = getSupabase();
+  if (!sb) return;
+  sb.from('ai_memory').insert([{
+    user_query:  trimText(userText),
+    ai_response: trimText(aiText),
+    players:     extractPlayers(`${userText} ${aiText}`, roster)
+  }]).then(({ error }) => {
+    if (error) console.error('[Memory] insert failed:', error.message);
+    else       console.log('[Memory] ✅ saved');
+  });
+};
+
+// ─── Summaries compactos ──────────────────────────────────────────────────────
+const rosterSummary = (roster: any) => {
+  const players  = roster?.players  || {};
+  const positions = roster?.positions || {};
+  const captains  = (roster?.captains || []).sort((a: any, b: any) => a.order - b.order);
+  const dtId      = roster?.dt?.id;
+
+  // Posición principal de cada jugador (la de mayor prioridad)
+  const posLabel: Record<string, string> = { porteros: 'POR', defensas: 'DEF', medio: 'MED', delanteros: 'DEL' };
+  const playerPos: Record<string, string> = {};
+  for (const [pos, list] of Object.entries(positions)) {
+    for (const item of (list as any[])) {
+      if (!playerPos[item.id] || item.priority === 'high-priority') {
+        playerPos[item.id] = posLabel[pos] || pos;
+      }
+    }
+  }
+
+  const capOrder: Record<string, number> = {};
+  captains.forEach((c: any) => { capOrder[c.id] = c.order; });
+
+  return Object.entries(players).map(([id, p]: [string, any]) => {
+    const tags = [
+      p.veteran     ? 'VET'        : '',
+      capOrder[id]  ? `C${capOrder[id]}` : '',
+      id === dtId   ? 'DT'         : '',
+    ].filter(Boolean).join(',');
+    const fort = (p.strengths   || []).slice(0, 2).join(',');
+    const mej  = (p.improvements|| []).slice(0, 1).join(',');
+    return `#${p.number} ${p.name}${tags ? ' ['+tags+']' : ''} ${playerPos[id] || ''} ★${p.rating} | +${fort} | ~${mej}`;
+  }).join('\n');
+};
+
+const matchSummary = (results: any, roster: any) => {
+  const matches = results?.matches || [];
+  if (!matches.length) return 'Sin partidos aún.';
+  const players = roster?.players || {};
+
+  let wins = 0, draws = 0, losses = 0, gf = 0, gc = 0;
+  const lines = matches.map((m: any) => {
+    const icon = m.homeScore > m.awayScore ? '✅' : m.homeScore === m.awayScore ? '🟡' : '❌';
+    if (m.homeScore > m.awayScore) wins++;
+    else if (m.homeScore === m.awayScore) draws++;
+    else losses++;
+    gf += m.homeScore; gc += m.awayScore;
+
+    const scorers = (m.scorers || [])
+      .map((s: any) => `${players[s.playerId]?.name || s.playerId} ${s.goals}gol`)
+      .join(', ');
+    const fort = (m.strengths   || []).slice(0, 1).join('');
+    const mej  = (m.improvements|| []).slice(0, 1).join('');
+    return `F${m.id} ${m.date} vs ${m.awayTeam} ${m.homeScore}-${m.awayScore}${icon}${scorers ? ' | '+scorers : ''}${fort ? ' | +'+fort.slice(0,60) : ''}${mej ? ' | ~'+mej.slice(0,60) : ''}`;
+  });
+  lines.push(`BALANCE: ${wins}V ${draws}E ${losses}D | GF:${gf} GC:${gc}`);
+  return lines.join('\n');
+};
+
+const tournamentSummary = (t: any) => {
+  const tr = t?.tournament  || {};
+  const ts = t?.tournament_structure || {};
+  const d  = t?.discipline  || {};
+  const r  = t?.match_rules || {};
+  const sp = t?.special_rules || {};
+  return [
+    `${tr.name} | Equipo#${tr.team_number} | ${tr.location} | ${tr.schedule}`,
+    `${ts.total_teams || 10} equipos, ${ts.total_dates || 9} fechas | Clasif: 5 ganadores + 3 mejores perdedores`,
+    `Puntos: V=3 E=1 D=0 | Desempate: dif.goles > goles.favor > directo`,
+    `Reglas: ${r.veteran_requirement || '1 veterano 40+'} | susts.${r.substitutions?.includes('ILIM') ? 'ilimitadas' : r.substitutions} | ${r.match_duration || '2×20min'} | mín.${r.minimum_players || 4}`,
+    `Tarjetas: amarilla ${d.yellow_card_cost} | azul ${d.blue_card_cost} | roja ${d.red_card_cost}+1fecha susp`,
+    `WO: >10min tarde=partido perdido | 2 WO=expulsión torneo`,
+    `Planilla: modificable hasta F3 | Carnet sellado obligatorio | Solo capitán reclama al árbitro`,
+  ].join('\n');
+};
+
+// ─── Llamada a OpenRouter — reintenta en 429 ─────────────────────────────────
+const callOpenRouter = async (model: string, system: string, history: any[], orKey: string): Promise<string> => {
+  const models = model === 'openrouter/free' ? FREE_MODELS : [model];
+
+  for (const m of models) {
+    try {
+      const res = await fetch(OPENROUTER_URL, {
+        method:  'POST',
+        headers: {
+          'Authorization': `Bearer ${orKey}`,
+          'Content-Type':  'application/json',
+          'HTTP-Referer':  'https://torneo-futbol.vercel.app',
+          'X-Title':       'Torneo CEA Fútbol 6'
+        },
+        body:   JSON.stringify({ model: m, messages: [{ role: 'system', content: system }, ...history], temperature: TEMPERATURE, max_tokens: MAX_TOKENS }),
+        signal: AbortSignal.timeout(18000),
+      });
+
+      if (!res.ok) {
+        const body = await res.text();
+        // 429 = modelo saturado → probar el siguiente
+        if (res.status === 429) { console.warn(`[OR] ${m} rate-limited, trying next`); continue; }
+        throw new Error(`OpenRouter ${res.status}: ${body.slice(0, 150)}`);
+      }
+
+      const data = await res.json();
+      // Algunos modelos "thinking" usan el campo reasoning en lugar de content
+      const text = data.choices?.[0]?.message?.content
+                || data.choices?.[0]?.message?.reasoning
+                || '';
+      if (!text) { console.warn(`[OR] ${m} empty response, trying next`); continue; }
+      console.log(`[OR] ✅ ${m}`);
+      return text;
+
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.name === 'TimeoutError') {
+        console.warn(`[OR] ${m} timeout, trying next`);
+        continue;
+      }
+      throw e;
+    }
+  }
+
+  throw new Error('Todos los modelos fallaron. Intenta en un momento.');
+};
+
+// Modelos Gemini en orden de velocidad — fallback automático en 503/429
+const GEMINI_MODELS = [
+  'gemini-2.5-flash',    // ~1s, más rápido
+  'gemini-flash-latest', // ~2s, backup
+];
+
+// ─── Llamada a Gemini ─────────────────────────────────────────────────────────
+const callGemini = async (model: string, system: string, history: any[], geminiKey: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: geminiKey });
+  const contents = history.map((m: any) => ({
+    role:  m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content || '' }],
   }));
 
-const addMemoryEntry = async (userText: string, assistantText: string, roster: any) => {
-  const admin = getSupabaseAdmin();
-  const shouldStore = shouldStoreMemory(userText) || shouldStoreMemory(assistantText);
-  
-  if (!shouldStore || !admin) {
-    console.log('[Memory] SKIPPED - shouldStore:', shouldStore, ', hasAdmin:', !!admin);
-    return { success: false, reason: !admin ? 'no_admin_client' : 'filtered' };
-  }
-  
-  try {
-    const entry = {
-      user_query: trimForMemory(userText),
-      ai_response: trimForMemory(assistantText),
-      players: extractPlayers(userText + ' ' + assistantText, roster)
-    };
+  // Si el modelo pedido no está en la lista, usarlo solo; si está, usar la lista completa en orden
+  const models = GEMINI_MODELS.includes(model) ? GEMINI_MODELS : [model, ...GEMINI_MODELS];
 
-    const { error } = await admin.from('ai_memory').insert([entry]);
-    if (error) {
-      console.error('[Supabase] Memory insert failed:', error.message);
-      return { success: false, reason: error.message };
+  for (const m of models) {
+    try {
+      const result = await Promise.race([
+        ai.models.generateContent({ model: m, contents, config: { systemInstruction: system, maxOutputTokens: MAX_TOKENS, temperature: TEMPERATURE } }),
+        new Promise<never>((_, rej) => setTimeout(() => rej(new Error('Gemini timeout')), 15000))
+      ]);
+      const text = (result as any).text || '';
+      if (!text) { console.warn(`[Gemini] ${m} empty, trying next`); continue; }
+      console.log(`[Gemini] ✅ ${m}`);
+      return text;
+    } catch (e: any) {
+      const msg = e.message || '';
+      // 503 = sobrecarga, 429 = cuota → probar siguiente
+      if (msg.includes('"code":503') || msg.includes('"code":429') || msg.includes('timeout')) {
+        console.warn(`[Gemini] ${m} → ${msg.includes('timeout') ? 'timeout' : msg.includes('503') ? 'sobrecarga' : 'cuota'}, trying next`);
+        continue;
+      }
+      throw e;
     }
-    console.log('[Memory] ✅ Saved to Supabase');
-    return { success: true };
-  } catch (dbError: any) {
-    console.error('[Supabase] Exception during memory insert:', dbError.message);
-    return { success: false, reason: dbError.message };
   }
+
+  throw new Error('Todos los modelos Gemini no disponibles. Intenta en un momento.');
 };
 
-const buildMemoryContext = (memory: any[]) => {
-  if (!Array.isArray(memory) || memory.length === 0) return '';
-  const recent = memory.slice(-MEMORY_CONTEXT_LIMIT);
-  const lines = recent.map((m: any) => {
-    const date = (m.created_at || '').slice(0, 10);
-    const players = (m.players && m.players.length) ? ` (jugadores: ${m.players.join(', ')})` : '';
-    return `- [${date}] Q: ${m.user_query} | A: ${m.ai_response}${players}`;
-  });
-  return `\nMEMORIA (notas relevantes):\n${lines.join('\n')}\n`;
-};
-
+// ─── API Route ────────────────────────────────────────────────────────────────
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = await request.json();
-    let { messages, provider, model, apiKey } = body;
-    let modelUsed = model;
+    const { messages, model, apiKey } = await request.json();
 
-    // Load Data + smart memory fetch after we know the user's question
-    const teamData = await loadData();
-    const lastUserMessage = [...messages].reverse().find((m: any) => m.role === 'user')?.content || '';
-    const memory = await fetchRelevantMemory(lastUserMessage, teamData?.roster);
-    const memoryContext = buildMemoryContext(memory);
+    const useModel  = (model || DEFAULT_MODEL) as string;
+    const isGemini  = useModel.startsWith('gemini-');
+    const orKey     = (apiKey || import.meta.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY) as string;
+    const geminiKey = (import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY) as string;
 
-    // Compressed context: no pretty-print JSON, only essential roster fields → saves ~40% tokens
-    const systemContext = `ROL: Eres el Asistente Técnico (DT IA) de "Tránsito de Girón" en el Torneo CEA Fútbol 6 (2026).
-RESTRICCIÓN: Tu único tema es el torneo, el equipo Tránsito de Girón y sus jugadores. Si la pregunta no tiene ninguna relación con esto, responde amablemente: "Soy el asistente del equipo, solo puedo ayudarte con temas del torneo, partidos o jugadores. ¿Tienes alguna duda del equipo?"
-PLANTILLA:${JSON.stringify(buildRosterSummary(teamData?.roster))}
-RESULTADOS:${JSON.stringify((teamData?.results as any)?.matches || [])}
-TORNEO:${JSON.stringify(teamData?.tournament || {})}${memoryContext}
-REGLAS:
-1. Usa nombres EXACTOS del JSON. No inventes jugadores.
-2. Fútbol 6: 6 jugadores (portero incluido), veterano 40+ obligatorio, sustituciones ilimitadas.
-3. Partidos: 2×20 min. Mínimo 4 en cancha.
-4. Responde técnico, motivador, breve y claro.`;
+    const { roster, results, tournament } = getData();
+    const userMsg = [...messages].reverse().find((m: any) => m.role === 'user')?.content || '';
+    const memCtx  = await fetchMemory(userMsg, roster);
 
-    // Prepend System Message
-    const refinedMessages = [
-        { role: 'system', content: systemContext },
-        ...messages.filter((m: any) => m.role !== 'system')
-    ];
+    const system = `Eres el DT IA del equipo "Tránsito de Girón", Torneo CEA Fútbol 6 (2026).
+RESTRICCIÓN: Solo responde sobre el equipo, jugadores, partidos, tácticas y reglas del Fútbol 6.
+Si preguntan otra cosa responde EXACTAMENTE: "Solo puedo ayudarte con temas del equipo Tránsito de Girón y el Torneo CEA."
 
-    const respond = async (text: string, modelLabel: string, extraNote?: string) => {
-        const finalText = extraNote ? `${text}
+PLANTILLA (#número Nombre [VET=veterano,C1=capitán1°,DT] posición ★rating | +fortalezas | ~mejoras):
+${rosterSummary(roster)}
 
-${extraNote}` : text;
-        const memoryResult = await addMemoryEntry(lastUserMessage, text, teamData?.roster);
-        return new Response(JSON.stringify({ 
-          content: finalText, 
-          modelUsed: modelLabel,
-          memorySaved: memoryResult?.success || false,
-          memoryNote: memoryResult?.reason || 'OK'
-        }), { status: 200 });
-    };
+PARTIDOS (F#=fecha | ✅ganado ❌perdido 🟡empate | +fortaleza ~mejora):
+${matchSummary(results, roster)}
 
-    // 1. Define Keys & Helpers
-    const geminiKey = apiKey || import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-    const requestedProvider = (provider || 'groq').toLowerCase();
+TORNEO:
+${tournamentSummary(tournament)}
+${memCtx}
+Responde en español, breve y técnico. Usa los nombres exactos de la plantilla.`;
 
-    // Helper: Groq
-    const runGroq = async (msgs: any[], userKey?: string) => {
-        const gKey = userKey || import.meta.env.GROQ_API_KEY || process.env.GROQ_API_KEY;
-        if (!gKey) throw new Error("Missing GROQ_API_KEY");
-        
-        const groq = new Groq({ apiKey: gKey });
-        const finalModel = "llama-3.3-70b-versatile"; 
-        modelUsed = finalModel;
-        
-        const completion = await groq.chat.completions.create({
-            messages: msgs,
-            model: finalModel,
-        });
-        return completion.choices[0]?.message?.content || "";
-    };
+    const history = messages.filter((m: any) => m.role !== 'system').slice(-4);
+    console.log(`[Chat] model:${useModel} msgs:${history.length} mem:${!!memCtx}`);
 
-    // Helper: DeepSeek
-    const runDeepSeek = async (msgs: any[], userKey?: string) => {
-        const dsKey = userKey || import.meta.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY;
-        if (!dsKey) throw new Error("Missing DEEPSEEK_API_KEY");
-        
-        const openai = new Groq({ apiKey: dsKey, baseURL: 'https://api.deepseek.com' }); 
-        const finalModel = model || "deepseek-chat";
-        modelUsed = finalModel;
-        
-        // @ts-ignore
-        const completion = await openai.chat.completions.create({
-            messages: msgs,
-            model: finalModel,
-        });
-        return completion.choices[0]?.message?.content || "";
-    };
+    let aiText: string;
+    let provider: string;
 
-    // Helper: Gemini
-    const runGemini = async (modelName: string) => {
-        if (!geminiKey) throw new Error("No Gemini Key");
-        const genAI = new GoogleGenerativeAI(geminiKey);
-        modelUsed = modelName;
-        
-        const geminiModel = genAI.getGenerativeModel({
-            model: modelName,
-            systemInstruction: systemContext,
-            generationConfig: {
-                maxOutputTokens: 800,
-                temperature: 0.7,
-            }
-        });
-
-        const conversation = messages.filter((m: any) => m.role !== 'system').map((m: any) => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }]
-        }));
-
-        // Gemini history MUST start with 'user' role
-        let history = conversation.length > 0 ? conversation.slice(0, -1) : [];
-        const firstUserIndex = history.findIndex((m: {role: string, parts: {text: string}[]}) => m.role === 'user');
-        
-        if (firstUserIndex === -1 && history.length > 0) {
-            console.log('[Gemini] History starts with model, clearing history to avoid error');
-            history = [];
-        } else if (firstUserIndex > 0) {
-            console.log(`[Gemini] Slicing history from index ${firstUserIndex} to find first user message`);
-            history = history.slice(firstUserIndex);
-        }
-
-        const chat = geminiModel.startChat({ history });
-        
-        const lastMessage = conversation.length > 0 
-            ? conversation[conversation.length - 1].parts[0].text 
-            : body.messages[body.messages.length - 1].content;
-
-        try {
-            console.log(`[Gemini] Sending message to ${modelName}...`);
-            const result = await chat.sendMessage(lastMessage);
-            return result.response.text();
-        } catch (sendError: any) {
-            console.error(`[Gemini] Send error (${modelName}):`, sendError.message);
-            throw sendError;
-        }
-    };
-
-    // Provider routing
-    if (requestedProvider === 'groq') {
-        const text = await runGroq(refinedMessages, apiKey);
-        return await respond(text, `Groq (${modelUsed})`);
+    if (isGemini && geminiKey) {
+      try {
+        aiText   = await callGemini(useModel, system, history, geminiKey);
+        provider = 'Gemini';
+      } catch (e: any) {
+        // Gemini falla (cuota/error) → OpenRouter Free automáticamente
+        console.warn(`[Chat] Gemini → fallback OpenRouter (${e.message?.slice(0, 50)})`);
+        if (!orKey) throw new Error('Sin modelos disponibles. Verifica las claves API.');
+        aiText   = await callOpenRouter('openrouter/free', system, history, orKey);
+        provider = 'OpenRouter';
+      }
+    } else {
+      if (!orKey) throw new Error('Falta OPENROUTER_API_KEY en .env');
+      aiText   = await callOpenRouter(useModel, system, history, orKey);
+      provider = 'OpenRouter';
     }
 
-    if (requestedProvider === 'deepseek') {
-        const text = await runDeepSeek(refinedMessages, apiKey);
-        return await respond(text, `DeepSeek (${modelUsed})`);
-    }
+    saveMemory(userMsg, aiText, roster);
 
-    // Default to Gemini with Groq fallback
-    try {
-        if (!geminiKey) throw new Error("No Gemini Key");
-
-        // Solo modelos confirmados disponibles con esta API key (gratuita)
-        const geminiCandidates = [
-            (model && model.includes('gemini')) ? model : null,
-            'gemini-2.0-flash',
-            'gemini-2.0-flash-lite',
-        ].filter(Boolean) as string[];
-
-        let lastError: any = null;
-        for (const useModel of geminiCandidates) {
-            try {
-                const text = await runGemini(useModel);
-                return await respond(text, `Gemini (${useModel})`);
-            } catch (e: any) {
-                lastError = e;
-                console.warn(`Gemini model failed (${useModel})`, e.message);
-                // If it's a 429 or quota error, try next
-                if (e.message?.includes('429') || e.message?.includes('quota')) continue;
-                // If it's a 404 model not found, try next
-                if (e.message?.includes('404')) continue;
-                // Otherwise throw to trigger Groq fallback
-                throw e;
-            }
-        }
-
-        throw new Error("Gemini models exhausted: " + (lastError?.message || "unknown error"));
-    } catch (geminiFinalError: any) {
-        console.warn("All Gemini attempts failed. Trying Groq fallback...", geminiFinalError.message);
-        try {
-            const text = await runGroq(refinedMessages, apiKey);
-            return await respond(text, `Groq (${modelUsed})`);
-        } catch (groqError: any) {
-            return new Response(JSON.stringify({ error: `All providers failed. Gemini: ${geminiFinalError.message}. Groq: ${groqError.message}` }), { status: 500 });
-        }
-    }
-
+    return new Response(
+      JSON.stringify({ content: aiText, modelUsed: `${provider} (${useModel})` }),
+      { status: 200 }
+    );
 
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    console.error('[Chat] Error:', error.message);
+    // Devuelve 200 con mensaje de error en content — el frontend lo muestra bien
+    return new Response(
+      JSON.stringify({ content: `Lo siento, no pude obtener respuesta: ${error.message}`, modelUsed: 'error' }),
+      { status: 200 }
+    );
   }
-}
+};

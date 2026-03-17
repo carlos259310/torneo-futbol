@@ -10,16 +10,17 @@
     "astro": "astro",
     "sync-data": "node ./scripts/sync-data.js",
     "prebuild": "node ./scripts/sync-data.js",
-    "predev": "node ./scripts/sync-data.js"
+    "predev": "node ./scripts/sync-data.js",
+    "test:chat": "node test-chat.js"
   },
   "dependencies": {
     "@astrojs/node": "^9.0.2",
     "@astrojs/vercel": "^8.0.0",
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^1.45.0",
     "@supabase/supabase-js": "^2.95.3",
     "astro": "^5.2.3",
     "dotenv": "^16.4.7",
-    "groq-sdk": "^0.37.0"
+    "groq-sdk": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^25.2.3"

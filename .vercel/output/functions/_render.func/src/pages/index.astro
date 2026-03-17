@@ -211,6 +211,7 @@
                     <span>Asistente DT - IA</span>
                 </div>
                 <div class="chat-header-actions">
+                    <button id="ai-chat-config" title="Configurar API Key"><i class="fas fa-cog"></i></button>
                     <button id="ai-chat-close"><i class="fas fa-times"></i></button>
                 </div>
             </div>
@@ -222,6 +223,38 @@
             <div class="chat-input-area">
                 <textarea id="ai-chat-input" placeholder="Pregúntame algo..." rows="1"></textarea>
                 <button id="ai-chat-send" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Config Modal -->
+    <div id="ai-config-modal" class="ai-config-modal-overlay hidden">
+        <div class="ai-config-modal-content">
+            <div class="modal-header">
+                <h3>Configuración de IA</h3>
+                <button class="modal-close" id="close-config-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <label for="ai-provider">Proveedor:</label>
+                <select id="ai-provider">
+                    <option value="gemini">Google Gemini</option>
+                    <option value="deepseek">DeepSeek</option>
+                    <option value="groq">Groq (Llama 3.3)</option>
+                    <option value="ollama">Ollama (Local)</option>
+                </select>
+                
+                <label for="ai-model">Modelo:</label>
+                <select id="ai-model">
+                    <!-- Dinámico -->
+                </select>
+                
+                <label for="ai-api-key">API Key (Opcional):</label>
+                <input type="password" id="ai-api-key" placeholder="Usar llave del servidor o pega la tuya...">
+                <p class="config-help">Si se deja vacío, usará la configuración del servidor.</p>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-blue" id="save-ai-config">Guardar Configuración</button>
+                </div>
             </div>
         </div>
     </div>
