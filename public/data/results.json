@@ -157,33 +157,6 @@
                 "Mejorar la condición física para competir con más intensidad.",
                 "Carlos Daniel hizo una falta innesesaria por la que le sacaron amarilla. Es importante mantener la calma, el resto del partido si marco bien y sin faltas."
             ]
-        },
-        {
-            "id": 6,
-            "date": "2026-04-12",
-            "homeTeam": "Tránsito de Girón",
-            "awayTeam": "Gestores",
-            "homeScore": 1,
-            "awayScore": 1,
-            "status": "Finalizado",
-            "scorers": [
-                {
-                    "playerId": "7",
-                    "goals": 1
-                }
-            ],
-            "strengths": [
-                "El equipo corrio bastante y se mantuvo competitivo durante todo el partido.",
-                "Se entendieron bien en ataque y se crearon varias opciones de gol.",
-                "El arquero cumplio cuando fue exigido y tuvo una buena actuacion.",
-                "Carlos Daniel  y el resto de los jugadores en defensa (Fredual, Harold, Jhon , Javier) tuvieron una buena actuación con buena marca y recuperación de balón."
-            ],
-            "improvements": [
-                "Se debe mejorar la definicion hubo varias opciones claras que se desperdiciaron.",
-                "Se debe hablar en la cancha y corregir los errores pero no discutir entre compañeros.",
-                "Se cometieron algunas faltas innesesarias y el arbitro estaba muy estricto pintadole casi todo al rival es importante mantener la calma y evitar que el arbitro influya en el partido.",
-                "Todos deben mejorar la condición física para competir con más intensidad."
-            ]
         }
     ]
 }
