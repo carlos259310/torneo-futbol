@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { mkdir, rm, copyFile, readdir, stat } from 'fs/promises';
-import { join } from 'path';
+import { mkdir, copyFile, readdir, stat } from 'fs/promises';
+import { dirname, join } from 'path';
 
 const SRC = 'src/data';
 const DEST = 'public/data';
@@ -9,27 +9,70 @@ async function ensureDir(path) {
   try { await mkdir(path, { recursive: true }); } catch (e) { }
 }
 
-async function copyRecursive(srcDir, destDir) {
-  await ensureDir(destDir);
-  const entries = await readdir(srcDir);
+async function walkFiles(dir, base = dir, files = []) {
+  const entries = await readdir(dir);
   for (const name of entries) {
-    const srcPath = join(srcDir, name);
-    const destPath = join(destDir, name);
-    const s = await stat(srcPath);
+    const absPath = join(dir, name);
+    const s = await stat(absPath);
     if (s.isDirectory()) {
-      await copyRecursive(srcPath, destPath);
+      await walkFiles(absPath, base, files);
     } else {
-      await copyFile(srcPath, destPath);
+      const relPath = absPath.slice(base.length + 1);
+      files.push(relPath);
     }
+  }
+  return files;
+}
+
+async function safeStat(path) {
+  try {
+    return await stat(path);
+  } catch {
+    return null;
+  }
+}
+
+async function syncFile(relPath) {
+  const srcPath = join(SRC, relPath);
+  const destPath = join(DEST, relPath);
+  const srcStat = await safeStat(srcPath);
+  const destStat = await safeStat(destPath);
+
+  if (srcStat && !destStat) {
+    await ensureDir(dirname(destPath));
+    await copyFile(srcPath, destPath);
+    return;
+  }
+
+  if (!srcStat && destStat) {
+    await ensureDir(dirname(srcPath));
+    await copyFile(destPath, srcPath);
+    return;
+  }
+
+  if (!srcStat || !destStat) return;
+
+  if (srcStat.mtimeMs > destStat.mtimeMs) {
+    await copyFile(srcPath, destPath);
+  } else if (destStat.mtimeMs > srcStat.mtimeMs) {
+    await copyFile(destPath, srcPath);
   }
 }
 
 async function main(){
   try {
+    await ensureDir(SRC);
     await ensureDir(DEST);
-    try { await rm(DEST, { recursive: true, force: true }); } catch (e) {}
-    await copyRecursive(SRC, DEST);
-    console.log('Data sync complete: src/data -> public/data');
+
+    const srcFiles = await walkFiles(SRC);
+    const destFiles = await walkFiles(DEST);
+    const allFiles = new Set([...srcFiles, ...destFiles]);
+
+    for (const relPath of allFiles) {
+      await syncFile(relPath);
+    }
+
+    console.log('Data sync complete: src/data <-> public/data');
   } catch (err) {
     console.error('Data sync failed:', err);
     process.exitCode = 1;
