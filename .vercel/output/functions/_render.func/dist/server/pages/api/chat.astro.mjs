@@ -42,14 +42,18 @@ const tournamentInfo = {
 };
 
 const prerender = false;
-const DEFAULT_MODEL = "gemini-2.0-flash";
-const FALLBACK_MODEL = "openrouter/free";
-const MAX_TOKENS = 350;
+const DEFAULT_MODEL = "openrouter/free";
+const MAX_TOKENS = 500;
 const TEMPERATURE = 0.3;
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MEMORY_LIMIT = 4;
-const MEMORY_CHARS = 200;
-const MEMORY_TIMEOUT = 900;
+const MEMORY_LIMIT = 5;
+const MEMORY_CHARS = 300;
+const MEMORY_TIMEOUT = 800;
+const FREE_MODELS = [
+  "openrouter/free",
+  "qwen/qwen-2.5-7b-instruct:free",
+  "meta-llama/llama-3.2-3b-instruct:free"
+];
 let _sb = null;
 const getSupabase = () => {
   if (_sb) return _sb;
@@ -58,21 +62,24 @@ const getSupabase = () => {
   _sb = createClient(url, key);
   return _sb;
 };
-const loadData = () => {
+let _data = null;
+const getData = () => {
+  if (_data) return _data;
   try {
     const dir = nodePath.join(process.cwd(), "public", "data");
-    const read = (file, seed) => {
-      const p = nodePath.join(dir, file);
+    const read = (f, seed) => {
+      const p = nodePath.join(dir, f);
       return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf-8")) : seed;
     };
-    return {
+    _data = {
       roster: read("roster.json", rosterSeed || {}),
       results: read("results.json", resultsSeed || {}),
       tournament: read("tournament_info.json", tournamentInfo || {})
     };
   } catch {
-    return { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {} };
+    _data = { roster: rosterSeed || {}, results: resultsSeed || {}, tournament: tournamentInfo || {} };
   }
+  return _data;
 };
 const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const trimText = (s, max = MEMORY_CHARS) => s.replace(/\s+/g, " ").trim().slice(0, max);
@@ -139,168 +146,240 @@ const SKIP = ["hola", "buenos", "gracias", "ok", "bien", "perfecto", "entendido"
 const isRelevant = (text) => {
   if (!text || text.trim().length < 6) return false;
   const t = normalize(text);
-  if (SKIP.some((p) => t.includes(p)) && text.trim().length < 40) return false;
+  if (SKIP.some((k) => t.includes(k)) && text.trim().length < 40) return false;
   return KEYWORDS.some((k) => t.includes(k));
 };
 const fetchMemory = async (query, roster) => {
   if (!isRelevant(query)) return "";
   const sb = getSupabase();
   if (!sb) return "";
-  const timeout = new Promise(
-    (resolve) => setTimeout(() => {
-      console.warn("[Memory] timeout");
-      resolve("");
-    }, MEMORY_TIMEOUT)
-  );
-  const doFetch = async () => {
-    try {
-      const players = extractPlayers(query, roster);
-      if (players.length > 0) {
-        const { data: data2, error: error2 } = await sb.from("ai_memory").select("user_query,ai_response").overlaps("players", players).order("created_at", { ascending: false }).limit(MEMORY_LIMIT);
-        if (!error2 && data2?.length) {
-          return formatMemory(data2.reverse());
-        }
-      }
-      const { data, error } = await sb.from("ai_memory").select("user_query,ai_response").order("created_at", { ascending: false }).limit(MEMORY_LIMIT);
-      if (error || !data?.length) return "";
-      return formatMemory(data.reverse());
-    } catch (e) {
-      console.warn("[Memory] fetch failed:", e.message);
-      return "";
-    }
-  };
-  return Promise.race([doFetch(), timeout]);
-};
-const formatMemory = (rows) => {
-  const lines = rows.map((m) => `P:${m.user_query} R:${m.ai_response}`);
-  return `
+  try {
+    const players = extractPlayers(query, roster);
+    const base = sb.from("ai_memory").select("user_query,ai_response");
+    const q = players.length ? base.overlaps("players", players).order("created_at", { ascending: false }).limit(MEMORY_LIMIT) : base.order("created_at", { ascending: false }).limit(MEMORY_LIMIT);
+    const { data } = await Promise.race([
+      q,
+      new Promise((r) => setTimeout(() => r({ data: null }), MEMORY_TIMEOUT))
+    ]);
+    if (!data?.length) return "";
+    const lines = [...data].reverse().map((m) => `P:${m.user_query} R:${m.ai_response}`);
+    return `
 CONTEXTO PREVIO:
 ${lines.join("\n")}`;
+  } catch {
+    return "";
+  }
 };
 const saveMemory = (userText, aiText, roster) => {
   if (!isRelevant(userText) && !isRelevant(aiText)) return;
   const sb = getSupabase();
   if (!sb) return;
-  const entry = {
+  sb.from("ai_memory").insert([{
     user_query: trimText(userText),
     ai_response: trimText(aiText),
     players: extractPlayers(`${userText} ${aiText}`, roster)
-  };
-  sb.from("ai_memory").insert([entry]).then(({ error }) => {
+  }]).then(({ error }) => {
     if (error) console.error("[Memory] insert failed:", error.message);
-    else console.log("[Memory] ✅ Saved");
+    else console.log("[Memory] ✅ saved");
   });
 };
-const rosterSummary = (roster) => Object.values(roster?.players || {}).map((p) => `${p.name}|#${p.number}${p.veteran ? "|vet" : ""}|★${p.rating}`).join("\n");
-const matchSummary = (results) => {
+const rosterSummary = (roster) => {
+  const players = roster?.players || {};
+  const positions = roster?.positions || {};
+  const captains = (roster?.captains || []).sort((a, b) => a.order - b.order);
+  const dtId = roster?.dt?.id;
+  const posLabel = { porteros: "POR", defensas: "DEF", medio: "MED", delanteros: "DEL" };
+  const playerPos = {};
+  for (const [pos, list] of Object.entries(positions)) {
+    for (const item of list) {
+      if (!playerPos[item.id] || item.priority === "high-priority") {
+        playerPos[item.id] = posLabel[pos] || pos;
+      }
+    }
+  }
+  const capOrder = {};
+  captains.forEach((c) => {
+    capOrder[c.id] = c.order;
+  });
+  return Object.entries(players).map(([id, p]) => {
+    const tags = [
+      p.veteran ? "VET" : "",
+      capOrder[id] ? `C${capOrder[id]}` : "",
+      id === dtId ? "DT" : ""
+    ].filter(Boolean).join(",");
+    const fort = (p.strengths || []).slice(0, 2).join(",");
+    const mej = (p.improvements || []).slice(0, 1).join(",");
+    return `#${p.number} ${p.name}${tags ? " [" + tags + "]" : ""} ${playerPos[id] || ""} ★${p.rating} | +${fort} | ~${mej}`;
+  }).join("\n");
+};
+const matchSummary = (results, roster) => {
   const matches = results?.matches || [];
   if (!matches.length) return "Sin partidos aún.";
-  return matches.map(
-    (m) => `${m.date} vs ${m.awayTeam}: ${m.homeScore}-${m.awayScore} (${m.status})`
-  ).join("\n");
+  const players = roster?.players || {};
+  let wins = 0, draws = 0, losses = 0, gf = 0, gc = 0;
+  const lines = matches.map((m) => {
+    const icon = m.homeScore > m.awayScore ? "✅" : m.homeScore === m.awayScore ? "🟡" : "❌";
+    if (m.homeScore > m.awayScore) wins++;
+    else if (m.homeScore === m.awayScore) draws++;
+    else losses++;
+    gf += m.homeScore;
+    gc += m.awayScore;
+    const scorers = (m.scorers || []).map((s) => `${players[s.playerId]?.name || s.playerId} ${s.goals}gol`).join(", ");
+    const fort = (m.strengths || []).slice(0, 1).join("");
+    const mej = (m.improvements || []).slice(0, 1).join("");
+    return `F${m.id} ${m.date} vs ${m.awayTeam} ${m.homeScore}-${m.awayScore}${icon}${scorers ? " | " + scorers : ""}${fort ? " | +" + fort.slice(0, 60) : ""}${mej ? " | ~" + mej.slice(0, 60) : ""}`;
+  });
+  lines.push(`BALANCE: ${wins}V ${draws}E ${losses}D | GF:${gf} GC:${gc}`);
+  return lines.join("\n");
 };
 const tournamentSummary = (t) => {
-  const tr = t?.tournament || t;
+  const tr = t?.tournament || {};
   const ts = t?.tournament_structure || {};
   const d = t?.discipline || {};
-  t?.registration || {};
+  const r = t?.match_rules || {};
+  t?.special_rules || {};
   return [
-    `${tr.name || "Torneo CEA"} | Equipo #${tr.team_number} | ${tr.location} | ${tr.schedule}`,
-    `Equipos: ${(ts.teams || []).join(", ")}`,
-    `Tarjetas: amarilla $${d.yellow_card_cost} | azul $${d.blue_card_cost} | roja $${d.red_card_cost} (suspensión 1 fecha)`,
-    `Planilla: modificable hasta fecha 3. Carnet sellado obligatorio. Uniformados hasta fecha 3.`
+    `${tr.name} | Equipo#${tr.team_number} | ${tr.location} | ${tr.schedule}`,
+    `${ts.total_teams || 10} equipos, ${ts.total_dates || 9} fechas | Clasif: 5 ganadores + 3 mejores perdedores`,
+    `Puntos: V=3 E=1 D=0 | Desempate: dif.goles > goles.favor > directo`,
+    `Reglas: ${r.veteran_requirement || "1 veterano 40+"} | susts.${r.substitutions?.includes("ILIM") ? "ilimitadas" : r.substitutions} | ${r.match_duration || "2×20min"} | mín.${r.minimum_players || 4}`,
+    `Tarjetas: amarilla ${d.yellow_card_cost} | azul ${d.blue_card_cost} | roja ${d.red_card_cost}+1fecha susp`,
+    `WO: >10min tarde=partido perdido | 2 WO=expulsión torneo`,
+    `Planilla: modificable hasta F3 | Carnet sellado obligatorio | Solo capitán reclama al árbitro`
   ].join("\n");
 };
-const callOpenRouterModel = async (model, system, history, orKey) => {
-  const res = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${orKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://torneo-futbol.vercel.app",
-      "X-Title": "Torneo CEA Fútbol 6"
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "system", content: system }, ...history],
-      temperature: TEMPERATURE,
-      max_tokens: MAX_TOKENS
-    })
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`OpenRouter ${res.status}: ${err}`);
+const callOpenRouter = async (model, system, history, orKey) => {
+  const models = model === "openrouter/free" ? FREE_MODELS : [model];
+  for (const m of models) {
+    try {
+      const res = await fetch(OPENROUTER_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${orKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://torneo-futbol.vercel.app",
+          "X-Title": "Torneo CEA Fútbol 6"
+        },
+        body: JSON.stringify({ model: m, messages: [{ role: "system", content: system }, ...history], temperature: TEMPERATURE, max_tokens: MAX_TOKENS }),
+        signal: AbortSignal.timeout(18e3)
+      });
+      if (!res.ok) {
+        const body = await res.text();
+        if (res.status === 429) {
+          console.warn(`[OR] ${m} rate-limited, trying next`);
+          continue;
+        }
+        throw new Error(`OpenRouter ${res.status}: ${body.slice(0, 150)}`);
+      }
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || data.choices?.[0]?.message?.reasoning || "";
+      if (!text) {
+        console.warn(`[OR] ${m} empty response, trying next`);
+        continue;
+      }
+      console.log(`[OR] ✅ ${m}`);
+      return text;
+    } catch (e) {
+      if (e.name === "AbortError" || e.name === "TimeoutError") {
+        console.warn(`[OR] ${m} timeout, trying next`);
+        continue;
+      }
+      throw e;
+    }
   }
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || "";
+  throw new Error("Todos los modelos fallaron. Intenta en un momento.");
 };
+const GEMINI_MODELS = [
+  "gemini-2.5-flash",
+  // ~1s, más rápido
+  "gemini-flash-latest"
+  // ~2s, backup
+];
 const callGemini = async (model, system, history, geminiKey) => {
   const ai = new GoogleGenAI({ apiKey: geminiKey });
   const contents = history.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content || "" }]
   }));
-  const result = await ai.models.generateContent({
-    model,
-    contents,
-    config: { systemInstruction: system, maxOutputTokens: MAX_TOKENS, temperature: TEMPERATURE }
-  });
-  return result.text || "";
+  const models = GEMINI_MODELS.includes(model) ? GEMINI_MODELS : [model, ...GEMINI_MODELS];
+  for (const m of models) {
+    try {
+      const result = await Promise.race([
+        ai.models.generateContent({ model: m, contents, config: { systemInstruction: system, maxOutputTokens: MAX_TOKENS, temperature: TEMPERATURE } }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error("Gemini timeout")), 15e3))
+      ]);
+      const text = result.text || "";
+      if (!text) {
+        console.warn(`[Gemini] ${m} empty, trying next`);
+        continue;
+      }
+      console.log(`[Gemini] ✅ ${m}`);
+      return text;
+    } catch (e) {
+      const msg = e.message || "";
+      if (msg.includes('"code":503') || msg.includes('"code":429') || msg.includes("timeout")) {
+        console.warn(`[Gemini] ${m} → ${msg.includes("timeout") ? "timeout" : msg.includes("503") ? "sobrecarga" : "cuota"}, trying next`);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("Todos los modelos Gemini no disponibles. Intenta en un momento.");
 };
 const POST = async ({ request }) => {
   try {
-    const body = await request.json();
-    const { messages, model, apiKey } = body;
+    const { messages, model, apiKey } = await request.json();
     const useModel = model || DEFAULT_MODEL;
     const isGemini = useModel.startsWith("gemini-");
     const orKey = apiKey || "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";
     const geminiKey = "AIzaSyDzgV-dI2canbjcfrIycOTkubysCO3i1SY";
-    if (!isGemini && !orKey) ;
-    if (isGemini && !geminiKey) ;
-    const { roster, results, tournament } = loadData();
+    const { roster, results, tournament } = getData();
     const userMsg = [...messages].reverse().find((m) => m.role === "user")?.content || "";
     const memCtx = await fetchMemory(userMsg, roster);
     const system = `Eres el DT IA del equipo "Tránsito de Girón", Torneo CEA Fútbol 6 (2026).
-
 RESTRICCIÓN: Solo responde sobre el equipo, jugadores, partidos, tácticas y reglas del Fútbol 6.
-Fuera de ese tema responde EXACTAMENTE: "Solo puedo ayudarte con temas del equipo Tránsito de Girón y el Torneo CEA."
+Si preguntan otra cosa responde EXACTAMENTE: "Solo puedo ayudarte con temas del equipo Tránsito de Girón y el Torneo CEA."
 
-PLANTILLA (Nombre|#Num|veterano|★rating):
+PLANTILLA (#número Nombre [VET=veterano,C1=capitán1°,DT] posición ★rating | +fortalezas | ~mejoras):
 ${rosterSummary(roster)}
 
-PARTIDOS:
-${matchSummary(results)}
+PARTIDOS (F#=fecha | ✅ganado ❌perdido 🟡empate | +fortaleza ~mejora):
+${matchSummary(results, roster)}
 
 TORNEO:
 ${tournamentSummary(tournament)}
-
-REGLAS CLAVE: 6 jugadores (portero incluido) | 1 veterano 40+ obligatorio en cancha | sustituciones ilimitadas | 2×20 min | mínimo 4 jugadores.${memCtx}
-
-Responde en español, breve y técnico. Usa los nombres exactos de la plantilla. Si no tienes el dato, dilo.`;
-    const history = messages.filter((m) => m.role !== "system").slice(-6);
-    console.log(`[Chat] ${useModel} | history:${history.length} | memory:${memCtx ? "si" : "no"}`);
-    let aiText = "";
-    let provider = isGemini ? "Gemini" : "OpenRouter";
-    try {
-      if (isGemini) {
+${memCtx}
+Responde en español, breve y técnico. Usa los nombres exactos de la plantilla.`;
+    const history = messages.filter((m) => m.role !== "system").slice(-8);
+    console.log(`[Chat] model:${useModel} msgs:${history.length} mem:${!!memCtx}`);
+    let aiText;
+    let provider;
+    if (isGemini && geminiKey) {
+      try {
         aiText = await callGemini(useModel, system, history, geminiKey);
-      } else {
-        aiText = await callOpenRouterModel(useModel, system, history, orKey);
+        provider = "Gemini";
+      } catch (e) {
+        console.warn(`[Chat] Gemini → fallback OpenRouter (${e.message?.slice(0, 50)})`);
+        if (!orKey) ;
+        aiText = await callOpenRouter("openrouter/free", system, history, orKey);
+        provider = "OpenRouter";
       }
-    } catch (primaryErr) {
-      console.warn(`[Chat] Fallback (${primaryErr.message?.slice(0, 60)})`);
-      if (isGemini && orKey) {
-        provider = "OpenRouter (fallback)";
-        aiText = await callOpenRouterModel(FALLBACK_MODEL, system, history, orKey);
-      } else {
-        throw primaryErr;
-      }
+    } else {
+      if (!orKey) ;
+      aiText = await callOpenRouter(useModel, system, history, orKey);
+      provider = "OpenRouter";
     }
     saveMemory(userMsg, aiText, roster);
-    return new Response(JSON.stringify({ content: aiText, modelUsed: `${provider} (${useModel})` }), { status: 200 });
+    return new Response(
+      JSON.stringify({ content: aiText, modelUsed: `${provider} (${useModel})` }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("[Chat] Error:", error.message);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(
+      JSON.stringify({ content: `Lo siento, no pude obtener respuesta: ${error.message}`, modelUsed: "error" }),
+      { status: 200 }
+    );
   }
 };
 

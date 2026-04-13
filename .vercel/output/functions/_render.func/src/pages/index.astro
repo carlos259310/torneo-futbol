@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Gestión de plantilla y alineación del equipo Tránsito de Girón para el Torneo C.E.A. Fútbol 6.">
     <title>Tránsito de Girón - Torneo C.E.A</title>
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/53/53283.png" type="image/png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23166534' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M50 15 L62 38 L88 38 L67 54 L75 78 L50 63 L25 78 L33 54 L12 38 L38 38 Z' fill='%23f0fdf4' stroke='%23166534' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23166534'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css?v=3.0">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -200,61 +200,28 @@
 
     <!-- AI Chat Box -->
     <div id="ai-chat-container" class="ai-chat-container">
-        <button id="ai-chat-toggle" class="ai-chat-toggle" title="Asistente de IA">
-            <i class="fas fa-robot"></i>
-            <span class="chat-toggle-text">Chat IA</span>
+        <button id="ai-chat-toggle" class="ai-chat-toggle" title="Asistente DT">
+            <i class="fas fa-futbol"></i>
+            <span class="chat-toggle-text">DT IA</span>
         </button>
         <div id="ai-chat-window" class="ai-chat-window hidden">
             <div class="chat-header">
                 <div class="chat-header-info">
-                    <i class="fas fa-robot"></i>
-                    <span>Asistente DT - IA</span>
+                    <i class="fas fa-futbol"></i>
+                    <span>DT Asistente IA</span>
                 </div>
                 <div class="chat-header-actions">
-                    <button id="ai-chat-config" title="Configurar API Key"><i class="fas fa-cog"></i></button>
                     <button id="ai-chat-close"><i class="fas fa-times"></i></button>
                 </div>
             </div>
             <div id="ai-chat-messages" class="chat-messages">
                 <div class="message assistant">
-                    ¡Hola! Soy tu asistente de IA. Puedo ayudarte con alineaciones de fútbol 6, jugadores y resultados. ¿En qué puedo ayudarte hoy?
+                    ¡Hola! Soy el DT IA de Tránsito de Girón. Preguntame sobre jugadores, alineaciones, resultados o tácticas del Torneo CEA Fútbol 6.
                 </div>
             </div>
             <div class="chat-input-area">
                 <textarea id="ai-chat-input" placeholder="Pregúntame algo..." rows="1"></textarea>
                 <button id="ai-chat-send" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <!-- API Config Modal -->
-    <div id="ai-config-modal" class="ai-config-modal-overlay hidden">
-        <div class="ai-config-modal-content">
-            <div class="modal-header">
-                <h3>Configuración de IA</h3>
-                <button class="modal-close" id="close-config-modal"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <label for="ai-provider">Proveedor:</label>
-                <select id="ai-provider">
-                    <option value="gemini">Google Gemini</option>
-                    <option value="deepseek">DeepSeek</option>
-                    <option value="groq">Groq (Llama 3.3)</option>
-                    <option value="ollama">Ollama (Local)</option>
-                </select>
-                
-                <label for="ai-model">Modelo:</label>
-                <select id="ai-model">
-                    <!-- Dinámico -->
-                </select>
-                
-                <label for="ai-api-key">API Key (Opcional):</label>
-                <input type="password" id="ai-api-key" placeholder="Usar llave del servidor o pega la tuya...">
-                <p class="config-help">Si se deja vacío, usará la configuración del servidor.</p>
-                
-                <div class="modal-actions">
-                    <button class="btn btn-blue" id="save-ai-config">Guardar Configuración</button>
-                </div>
             </div>
         </div>
     </div>

@@ -836,10 +836,10 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     height: 60px;
     padding: 0 20px;
     border-radius: 30px;
-    background: var(--primary);
+    background: linear-gradient(135deg, #16a34a, #166534);
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 4px 15px rgba(22, 163, 74, 0.45);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -847,7 +847,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     gap: 10px;
     font-size: 1.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: pulse-blue 2s infinite;
+    animation: pulse-green 2s infinite;
 }
 
 .chat-toggle-text {
@@ -856,15 +856,15 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     white-space: nowrap;
 }
 
-@keyframes pulse-blue {
-    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(22, 163, 74, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
 }
 
 .ai-chat-toggle:hover {
     transform: scale(1.05) translateY(-5px);
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, #15803d, #14532d);
     animation: none;
 }
 
@@ -903,7 +903,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
 }
 
 .chat-header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #16a34a, #14532d);
     color: white; padding: 1rem;
     display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -979,73 +979,6 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     transform: scale(1.1);
 }
 
-/* AI Configuration Modal Styling (Standardized) */
-.ai-config-modal-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 2000; /* Higher than chat window */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-    transition: all 0.3s ease;
-}
-
-.ai-config-modal-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-.ai-config-modal-content {
-    background: var(--bg-card);
-    padding: 1.5rem;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border: 1px solid var(--border);
-    position: relative;
-}
-
-.ai-config-modal-content h3 {
-    margin-top: 0;
-    color: var(--text-main);
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-}
-
-.ai-config-modal-content .modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.ai-config-modal-content label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.ai-config-modal-content select, 
-.ai-config-modal-content input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--bg-body);
-    color: var(--text-main);
-    font-size: 0.95rem;
-    transition: all 0.2s;
-}
-
-.ai-config-modal-content select:focus, 
-.ai-config-modal-content input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
 
 .form-group {
     margin-bottom: 1rem;
@@ -1104,49 +1037,6 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     opacity: 0.7;
 }
 
-/* Configuration Modal Improvements */
-.ai-config-modal-content .modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.ai-config-modal-content label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.ai-config-modal-overlay select, 
-.ai-config-modal-overlay input {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text);
-    font-size: 0.95rem;
-    transition: var(--transition);
-}
-
-.ai-config-modal-overlay select:focus, 
-.ai-config-modal-overlay input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
-}
-
-.config-help {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-style: italic;
-    margin-top: -5px;
-}
-
-.modal-actions {
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-end;
-}
 
 /* Dark Mode Support for AI Chat */
 .dark-mode .ai-chat-window {
