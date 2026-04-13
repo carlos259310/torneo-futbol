@@ -1,2 +1,7 @@
 node_modules
 .env
+
+# Build artifacts
+dist/
+.astro/
+.vercel/
