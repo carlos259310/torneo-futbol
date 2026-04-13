@@ -836,10 +836,10 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     height: 60px;
     padding: 0 20px;
     border-radius: 30px;
-    background: var(--primary);
+    background: linear-gradient(135deg, #16a34a, #166534);
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 4px 15px rgba(22, 163, 74, 0.45);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -847,7 +847,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     gap: 10px;
     font-size: 1.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: pulse-blue 2s infinite;
+    animation: pulse-green 2s infinite;
 }
 
 .chat-toggle-text {
@@ -856,15 +856,15 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
     white-space: nowrap;
 }
 
-@keyframes pulse-blue {
-    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(22, 163, 74, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
 }
 
 .ai-chat-toggle:hover {
     transform: scale(1.05) translateY(-5px);
-    background: var(--primary-dark);
+    background: linear-gradient(135deg, #15803d, #14532d);
     animation: none;
 }
 
@@ -903,7 +903,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size:
 }
 
 .chat-header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #16a34a, #14532d);
     color: white; padding: 1rem;
     display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);

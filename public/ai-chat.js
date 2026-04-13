@@ -5,10 +5,12 @@
 
 class AIChat {
     constructor() {
-        this.messages   = [];
-        this.maxHistory = 10;
-        this.isTyping   = false;
-        this.model      = 'gemini-2.5-flash';
+        this.messages      = [];
+        this.maxHistory    = 16;
+        this.isTyping      = false;
+        this.model         = 'gemini-2.5-flash';
+        this.retryCount    = 0;
+        this.maxRetries    = 2;
         this.init();
     }
 
@@ -69,11 +71,12 @@ class AIChat {
         this.inputField.value = '';
         this.inputField.style.height = 'auto';
 
-        this.isTyping = true;
+        this.isTyping   = true;
+        this.retryCount = 0;
         this.showTypingIndicator();
 
         try {
-            const data    = await this.fetchAIResponse();
+            const data    = await this.fetchWithRetry();
             const content = data?.content || '';
             const mdContent = (window.marked && typeof window.marked.parse === 'function')
                 ? window.marked.parse(content)
@@ -81,10 +84,32 @@ class AIChat {
             this.addMessage('assistant', mdContent);
         } catch (error) {
             console.error('AI Error:', error.message);
-            this.addMessage('assistant', '⚠️ Sin conexión con el servidor. Intenta de nuevo.', true);
+            const errMsg = error.message?.includes('timeout') || error.message?.includes('AbortError')
+                ? 'Tiempo de espera agotado. El servidor tardó demasiado. Intenta de nuevo.'
+                : `Sin respuesta del servidor. ${error.message || ''}`;
+            this.addMessage('assistant', `<span style="color:#ef4444">&#9888; ${errMsg}</span>`, true);
         } finally {
             this.removeTypingIndicator();
             this.isTyping = false;
+        }
+    }
+
+    async fetchWithRetry() {
+        while (this.retryCount <= this.maxRetries) {
+            try {
+                return await this.fetchAIResponse();
+            } catch (error) {
+                const isRetryable = error.message?.includes('503') ||
+                                    error.message?.includes('429') ||
+                                    error.message?.includes('timeout');
+                if (isRetryable && this.retryCount < this.maxRetries) {
+                    this.retryCount++;
+                    console.warn(`[Chat] Retry ${this.retryCount}/${this.maxRetries}:`, error.message);
+                    await new Promise(r => setTimeout(r, 1500 * this.retryCount));
+                    continue;
+                }
+                throw error;
+            }
         }
     }
 
@@ -106,8 +131,8 @@ class AIChat {
         const response = await fetch('/api/chat', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ messages: this.messages.slice(-6), model: this.model }),
-            signal:  AbortSignal.timeout(30000),
+            body:    JSON.stringify({ messages: this.messages.slice(-10), model: this.model }),
+            signal:  AbortSignal.timeout(35000),
         });
 
         if (!response.ok) {

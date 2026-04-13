@@ -11,12 +11,12 @@ import tournamentInfo from '../../data/tournament_info.json';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const DEFAULT_MODEL  = 'openrouter/free';
-const MAX_TOKENS     = 300;
+const MAX_TOKENS     = 500;
 const TEMPERATURE    = 0.3;
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MEMORY_LIMIT   = 3;
-const MEMORY_CHARS   = 180;
-const MEMORY_TIMEOUT = 600;
+const MEMORY_LIMIT   = 5;
+const MEMORY_CHARS   = 300;
+const MEMORY_TIMEOUT = 800;
 
 // Modelos de fallback en orden — si el primero falla, prueba el siguiente
 const FREE_MODELS = [
@@ -318,7 +318,7 @@ ${tournamentSummary(tournament)}
 ${memCtx}
 Responde en español, breve y técnico. Usa los nombres exactos de la plantilla.`;
 
-    const history = messages.filter((m: any) => m.role !== 'system').slice(-4);
+    const history = messages.filter((m: any) => m.role !== 'system').slice(-8);
     console.log(`[Chat] model:${useModel} msgs:${history.length} mem:${!!memCtx}`);
 
     let aiText: string;
