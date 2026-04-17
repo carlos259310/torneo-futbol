@@ -94,6 +94,69 @@
             100% { transform: translateY(160px) rotate(540deg); opacity: 0; }
         }
 
+        /* ── Positions Table ── */
+        #positions-container {
+            display: none;
+            margin-bottom: 2.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(59,130,246,0.3);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+        }
+        .positions-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 1rem 1.2rem;
+            background: linear-gradient(135deg,#2563eb,#1e3a8a);
+            color: #fff;
+            font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+        }
+        .positions-info {
+            background: rgba(59,130,246,0.05);
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .positions-info i { color: #3b82f6; font-size: 1rem; }
+        .positions-table-wrap {
+            overflow-x: auto;
+        }
+        .pos-table {
+            width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem;
+        }
+        .pos-table th {
+            padding: 0.8rem 0.4rem; background: rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 800; font-size: 0.75rem; letter-spacing: 0.05em; border-bottom: 2px solid var(--border);
+        }
+        .dark-mode .pos-table th { background: rgba(255,255,255,0.03); }
+        .pos-table td {
+            padding: 0.9rem 0.4rem; border-bottom: 1px solid var(--border); font-weight: 600;
+            transition: background 0.3s;
+        }
+        .pos-table tr:last-child td { border-bottom: none; }
+        .pos-table tbody tr { transition: background 0.2s; }
+        .pos-table tbody tr:hover td { background: var(--bg-body); }
+        
+        .pos-team { text-align: left; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        
+        /* default rank box */
+        .pos-rank-box {
+            width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+            background: var(--bg-body); color: var(--text-muted); border-radius: 6px; font-size: 0.8rem; font-weight: 900;
+        }
+        
+        .pos-table tbody tr td:first-child { border-left: 4px solid transparent; }
+
+        .pos-pts { font-weight: 900; color: var(--primary); font-size: 0.95rem; }
+        .our-team td { background: rgba(34,197,94,0.08) !important; border-top: 1px solid rgba(34,197,94,0.3); border-bottom: 1px solid rgba(34,197,94,0.3) !important; }
+        .our-team td:first-child { border-left: 4px solid #22c55e !important; }
+        .our-team .pos-team { color: #15803d; }
+        .dark-mode .our-team .pos-team { color: #4ade80; }
+
         /* ── Scorers Table (standalone below grid) ── */
         #scorers-section {
             display: none;
@@ -101,43 +164,69 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(34,197,94,0.3);
-            box-shadow: 0 4px 20px rgba(34,197,94,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            background: var(--bg-card);
         }
         .scorers-header {
             display: flex; align-items: center; gap: 10px;
-            padding: 0.85rem 1.2rem;
-            background: linear-gradient(135deg,#16a34a,#15803d);
+            padding: 1rem 1.2rem;
+            background: linear-gradient(135deg,#16a34a,#065f46);
             color: #fff;
-            font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+            font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
         }
-        @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        .spin-ball { animation: spin-slow 4s linear infinite; display: inline-block; }
-        .scorers-list { padding: 0.5rem 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; background: var(--bg-card); }
+        
+        .scorers-table-wrap { width: 100%; overflow-x: auto; }
+        .scorers-cols {
+            display: grid; grid-template-columns: 60px 1fr 120px;
+            padding: 0.8rem 1rem; background: rgba(0,0,0,0.03);
+            border-bottom: 2px solid var(--border);
+            font-size: 0.75rem; font-weight: 800; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .dark-mode .scorers-cols { background: rgba(255,255,255,0.03); }
+        .sc-col-center { text-align: center; }
+        .sc-col-right { text-align: right; }
+        
+        .scorers-list { display: flex; flex-direction: column; }
         .scorer-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0.55rem 0.75rem; border-radius: 8px;
-            background: var(--bg-body); transition: background .2s, transform .15s;
-            border: 1px solid transparent;
+            display: grid; grid-template-columns: 60px 1fr 120px;
+            align-items: center; padding: 0.9rem 1rem;
+            background: transparent; transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+            border-left: 4px solid transparent;
         }
-        .scorer-row:hover { background: rgba(34,197,94,0.07); border-color: rgba(34,197,94,0.2); transform: translateX(3px); }
-        .scorer-row[data-rank="0"] { background: rgba(250,204,21,0.08); border-color: rgba(250,204,21,0.3); }
-        .scorer-left  { display: flex; align-items: center; gap: 10px; }
-        .scorer-right { display: flex; align-items: center; gap: 8px; }
-        .scorer-medal { font-size: 1.1rem; min-width: 1.6rem; text-align: center; }
-        .scorer-info  { display: flex; flex-direction: column; gap: 1px; }
-        .scorer-fullname { font-size: 0.88rem; font-weight: 700; }
-        .scorer-meta  { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-        .scorer-rating { color: #b45309; font-weight: 600; }
+        .scorer-row:last-child { border-bottom: none; }
+        .scorer-row:hover { background: var(--bg-body); cursor: default; }
+        
+        .rank-1-scorer { background: linear-gradient(90deg, rgba(250,204,21,0.08), transparent) !important; border-left-color: #facc15; }
+        .rank-2-scorer { background: linear-gradient(90deg, rgba(148,163,184,0.08), transparent) !important; border-left-color: #94a3b8; }
+        .rank-3-scorer { background: linear-gradient(90deg, rgba(217,119,6,0.08), transparent) !important; border-left-color: #d97706; }
+
+        .sc-rank-col { display: flex; align-items: center; justify-content: center; }
+        .scorer-rank-box {
+            width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+            background: var(--bg-body); color: var(--text-muted); border-radius: 6px; font-size: 0.9rem; font-weight: 900;
+        }
+        .rank-1-scorer .scorer-rank-box { background: linear-gradient(135deg, #facc15, #ca8a04); color: #fff; box-shadow: 0 2px 8px rgba(250,204,21,0.4); }
+        .rank-2-scorer .scorer-rank-box { background: linear-gradient(135deg, #94a3b8, #475569); color: #fff; box-shadow: 0 2px 8px rgba(148,163,184,0.4); }
+        .rank-3-scorer .scorer-rank-box { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; box-shadow: 0 2px 8px rgba(217,119,6,0.4); }
+
+        .sc-info-col { display: flex; flex-direction: column; gap: 2px; }
+        .scorer-fullname { font-size: 0.95rem; font-weight: 800; color: var(--text); }
+        .scorer-meta  { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .scorer-rating { color: #d97706; font-weight: 700; }
         .vet-badge {
-            font-size: 0.58rem; font-weight: 800; padding: 1px 5px;
-            background: linear-gradient(135deg,#7c3aed,#6d28d9);
+            font-size: 0.6rem; font-weight: 800; padding: 2px 6px;
+            background: linear-gradient(135deg,#7c3aed,#5b21b6);
             color: #fff; border-radius: 20px; vertical-align: middle;
         }
-        .scorer-balls { font-size: 0.9rem; letter-spacing: 1px; }
+        
+        .sc-goals-col { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+        .scorer-balls { font-size: 0.8rem; letter-spacing: 2px; }
         .scorer-count {
-            font-size: 0.7rem; font-weight: 700; color: #fff;
-            background: linear-gradient(135deg,#16a34a,#15803d);
-            padding: 3px 10px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 800; color: #fff;
+            background: linear-gradient(135deg,#16a34a,#065f46);
+            padding: 4px 12px; border-radius: 20px;
             box-shadow: 0 2px 6px rgba(22,163,74,.35);
         }
     </style>
@@ -146,18 +235,31 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/#" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
-            <a href="resultados.html" class="nav-link active"><i class="fas fa-poll"></i> Resultados</a>
+            <a href="#positions-container" class="nav-link"><i class="fas fa-list-ol"></i> Posiciones</a>
+            <a href="#partidos-section" class="nav-link"><i class="fas fa-poll"></i> Resultados</a>
+            <a href="#scorers-section" class="nav-link"><i class="fas fa-futbol"></i> Goleadores</a>
             <button class="nav-link theme-toggle" onclick="toggleDarkMode()" style="background:none; border:none; cursor:pointer;"><i class="fas fa-moon" id="theme-icon"></i></button>
         </div>
     </nav>
     <div class="container">
         <header>
             <div class="futsal-badge"><i class="fas fa-trophy"></i> TORNEO C.E.A</div>
-            <h1>Resultados</h1>
+            <h1 style="margin-bottom: 0.5rem;">Estadísticas del Torneo</h1>
         </header>
         <main>
-            <div id="results-grid" class="results-grid"></div>
-            <div id="scorers-section"></div>
+            <!-- Sección Posiciones -->
+            <div id="positions-container" style="scroll-margin-top: 80px;"></div>
+            
+            <!-- Sección Resultados de Partidos -->
+            <div id="partidos-section" style="scroll-margin-top: 80px; margin-top: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                    <i class="fas fa-poll" style="color: var(--primary);"></i> Resultados de los Partidos
+                </h2>
+                <div id="results-grid" class="results-grid"></div>
+            </div>
+            
+            <!-- Sección Goleadores -->
+            <div id="scorers-section" style="scroll-margin-top: 80px;"></div>
         </main>
         <footer><p>Equipo de Fútbol 6 - Sistema de Gestión v2.0</p></footer>
     </div>

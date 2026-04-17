@@ -12,11 +12,13 @@ let roster = {};   // roster.players map, keyed by id
 function initResults() {
     Promise.all([
         fetch('./data/results.json').then(r => r.json()),
-        fetch('./data/roster.json').then(r => r.json())
+        fetch('./data/roster.json').then(r => r.json()),
+        fetch('./data/positions.json').then(r => r.json()).catch(() => null)
     ])
-    .then(([resultsData, rosterData]) => {
+    .then(([resultsData, rosterData, positionsData]) => {
         roster = rosterData.players || {};
         window.matchResults = resultsData.matches;
+        if (positionsData) renderPositionsTable(positionsData);
         renderResults(resultsData.matches);
         renderScorersTable(resultsData.matches);
     })
@@ -65,6 +67,76 @@ function spawnConfetti(card) {
             width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;`;
         layer.appendChild(dot);
     }
+}
+
+// ─── Render: Positions Table ──────────────────────────────────────────────────
+function renderPositionsTable(data) {
+    const container = document.getElementById('positions-container');
+    if (!container || !data || !data.tabla_posiciones) return;
+    
+    // Sort table by points (descending), then goal difference, then goals scored
+    const sorted = [...data.tabla_posiciones].sort((a, b) => {
+        if (b.puntos !== a.puntos) return b.puntos - a.puntos;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        return b.gf - a.gf;
+    });
+
+    const rows = sorted.map((t, index) => {
+        const rank = index + 1;
+        const isOurTeam = t.equipo.toLowerCase() === 'transito giron' || t.equipo.toLowerCase() === 'tránsito de girón';
+        const rowClass = isOurTeam ? `our-team` : '';
+        
+        return `
+            <tr class="${rowClass}">
+                <td>
+                    <div class="pos-team">
+                        <span class="pos-rank-box">${rank}</span>
+                        ${t.equipo}
+                    </div>
+                </td>
+                <td>${t.pj}</td>
+                <td>${t.pg}</td>
+                <td>${t.pe}</td>
+                <td>${t.pp}</td>
+                <td>${t.gf}</td>
+                <td>${t.gc}</td>
+                <td>${t.dg > 0 ? '+'+t.dg : t.dg}</td>
+                <td class="pos-pts">${t.puntos}</td>
+            </tr>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <div class="positions-header">
+            <i class="fas fa-list-ol"></i>
+            <span>Tabla de Posiciones - ${data.torneo || 'Torneo'}</span>
+        </div>
+        <div class="positions-info">
+            <i class="fas fa-info-circle"></i>
+            <span>La actualización depende del organizador oficial. (Info del: ${data.ultima_actualizacion || 'Reciente'})</span>
+        </div>
+        <div class="positions-table-wrap">
+            <table class="pos-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-left: 1rem; width: 40%;">POSICIÓN / EQUIPO</th>
+                        <th>PJ</th>
+                        <th>PG</th>
+                        <th>PE</th>
+                        <th>PP</th>
+                        <th>GF</th>
+                        <th>GC</th>
+                        <th>DG</th>
+                        <th>PTS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </div>
+    `;
+    container.style.display = 'block';
 }
 
 // ─── Render: Match Cards ──────────────────────────────────────────────────────
@@ -160,7 +232,6 @@ function renderScorersTable(matches) {
     if (!Object.keys(totals).length) { section.style.display = 'none'; return; }
 
     const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-    const medals = ['🥇','🥈','🥉'];
 
     const rows = sorted.map(([id, goals], i) => {
         const p = getPlayer(id);
@@ -168,31 +239,39 @@ function renderScorersTable(matches) {
         const number  = p ? `#${p.number}` : '';
         const rating  = p ? `⭐ ${p.rating}` : '';
         const vet     = p?.veteran ? '<span class="vet-badge">VET</span>' : '';
-        const medal   = medals[i] || `${i+1}.`;
-        const balls   = '⚽'.repeat(goals);
-        const top     = i === 0 ? ' data-rank="0"' : '';
+        const rank    = i + 1;
+        const balls   = '⚽'.repeat(Math.min(goals, 5)) + (goals > 5 ? '+' : ''); // cap balls visually if too many
+        const topClass= i < 3 ? ` rank-${rank}-scorer` : '';
+        
         return `
-        <div class="scorer-row"${top}>
-            <div class="scorer-left">
-                <span class="scorer-medal">${medal}</span>
-                <div class="scorer-info">
-                    <span class="scorer-fullname">${name} ${vet}</span>
-                    <span class="scorer-meta">${number}${rating ? ' · '+rating : ''}</span>
-                </div>
+        <div class="scorer-row${topClass}">
+            <div class="sc-rank-col">
+                <span class="scorer-rank-box">${rank}</span>
             </div>
-            <div class="scorer-right">
-                <span class="scorer-balls">${balls}</span>
-                <span class="scorer-count">${goals} ${goals===1?'gol':'goles'}</span>
+            <div class="sc-info-col">
+                <span class="scorer-fullname">${name} ${vet}</span>
+                <span class="scorer-meta">${number}${rating ? ' · '+rating : ''}</span>
+            </div>
+            <div class="sc-goals-col">
+                <span class="scorer-balls" title="${goals} goles">${balls}</span>
+                <span class="scorer-count">${goals}</span>
             </div>
         </div>`;
     }).join('');
 
     section.innerHTML = `
         <div class="scorers-header">
-            <i class="fas fa-futbol spin-ball"></i>
+            <i class="fas fa-futbol"></i>
             <span>Tabla de Goleadores</span>
         </div>
-        <div class="scorers-list">${rows}</div>
+        <div class="scorers-table-wrap">
+            <div class="scorers-cols">
+                <div class="sc-col-center">POS</div>
+                <div>JUGADOR</div>
+                <div class="sc-col-right">GOLES</div>
+            </div>
+            <div class="scorers-list">${rows}</div>
+        </div>
     `;
     section.style.display = 'block';
 }
