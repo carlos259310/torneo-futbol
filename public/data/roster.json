@@ -61,7 +61,7 @@
       "number": "22",
       "veteran": false,
       "rating": 4.3,
-      "strengths": ["Presión alta", "Buena marca", "Apoyo en defensa"],
+      "strengths": ["Presión alta", "Buena marca", "Protege bien el balón en ataque"],
       "improvements": ["Definición", "Juego asociativo en ataque"]
     },
     "9": {
@@ -76,7 +76,7 @@
       "name": "Juan Duarte",
       "number": "10",
       "veteran": false,
-      "rating": 3.9,
+      "rating": 4.0,
       "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"],
       "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"]
     },
@@ -143,9 +143,9 @@
     ]
   },
   "captains": [
-    { "order": 1, "id": "7" },
-    { "order": 2, "id": "3" },
-    { "order": 3, "id": "8" },
+    { "order": 1, "id": "8" },
+    { "order": 2, "id": "7" },
+    { "order": 3, "id": "3" },
     { "order": 4, "id": "1" }
   ],
   "dt": {
