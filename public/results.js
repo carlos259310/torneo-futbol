@@ -83,7 +83,8 @@ function renderPositionsTable(data) {
 
     const rows = sorted.map((t, index) => {
         const rank = index + 1;
-        const isOurTeam = t.equipo.toLowerCase() === 'transito giron' || t.equipo.toLowerCase() === 'tránsito de girón';
+        const normalizedName = t.equipo.toLowerCase();
+        const isOurTeam = normalizedName === 'transito giron' || normalizedName === 'tránsito de girón' || normalizedName === 'tránsito girón';
         const rowClass = isOurTeam ? `our-team` : '';
         
         return `
