@@ -183,6 +183,47 @@
                 "Se cometieron algunas faltas innesesarias y el arbitro estaba muy estricto pintadole casi todo al rival es importante mantener la calma y evitar que el arbitro influya en el partido.",
                 "Todos deben mejorar la condición física para competir con más intensidad."
             ]
+        },
+        {
+            "id": 7,
+            "date": "2026-04-19",
+            "homeTeam": "Tránsito de Girón",
+            "awayTeam": "Aprender-Victor",
+            "homeScore": 10,
+            "awayScore": 4,
+            "status": "Finalizado",
+            "scorers": [
+                {
+                    "playerId": "8",
+                    "goals": 4
+                },
+                {
+                    "playerId": "7",
+                    "goals": 2
+                },
+                {
+                    "playerId": "10",
+                    "goals": 2
+                },
+                {
+                    "playerId": "6",
+                    "goals": 2
+                }
+            ],
+            "strengths": [
+                "El equipo se recupero del marcador adverso y remonto el partido.",
+                "Jhon se reencontro con el gol y aporto con 4 goles.",
+                "Harold , Javier y Juan aportaron con 2 goles cada uno.",
+                "En la parte ofensiva generaron muchas opciones de gol.",
+                "Ronal aunque no marco ,hizo  asistencias y aporto en la creacion de juego."
+                
+            ],
+            "improvements": [
+                "Se cometieron muchas impresiciones defensivas que permitieron al rival marcar 4 goles .",
+                "Ronal debe mejorar la definicion ya que aunque aporto en la creacion de juego no fue preciso en la definicion.",
+                "Todos deben mejorar la condición física para competir con más intensidad.",
+                "Hay 12 jugadores inscritos y solo asistieron 7"
+            ]
         }
     ]
 }
