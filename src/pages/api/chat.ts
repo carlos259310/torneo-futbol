@@ -11,7 +11,7 @@ import tournamentInfo from '../../data/tournament_info.json';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const DEFAULT_MODEL  = 'openrouter/free';
-const MAX_TOKENS     = 500;
+const MAX_TOKENS     = 800;
 const TEMPERATURE    = 0.3;
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MEMORY_LIMIT   = 5;
@@ -250,8 +250,9 @@ const callOpenRouter = async (model: string, system: string, history: any[], orK
 
 // Modelos Gemini en orden de velocidad — fallback automático en 503/429
 const GEMINI_MODELS = [
-  'gemini-2.5-flash',    // ~1s, más rápido
-  'gemini-flash-latest', // ~2s, backup
+  'gemini-3-flash-preview', // Libre y eficiente
+  'gemini-2.5-flash',       // ~1s, más rápido
+  'gemini-flash-latest',    // ~2s, backup
 ];
 
 // ─── Llamada a Gemini ─────────────────────────────────────────────────────────
@@ -316,7 +317,7 @@ ${matchSummary(results, roster)}
 TORNEO:
 ${tournamentSummary(tournament)}
 ${memCtx}
-Responde en español, breve y técnico. Usa los nombres exactos de la plantilla.`;
+Responde de forma directa, concisa y al punto (usa viñetas corporativas si enumeras algo). NUNCA inventes resultados ni alucines información que no te he dado. Si no actúas sobre datos concretos de este contexto, di "No tengo información". Usa los nombres exactos.`;
 
     const history = messages.filter((m: any) => m.role !== 'system').slice(-8);
     console.log(`[Chat] model:${useModel} msgs:${history.length} mem:${!!memCtx}`);

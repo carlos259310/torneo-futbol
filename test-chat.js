@@ -57,7 +57,7 @@ async function callOpenRouter(messages, model = 'openrouter/free') {
 }
 
 // ─── Llamada a Gemini REST ────────────────────────────────────────────────────
-async function callGemini(messages, model = 'gemini-2.0-flash') {
+async function callGemini(messages, model = 'gemini-3-flash-preview') {
   const system  = messages.find(m => m.role === 'system')?.content || '';
   const history = messages.filter(m => m.role !== 'system');
 
@@ -188,14 +188,14 @@ Si la pregunta no tiene relación, responde EXACTAMENTE: "Solo puedo ayudarte co
     console.log();
   }
 
-  // ── TEST 5: Gemini 2.0 Flash — conexión básica ──────────────────────────────
+  // ── TEST 5: Gemini 3 Flash Preview — conexión básica ──────────────────────────────
   if (canGemini) {
-    console.log(c.cyan('▶ Test 5: Gemini 2.0 Flash — conexión básica'));
+    console.log(c.cyan('▶ Test 5: Gemini 3 Flash Preview — conexión básica'));
     try {
       const { text, model } = await callGemini([
         { role: 'system', content: 'Eres el asistente del equipo Tránsito de Girón. Responde en español, muy breve.' },
         { role: 'user',   content: '¿Cuántos jugadores juegan en el fútbol 6?' }
-      ], 'gemini-2.0-flash');
+      ], 'gemini-3-flash-preview');
 
       assert('Respuesta no vacía',        text.length > 5, `"${text.slice(0, 60)}"`);
       assert('Responde sobre fútbol (6)', text.includes('6') || text.toLowerCase().includes('seis'));
@@ -224,7 +224,7 @@ RESTRICCIÓN ABSOLUTA: Solo puedes hablar sobre el equipo, sus jugadores, tácti
 Si la pregunta no tiene relación, responde EXACTAMENTE: "Solo puedo ayudarte con temas del equipo Tránsito de Girón y el Torneo CEA."`,
         },
         { role: 'user', content: '¿Cuál es la capital de Francia?' }
-      ], 'gemini-2.0-flash');
+      ], 'gemini-3-flash-preview');
 
       assert('Respuesta no vacía', text.length > 0);
       const isRestricted =
@@ -249,7 +249,7 @@ Si la pregunta no tiene relación, responde EXACTAMENTE: "Solo puedo ayudarte co
   console.log(c.cyan('▶ Test 7: Endpoint local /api/chat (opcional — requiere npm run dev)'));
   for (const [label, model, provider] of [
     ['openrouter/free', 'openrouter/free', 'openrouter'],
-    ['gemini-2.0-flash', 'gemini-2.0-flash', 'gemini'],
+    ['gemini-3-flash-preview', 'gemini-3-flash-preview', 'gemini'],
   ]) {
     try {
       const res = await fetch('http://localhost:4321/api/chat', {

@@ -1,8 +1,9 @@
 {
   "torneo": "C.E.A",
+  "ultima_actualizacion": "17 de Abril 2026",
   "tabla_posiciones": [
     {
-      "equipo": "CNT principal",
+      "equipo": "CNT Principal",
       "pj": 6,
       "pg": 5,
       "pe": 1,
@@ -13,7 +14,7 @@
       "puntos": 16
     },
     {
-      "equipo": "instructores f.c",
+      "equipo": "Instructores F.C.",
       "pj": 6,
       "pg": 4,
       "pe": 0,
@@ -24,7 +25,7 @@
       "puntos": 12
     },
     {
-      "equipo": "CDA la 27",
+      "equipo": "CDA La 27",
       "pj": 6,
       "pg": 4,
       "pe": 0,
@@ -35,7 +36,7 @@
       "puntos": 12
     },
     {
-      "equipo": "gestores",
+      "equipo": "Gestores",
       "pj": 6,
       "pg": 3,
       "pe": 2,
@@ -46,7 +47,7 @@
       "puntos": 11
     },
     {
-      "equipo": "transito giron",
+      "equipo": "Tránsito Girón",
       "pj": 6,
       "pg": 3,
       "pe": 1,
@@ -57,7 +58,7 @@
       "puntos": 10
     },
     {
-      "equipo": "CmR lebrija",
+      "equipo": "CmR Lebrija",
       "pj": 6,
       "pg": 3,
       "pe": 0,
@@ -68,7 +69,7 @@
       "puntos": 9
     },
     {
-      "equipo": "gestoría bga",
+      "equipo": "Gestoría BGA",
       "pj": 6,
       "pg": 2,
       "pe": 0,
@@ -79,7 +80,7 @@
       "puntos": 6
     },
     {
-      "equipo": "auto aprender",
+      "equipo": "Auto Aprender",
       "pj": 6,
       "pg": 2,
       "pe": 0,
@@ -90,7 +91,7 @@
       "puntos": 6
     },
     {
-      "equipo": "auto giron",
+      "equipo": "Auto Girón",
       "pj": 5,
       "pg": 1,
       "pe": 0,
@@ -101,7 +102,7 @@
       "puntos": 3
     },
     {
-      "equipo": "aprender",
+      "equipo": "Aprender",
       "pj": 5,
       "pg": 0,
       "pe": 0,

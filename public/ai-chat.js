@@ -8,7 +8,7 @@ class AIChat {
         this.messages      = [];
         this.maxHistory    = 16;
         this.isTyping      = false;
-        this.model         = 'gemini-2.5-flash';
+        this.model         = 'gemini-3-flash-preview';
         this.retryCount    = 0;
         this.maxRetries    = 2;
         this.init();
