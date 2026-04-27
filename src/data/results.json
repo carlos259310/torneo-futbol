@@ -224,6 +224,42 @@
                 "Todos deben mejorar la condición física para competir con más intensidad.",
                 "Hay 12 jugadores inscritos y solo asistieron 7"
             ]
+        },
+        ,
+      {
+    "id": 8,
+    "date": "2026-04-26",
+    "homeTeam": "Tránsito de Girón",
+    "awayTeam": "CDA LA 27",
+    "homeScore": 3,
+    "awayScore": 5,
+    "status": "Finalizado",
+    "scorers": [
+        {
+            "playerId": "1",
+            "goals": 1
+        },
+        {
+            "playerId": "7",
+            "goals": 1
+        },
+        {
+            "playerId": "12",
+            "goals": 1
         }
+    ],
+    "strengths": [
+        "El equipo luchó todo el partido hasta el final y se repuso de momentos difíciles.",
+        "Ronal marcó y aportó ofensivamente.",
+        "Harold y Javier aportaron en el mediocampo, generando fútbol ofensivo, y también contribuyeron en defensa.",
+        "Fernando anotó un gol, algo atípico en los porteros."
+    ],
+    "improvements": [
+        "La defensa y el portero no mostraron la misma solidez y seguridad que en otros partidos.",
+        "Al menos dos goles en contra fueron producto de jugadas que se pudieron evitar.",
+        "Todos deben mejorar la condición física para competir con mayor intensidad.",
+        "Aunque se marcaron 3 goles, se desperdiciaron algunas oportunidades claras."
+    ]
+}
     ]
 }
