@@ -17,7 +17,7 @@ if (!Array.from) {
 // ============================================================================
 
 var rosterData = {}; // Will be populated from JSON
-var currentLineup = []; // Empieza vacío
+var currentLineup = [];
 var draggedPlayerId = null;
 
 // ============================================================================
@@ -29,28 +29,26 @@ document.addEventListener('DOMContentLoaded', initRoster);
 // Fallback data for file:// access where fetch is blocked
 const FALLBACK_DATA = {
     "players": {
-        "1": { "name": "Fernando (Nuevo)", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"], "improvements": ["Salida con los pies", "A veces mide mal las salidas"] },
-        "2": { "name": "Gregorio", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Visión de juego", "Equilibrio"], "improvements": ["Estado físico", "Constancia en el juego"] },
+        "1": { "name": "Fernando Jr.", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"], "improvements": ["Salida con los pies", "A veces mide mal las salidas"] },
+        "2": { "name": "Marco", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Visión de juego", "Equilibrio"], "improvements": ["Estado físico", "Constancia en el juego"] },
         "3": { "name": "Carlos Daniel", "number": "15", "veteran": false, "rating": 4.2, "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"], "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"] },
         "4": { "name": "Fredual Guevara", "number": "2", "veteran": false, "rating": 3.6, "strengths": ["Juego asociativo", "Ubicación en ataque"], "improvements": ["Constancia en el juego", "Agresividad en marca"] },
-        "5": { "name": "Fernando (Señor)", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Inteligencia táctica", "Liderazgo"], "improvements": ["Precisión en pases", "Estado físico"] },
+        "5": { "name": "Fernando Senior", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Inteligencia táctica", "Liderazgo"], "improvements": ["Precisión en pases", "Estado físico"] },
         "6": { "name": "Javier", "number": "27", "veteran": false, "rating": 4.3, "strengths": ["Creatividad", "Pase filtrado", "Definición"], "improvements": ["Intensidad en marca", "Apoyo defensivo"] },
-        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.5, "strengths": ["Liderazgo", "Organización", "Pase filtrado"], "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"] },
+        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.2, "strengths": ["Liderazgo", "Organización", "Pase filtrado"], "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"] },
         "8": { "name": "Jhon Vill", "number": "22", "veteran": false, "rating": 4.2, "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"], "improvements": ["Definición", "Juego asociativo en ataque"] },
         "9": { "name": "Carlos Medina", "number": "94", "veteran": false, "rating": 3.9, "strengths": ["Visión de juego", "Juego asociativo"], "improvements": ["Definición", "Intensidad en marca"] },
-        "10": { "name": "Juan Duarte", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"], "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"] },
+        "10": { "name": "Hermano de Fernando Jr.", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"], "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"] },
         "11": { "name": "Cristian", "number": "4", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones", "Estado físico"] },
-        "12": { "name": "Ingeniero John", "number": "3", "veteran": true, "rating": 3.3, "strengths": ["Apoyo defensivo", "Orden táctico"], "improvements": ["Técnica básica", "Intensidad en marca"] },
-        "13": { "name": "Juan (SENA)", "number": "23", "veteran": false, "rating": 3.6, "strengths": ["Desmarque", "Juego en corto"], "improvements": ["Definición", "Control de balón", "Compromiso en marca"] }
+        "12": { "name": "Ronal", "number": "3", "veteran": true, "rating": 3.9, "strengths": ["Remate fuerte media distancia", "Juego asociativo ofensivo"], "improvements": ["Precisión en remate", "Estado físico"] }
     },
     "positions": {
         "porteros": [ { "id": "1", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "7", "priority": "low-priority" } ],
-        "defensas": [ { "id": "3", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "11", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "5", "priority": "low-priority" }, { "id": "6", "priority": "low-priority" }, { "id": "12", "priority": "high-priority" } ],
-        "medio": [ { "id": "7", "priority": "high-priority" }, { "id": "8", "priority": "high-priority" }, { "id": "6", "priority": "medium-priority" }, { "id": "9", "priority": "medium-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "low-priority" }, { "id": "12", "priority": "medium-priority" }, { "id": "13", "priority": "medium-priority" } ],
-        "delanteros": [ { "id": "10", "priority": "high-priority" }, { "id": "8", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" }, { "id": "13", "priority": "high-priority" } ]
+        "defensas": [ { "id": "3", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "10", "priority": "medium-priority" }, { "id": "11", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "5", "priority": "low-priority" }, { "id": "6", "priority": "low-priority" }, { "id": "12", "priority": "high-priority" } ],
+        "medio": [ { "id": "7", "priority": "high-priority" }, { "id": "8", "priority": "high-priority" }, { "id": "10", "priority": "high-priority" }, { "id": "6", "priority": "medium-priority" }, { "id": "9", "priority": "medium-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "low-priority" }, { "id": "12", "priority": "medium-priority" } ],
+        "delanteros": [ { "id": "10", "priority": "high-priority" }, { "id": "8", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" } ]
     },
     "captains": [ { "order": 1, "id": "7" }, { "order": 2, "id": "3" }, { "order": 3, "id": "8" }, { "order": 4, "id": "1" } ],
-    "dt": { "id": "5" },
     "field": [
         { "class": "goalkeeper", "id": "1", "side": "left" },
         { "class": "defender-1", "id": "2" },
@@ -92,10 +90,9 @@ function initializeApp() {
         // Render sections
         renderPositionLists();
         renderFullRoster();
-        renderDT();
         renderCaptains();
         renderConvocatoria();
-        initializeEmptyLineup();
+        initializeDefaultLineup();
         updateConvocatoriaStats();
         // highlightVeterans(); // Removed as it might not be needed or function missing in snippet
         
@@ -120,7 +117,9 @@ function renderPositionList(positionKey, container) {
     var posList = (rosterData.positions && rosterData.positions[positionKey]) || [];
     container.innerHTML = '';
     
-    posList.forEach(function(entry) {
+    posList.slice().sort(function(a, b) {
+        return rosterData.players[a.id].name.localeCompare(rosterData.players[b.id].name, 'es');
+    }).forEach(function(entry) {
         var playerRef = rosterData.players[entry.id];
         if (!playerRef) return;
         
@@ -137,6 +136,14 @@ function renderPositionList(positionKey, container) {
         var name = document.createElement('span');
         name.className = 'player-name' + (playerRef.veteran ? ' veteran' : '');
         name.textContent = playerRef.name;
+
+        if (playerRef.veteran) {
+            var veteranIndicator = document.createElement('i');
+            veteranIndicator.className = 'fas fa-medal veteran-indicator';
+            veteranIndicator.setAttribute('aria-label', 'Veterano');
+            veteranIndicator.title = 'Veterano';
+            name.appendChild(veteranIndicator);
+        }
 
         var subInfo = document.createElement('div');
         subInfo.style.display = 'flex';
@@ -174,9 +181,7 @@ function renderFullRoster() {
     
     grid.innerHTML = '';
     var ids = Object.keys(rosterData.players).sort(function(a, b) {
-        var numA = parseInt(rosterData.players[a].number) || 0;
-        var numB = parseInt(rosterData.players[b].number) || 0;
-        return numA - numB;
+        return rosterData.players[a].name.localeCompare(rosterData.players[b].name, 'es');
     });
     
     ids.forEach(function(id) {
@@ -206,6 +211,14 @@ function renderFullRoster() {
         var name = document.createElement('span');
         name.className = 'roster-name' + (p.veteran ? ' veteran' : '');
         name.textContent = p.name;
+
+        var veteranBadge = null;
+        if (p.veteran) {
+            veteranBadge = document.createElement('span');
+            veteranBadge.className = 'veteran-badge';
+            veteranBadge.innerHTML = '<i class="fas fa-medal" aria-hidden="true"></i> Veterano';
+            veteranBadge.setAttribute('aria-label', 'Jugador veterano');
+        }
         
         var positionsDiv = document.createElement('div');
         positionsDiv.className = 'roster-positions';
@@ -220,6 +233,7 @@ function renderFullRoster() {
         });
 
         info.appendChild(name);
+        if (veteranBadge) info.appendChild(veteranBadge);
         info.appendChild(positionsDiv);
         header.appendChild(badge);
         header.appendChild(info);
@@ -287,30 +301,6 @@ function renderFullRoster() {
     if (totalEl) totalEl.textContent = 'Total: ' + ids.length + ' jugadores';
 }
 
-function renderDT() {
-    var dtEntry = rosterData.dt;
-    var dtContainer = document.getElementById('dt-info');
-    if (!dtContainer || !dtEntry) return;
-    
-    dtContainer.innerHTML = '';
-    var player = rosterData.players[dtEntry.id];
-    if (!player) return;
-
-    var dtCard = document.createElement('div');
-    dtCard.className = 'dt-card-display';
-    dtCard.innerHTML = 
-        '<div class="dt-icon-wrapper"><i class="fas fa-user-tie"></i></div>' +
-        '<div class="dt-details">' +
-        '  <span class="dt-role-label">Director Técnico</span>' +
-        '  <div class="dt-main-info">' +
-        '    <span class="dt-name">' + player.name + '</span>' +
-        (player.number ? '    <span class="dt-number">N° ' + player.number + '</span>' : '') +
-        '  </div>' +
-        '</div>';
-        
-    dtContainer.appendChild(dtCard);
-}
-
 function renderCaptains() {
     var caps = rosterData.captains || [];
     var capsContainer = document.getElementById('captains-list');
@@ -356,9 +346,7 @@ function renderConvocatoria() {
     list.innerHTML = '';
     
     var ids = Object.keys(rosterData.players).sort(function(a, b) {
-        var numA = parseInt(rosterData.players[a].number) || 0;
-        var numB = parseInt(rosterData.players[b].number) || 0;
-        return numA - numB;
+        return rosterData.players[a].name.localeCompare(rosterData.players[b].name, 'es');
     });
     
     ids.forEach(function(id) {
@@ -490,7 +478,9 @@ function renderConvocatoria() {
         if (player.veteran) {
             var veteranBadge = document.createElement('span');
             veteranBadge.className = 'veteran-badge-mini';
-            veteranBadge.innerHTML = '<i class="fas fa-star"></i>';
+            veteranBadge.innerHTML = '<i class="fas fa-medal" aria-hidden="true"></i>';
+            veteranBadge.setAttribute('aria-label', 'Veterano');
+            veteranBadge.title = 'Veterano';
             item.appendChild(veteranBadge);
         }
         
@@ -584,16 +574,26 @@ function getFormationConfig(formation) {
     return configs[formation] || configs['1-2-2-1'];
 }
 
-function initializeEmptyLineup() {
+function initializeDefaultLineup() {
     var formation = getFormationConfig('1-2-2-1');
+    var configuredField = Array.isArray(rosterData.field) ? rosterData.field : [];
+    var playerByPosition = {};
+
+    configuredField.forEach(function(slot) {
+        if (slot && slot.class && rosterData.players && rosterData.players[slot.id]) {
+            playerByPosition[slot.class] = slot.id;
+        }
+    });
+
     currentLineup = formation.map(function(pos) {
         return {
             class: pos.class,
             style: pos.style,
-            id: null // VACÍO
+            id: playerByPosition[pos.class] || null
         };
     });
     updateFieldDisplay();
+    renderConvocatoria();
     validateLineup();
 }
 

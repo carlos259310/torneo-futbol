@@ -72,6 +72,17 @@ function spawnConfetti(card) {
 function renderPositionsTable(data) {
     const container = document.getElementById('positions-container');
     if (!container || !data || !data.tabla_posiciones) return;
+
+    if (!data.tabla_posiciones.length) {
+        container.innerHTML = buildEmptyState(
+            'fa-list-ol',
+            'La tabla comienza en cero',
+            'Las posiciones aparecerán aquí cuando se registre la primera jornada del nuevo torneo.'
+        );
+        container.classList.add('empty-section');
+        container.style.display = 'block';
+        return;
+    }
     
     // Sort table by points (descending), then goal difference, then goals scored
     const sorted = [...data.tabla_posiciones].sort((a, b) => {
@@ -145,6 +156,15 @@ function renderResults(matches) {
     if (!grid) return;
     grid.innerHTML = '';
 
+    if (!matches.length) {
+        grid.innerHTML = buildEmptyState(
+            'fa-calendar-plus',
+            'Nuevo torneo, nueva historia',
+            'Los resultados se mostrarán aquí después del primer partido.'
+        );
+        return;
+    }
+
     matches.forEach(match => {
         const isWin  = match.homeScore > match.awayScore;
         const isDraw = match.homeScore === match.awayScore;
@@ -214,6 +234,16 @@ function renderResults(matches) {
 
         grid.appendChild(card);
     });
+}
+
+function buildEmptyState(icon, title, copy) {
+    return `
+        <div class="empty-state">
+            <span class="empty-state-icon"><i class="fas ${icon}"></i></span>
+            <h3>${title}</h3>
+            <p>${copy}</p>
+        </div>
+    `;
 }
 
 // ─── Render: Scorers Table ────────────────────────────────────────────────────

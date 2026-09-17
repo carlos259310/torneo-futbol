@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Gestión de plantilla y alineación del equipo Tránsito de Girón para el Torneo C.E.A. Fútbol 6.">
     <title>Tránsito de Girón - Torneo C.E.A</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23166534' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M50 15 L62 38 L88 38 L67 54 L75 78 L50 63 L25 78 L33 54 L12 38 L38 38 Z' fill='%23f0fdf4' stroke='%23166534' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23166534'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css?v=3.0">
 </head>
@@ -15,26 +15,33 @@
     <!-- Navigation Menu -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#plantilla" class="nav-link"><i class="fas fa-users"></i> Plantilla</a>
-            <a href="#posiciones" class="nav-link"><i class="fas fa-th"></i> Posiciones</a>
-            <a href="#dt-capitanes" class="nav-link"><i class="fas fa-user-tie"></i> DT & Capitanes</a>
-            <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Alineación</a>
-            <a href="/resultados.html" class="nav-link"><i class="fas fa-poll"></i> Resultados</a>
-            <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" style="background:none; border:none; cursor:pointer;">
+            <a href="/" class="brand" aria-label="Ir al inicio" aria-current="page">
+                <span class="brand-mark"><img src="/favicon.svg" width="24" height="24" alt=""></span>
+                <span class="brand-copy"><strong>Tránsito Girón</strong><small>Fútbol 6</small></span>
+            </a>
+            <div class="nav-links">
+                <a href="#plantilla" class="nav-link"><i class="fas fa-users"></i> Plantilla</a>
+                <a href="#posiciones" class="nav-link"><i class="fas fa-th-large"></i> Posiciones</a>
+                <a href="#capitanes" class="nav-link"><i class="fas fa-star"></i> Capitanes</a>
+                <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Alineación</a>
+                <a href="/resultados.html" class="nav-link"><i class="fas fa-chart-simple"></i> Resultados</a>
+            </div>
+            <button class="nav-link audio-toggle" id="audio-toggle" type="button" title="Silenciar audio" aria-label="Silenciar audio" aria-pressed="false">
+                <i class="fas fa-volume-high" id="audio-icon" aria-hidden="true"></i>
+            </button>
+            <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" aria-label="Cambiar tema">
                 <i class="fas fa-moon" id="theme-icon"></i>
             </button>
         </div>
     </nav>
 
     <div class="container">
-        <header>
-            <div class="futsal-badge">
-                <i class="fas fa-trophy"></i> TORNEO C.E.A
-            </div>
-        
-            <div class="veteran-note">
-                <i class="fas fa-star"></i> Se requiere al menos un veterano obligatorio en la alineación
-            </div>
+        <header class="image-hero">
+            <h1 class="visually-hidden">Torneo de Fútbol CEA · Equipo Tránsito de Girón</h1>
+            <picture>
+                <source media="(max-width: 640px)" srcset="/assets/images/torneo-cea-banner-720.webp">
+                <img src="/assets/images/torneo-cea-banner-1200.webp" width="1200" height="536" alt="Torneo de Fútbol CEA, equipo Tránsito de Girón, en un estadio nocturno" fetchpriority="high">
+            </picture>
         </header>
         
         <main>
@@ -80,14 +87,8 @@
                 </div>
             </div>
 
-            <!-- Sección: Director Técnico -->
-            <section id="dt-capitanes" class="dt-full-section">
-                <h3><i class="fas fa-user-tie"></i> Director Técnico</h3>
-                <div id="dt-info" class="dt-info-full"></div>
-            </section>
-
             <!-- Sección: Capitanes -->
-            <section class="captains-full-section">
+            <section id="capitanes" class="captains-full-section">
                 <h3><i class="fas fa-star"></i> Capitanes</h3>
                 <div class="captains-list" id="captains-list"></div>
             </section>
@@ -187,17 +188,114 @@
             </section>
         </main>
         
-        <footer>
-            <p>Equipo de Fútbol 6 - Sistema de Gestión v2.0</p>
-        </footer>
     </div>
+
+    <footer class="site-footer" id="site-footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <span class="brand-mark"><img src="/favicon.svg" width="24" height="24" alt=""></span>
+                    <div><strong>Torneo C.E.A.</strong><p>Fútbol 6 · Alineaciones y resultados</p></div>
+                </div>
+                <div class="footer-message">
+                    <span>Nuestra identidad</span>
+                    <strong>Un equipo. Una historia.</strong>
+                </div>
+                <nav class="footer-links" aria-label="Enlaces del pie de página">
+                    <a href="#plantilla">Plantilla</a>
+                    <a href="#convocatoria-alineacion">Alineación</a>
+                    <a href="/resultados.html">Resultados</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Torneo C.E.A.</span>
+                <span>Disciplina · Equipo · Respeto</span>
+            </div>
+        </div>
+    </footer>
     
     <!-- Player Selection Modal (Mobile Friendly) -->
     <div id="player-selection-modal" class="modal-overlay hidden">
-        </div>
     </div>
+
+    <audio id="intro-audio" preload="metadata" aria-hidden="true">
+        <source src="/assets/audio/agarrate-vuelta-de-pablo-aimar.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Scripts -->
     <script is:inline src="/assets/js/main.js?v=3.0"></script>
+    <script is:inline>
+        (function() {
+            var key = 'torneo-cea-intro-audio-played';
+            var muteKey = 'torneo-cea-intro-audio-muted';
+            var replayDelay = 60000;
+            var audio = document.getElementById('intro-audio');
+            var toggle = document.getElementById('audio-toggle');
+            var icon = document.getElementById('audio-icon');
+            if (!audio) return;
+
+            function updateAudioToggle() {
+                if (!toggle || !icon) return;
+                var label = audio.muted ? 'Activar audio' : 'Silenciar audio';
+                toggle.setAttribute('aria-label', label);
+                toggle.setAttribute('title', label);
+                toggle.setAttribute('aria-pressed', String(audio.muted));
+                icon.className = 'fas ' + (audio.muted ? 'fa-volume-xmark' : 'fa-volume-high');
+            }
+
+            audio.muted = sessionStorage.getItem(muteKey) === 'true';
+            updateAudioToggle();
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    audio.muted = !audio.muted;
+                    sessionStorage.setItem(muteKey, String(audio.muted));
+                    updateAudioToggle();
+                });
+            }
+
+            var listeners = [];
+            function removeFallbackListeners() {
+                listeners.forEach(function(eventName) {
+                    window.removeEventListener(eventName, playOnce);
+                });
+                listeners = [];
+            }
+
+            function markAsPlayed() {
+                sessionStorage.setItem(key, String(Date.now()));
+                removeFallbackListeners();
+            }
+
+            function playedInLastMinute() {
+                var lastPlayback = Number(sessionStorage.getItem(key));
+                return Number.isFinite(lastPlayback) && Date.now() - lastPlayback < replayDelay;
+            }
+
+            function stopAfterIntro() {
+                window.setTimeout(function() {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }, 15000);
+            }
+
+            function playOnce() {
+                if (playedInLastMinute()) return;
+                audio.play().then(function() {
+                    markAsPlayed();
+                    stopAfterIntro();
+                }).catch(function() {
+                    // Los navegadores pueden bloquear el sonido automático.
+                    // El primer toque o clic vuelve a intentarlo una sola vez.
+                });
+            }
+
+            if (playedInLastMinute()) return;
+            playOnce();
+            listeners = ['pointerdown', 'keydown'];
+            listeners.forEach(function(eventName) {
+                window.addEventListener(eventName, playOnce, { once: true });
+            });
+        })();
+    </script>
 </body>
 </html>

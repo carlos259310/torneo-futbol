@@ -53,4 +53,4 @@ Los archivos JSON de `src/data` contienen la plantilla, posiciones, resultados e
 
 El proyecto usa el adaptador oficial de Vercel. Ejecuta `npm run build` para validar una entrega antes de publicarla.
 
-Consulta [la documentación técnica](docs/architecture.md) y [el historial de cambios](CHANGELOG.md) para más contexto.
+Consulta [la documentación técnica](docs/architecture.md), [la gestión de datos](docs/data-management.md), [el sistema visual](docs/design-system.md) y [el historial de cambios](CHANGELOG.md) para más contexto.

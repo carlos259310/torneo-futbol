@@ -1,40 +1,40 @@
 {
   "players": {
     "1": {
-      "name": "Fernando (Nuevo)",
-      "number": "99",
+      "name": "Fernando Jr.",
+      "number": "",
       "veteran": false,
-      "rating": 4.5,
+      "rating": 4.3,
       "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"],
       "improvements": ["Salida con los pies", "A veces mide mal las salidas"]
     },
     "2": {
-      "name": "Gregorio",
-      "number": "17",
+      "name": "Marco",
+      "number": "",
       "veteran": true,
-      "rating": 4.0,
-      "strengths": ["Visión de juego", "Equilibrio","Buena marca"],
-      "improvements": ["Estado físico", "Constancia en el juego"]
+      "rating": 3.8,
+      "strengths": ["Juega Varias posiciones", "Juego Aereo"],
+      "improvements": ["Asociarse mas con compañeros", "Definición"]
     },
     "3": {
       "name": "Carlos Daniel",
-      "number": "15",
+      "number": "",
       "veteran": false,
-      "rating": 4.2,
+      "rating": 4.0,
       "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"],
       "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"]
     },
     "4": {
       "name": "Fredual Guevara",
-      "number": "2",
+      "number": "",
       "veteran": false,
       "rating": 3.9,
       "strengths": ["Juego asociativo", "Ubicación en ataque","Apoyo en defensa"],
       "improvements": ["Constancia en el juego", "Agresividad en marca","Estado físico"]
     },
     "5": {
-      "name": "Fernando (Señor)",
-      "number": "7",
+      "name": "Fernando Senior",
+      "number": "",
       "veteran": true,
       "rating": 3.6,
       "strengths": ["Inteligencia táctica", "Liderazgo"],
@@ -42,47 +42,47 @@
     },
     "6": {
       "name": "Javier",
-      "number": "27",
+      "number": "",
       "veteran": false,
-      "rating": 4.4,
+      "rating": 4.2,
       "strengths": ["Creatividad", "Pase filtrado", "Definición"],
       "improvements": ["Intensidad en marca", "Apoyo defensivo"]
     },
     "7": {
       "name": "Harold Charris",
-      "number": "9",
+      "number": "",
       "veteran": false,
-      "rating": 4.4,
+      "rating": 4.2,
       "strengths": ["Liderazgo", "Organización de juego", "Pase filtrado"],
       "improvements": [ "A veces no suelta el balón", "Ha progresado mucho, pero aún discute sin asertividad con compañeros."]
     }, 
     "8": {
       "name": "Jhon Vill",
-      "number": "22",
+      "number": "",
       "veteran": false,
-      "rating": 4.3,
+      "rating": 4.2,
       "strengths": ["Presión alta", "Buena marca", "Protege bien el balón en ataque"],
       "improvements": ["Definición", "Juego asociativo en ataque"]
     },
     "9": {
       "name": "Carlos Medina",
-      "number": "94",
+      "number": "",
       "veteran": false,
       "rating": 3.9,
       "strengths": ["Visión de juego", "Juego asociativo"],
       "improvements": ["Definición", "Intensidad en marca"]
     },
     "10": {
-      "name": "Juan Duarte",
-      "number": "10",
+      "name": "Hermano de Fernando Jr.",
+      "number": "",
       "veteran": false,
-      "rating": 4.0,
-      "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"],
-      "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"]
+      "rating": 4.5,
+      "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia","Visión de juego"],
+      "improvements": ["A veces no suelta el balón", "Comunicación con los compañeros"]
     },
     "11": {
       "name": "Cristian",
-      "number": "4",
+      "number": "",
       "veteran": false,
       "rating": 3.8,
       "strengths": ["Marca intensa", "Recuperación de balón"],
@@ -91,33 +91,22 @@
 
     "12": {
       "name": "Ronal",
-      "number": "19",
+      "number": "",
       "veteran": true,
       "rating": 3.9,
       "strengths": ["Remate fuerte media distancia", "Juego asociativo ofensivo"],
       "improvements": ["Precision en remate", "Estado físico"]
-    },
-
-    "13": {
-      "name": "Juan (SENA)",
-      "number": "23",
-      "veteran": false,
-      "rating": 3.7,
-      "strengths": ["Desmarque", "Juego en corto"],
-      "improvements": ["Definición", "Control de balón", "Compromiso en marca"]
     }
   },
   "positions": {
     "porteros": [
       { "id": "1", "priority": "high-priority" },
-      { "id": "2", "priority": "medium-priority" },
-      { "id": "3", "priority": "medium-priority" },
-      { "id": "4", "priority": "low-priority" },
-      { "id": "7", "priority": "low-priority" }
+      { "id": "3", "priority": "medium-priority" }
     ],
     "defensas": [
       { "id": "3", "priority": "high-priority" },
-      { "id": "2", "priority": "medium-priority" },
+      { "id": "2", "priority": "high-priority" },
+      { "id": "10", "priority": "medium-priority" },
       { "id": "11", "priority": "medium-priority" },
       { "id": "4", "priority": "low-priority" },
       { "id": "5", "priority": "low-priority" },
@@ -127,18 +116,16 @@
     "medio": [
       { "id": "7", "priority": "high-priority" },
       { "id": "8", "priority": "high-priority" },
+      { "id": "10", "priority": "high-priority" },
       { "id": "6", "priority": "medium-priority" },
       { "id": "9", "priority": "medium-priority" },
       { "id": "2", "priority": "medium-priority" },
-      { "id": "3", "priority": "low-priority" },
-
-      { "id": "13", "priority": "medium-priority" }
+      { "id": "3", "priority": "low-priority" }
     ],
     "delanteros": [
       { "id": "10", "priority": "high-priority" },
       { "id": "8", "priority": "medium-priority" },
       { "id": "7", "priority": "low-priority" },
-      { "id": "13", "priority": "high-priority" },
          { "id": "12", "priority": "high-priority" }
     ]
   },
@@ -148,14 +135,11 @@
     { "order": 3, "id": "3" },
     { "order": 4, "id": "1" }
   ],
-  "dt": {
-    "id": "5"
-  },
   "field": [
     { "class": "goalkeeper", "id": "1", "side": "left" },
-    { "class": "defender-1", "id": "2" },
-    { "class": "defender-2", "id": "3" },
-    { "class": "midfielder-1", "id": "6" },
+    { "class": "defender-1", "id": "3" },
+    { "class": "defender-2", "id": "2" },
+    { "class": "midfielder-1", "id": "10" },
     { "class": "midfielder-2", "id": "7" },
     { "class": "forward", "id": "8" }
   ]
