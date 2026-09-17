@@ -28,6 +28,8 @@ El banner usa `<picture>` para no descargar la versión grande en pantallas pequ
 - La navegación es fija, clara y muestra la sección actual con fondo azul suave y un punto dorado.
 - El encabezado usa una sombra azul muy suave y un borde inferior dorado; los enlaces marcan hover con una línea dorada interior.
 - El banner tiene borde azul tenue, anillo blanco fino y sombra moderada para separarlo del fondo sin añadir animaciones.
+- Posiciones, Capitanes y Alineación mantienen 2rem de separación vertical para que los bloques no queden pegados ni aislados.
+- El audio es voluntario: el icono de volumen inicia una vista previa de 15 segundos y cambia a detener mientras se reproduce.
 - Las tarjetas usan un borde tenue y una elevación de 2 px al pasar el cursor; debe mantenerse sutil.
 - La valoración se sitúa en la esquina superior derecha. `roster-header` reserva `3.25rem` a la derecha para que los nombres largos nunca queden debajo de la estrella; los nombres se parten en dos líneas si lo requieren, en lugar de ocultarse.
 - La cancha es el único elemento con color verde dominante.

@@ -26,7 +26,7 @@
                 <a href="#convocatoria-alineacion" class="nav-link"><i class="fas fa-clipboard-check"></i> Alineación</a>
                 <a href="/resultados.html" class="nav-link"><i class="fas fa-chart-simple"></i> Resultados</a>
             </div>
-            <button class="nav-link audio-toggle" id="audio-toggle" type="button" title="Silenciar audio" aria-label="Silenciar audio" aria-pressed="false">
+            <button class="nav-link audio-toggle" id="audio-toggle" type="button" title="Reproducir introducción" aria-label="Reproducir introducción" aria-pressed="false">
                 <i class="fas fa-volume-high" id="audio-icon" aria-hidden="true"></i>
             </button>
             <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" aria-label="Cambiar tema">
@@ -226,75 +226,47 @@
     <script is:inline src="/assets/js/main.js?v=3.0"></script>
     <script is:inline>
         (function() {
-            var key = 'torneo-cea-intro-audio-played';
-            var muteKey = 'torneo-cea-intro-audio-muted';
-            var replayDelay = 60000;
             var audio = document.getElementById('intro-audio');
             var toggle = document.getElementById('audio-toggle');
             var icon = document.getElementById('audio-icon');
             if (!audio) return;
+            var stopTimer = null;
 
             function updateAudioToggle() {
                 if (!toggle || !icon) return;
-                var label = audio.muted ? 'Activar audio' : 'Silenciar audio';
+                var isPlaying = !audio.paused;
+                var label = isPlaying ? 'Detener audio' : 'Reproducir introducción';
                 toggle.setAttribute('aria-label', label);
                 toggle.setAttribute('title', label);
-                toggle.setAttribute('aria-pressed', String(audio.muted));
-                icon.className = 'fas ' + (audio.muted ? 'fa-volume-xmark' : 'fa-volume-high');
+                toggle.setAttribute('aria-pressed', String(isPlaying));
+                icon.className = 'fas ' + (isPlaying ? 'fa-stop' : 'fa-volume-high');
             }
 
-            audio.muted = sessionStorage.getItem(muteKey) === 'true';
             updateAudioToggle();
-            if (toggle) {
-                toggle.addEventListener('click', function() {
-                    audio.muted = !audio.muted;
-                    sessionStorage.setItem(muteKey, String(audio.muted));
+
+            function stopAudio() {
+                window.clearTimeout(stopTimer);
+                audio.pause();
+                audio.currentTime = 0;
+                updateAudioToggle();
+            }
+
+            toggle.addEventListener('click', function() {
+                if (!audio.paused) {
+                    stopAudio();
+                    return;
+                }
+
+                audio.currentTime = 0;
+                audio.play().then(function() {
+                    updateAudioToggle();
+                    stopTimer = window.setTimeout(stopAudio, 15000);
+                }).catch(function() {
                     updateAudioToggle();
                 });
-            }
-
-            var listeners = [];
-            function removeFallbackListeners() {
-                listeners.forEach(function(eventName) {
-                    window.removeEventListener(eventName, playOnce);
-                });
-                listeners = [];
-            }
-
-            function markAsPlayed() {
-                sessionStorage.setItem(key, String(Date.now()));
-                removeFallbackListeners();
-            }
-
-            function playedInLastMinute() {
-                var lastPlayback = Number(sessionStorage.getItem(key));
-                return Number.isFinite(lastPlayback) && Date.now() - lastPlayback < replayDelay;
-            }
-
-            function stopAfterIntro() {
-                window.setTimeout(function() {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }, 15000);
-            }
-
-            function playOnce() {
-                if (playedInLastMinute()) return;
-                audio.play().then(function() {
-                    markAsPlayed();
-                    stopAfterIntro();
-                }).catch(function() {
-                    // Los navegadores pueden bloquear el sonido automático.
-                    // El primer toque o clic vuelve a intentarlo una sola vez.
-                });
-            }
-
-            if (playedInLastMinute()) return;
-            playOnce();
-            listeners = ['pointerdown', 'keydown'];
-            listeners.forEach(function(eventName) {
-                window.addEventListener(eventName, playOnce, { once: true });
             });
+
+            audio.addEventListener('ended', updateAudioToggle);
         })();
     </script>
 </body>

@@ -17,7 +17,7 @@ Usa `"veteran": true` dentro de `players`. La interfaz muestra una medalla y una
 
 ## Audio de entrada
 
-El audio de inicio está en `public/assets/audio/agarrate-vuelta-de-pablo-aimar.mp3`. Solo se reproducen los primeros 15 segundos al abrir la página principal. Al recargar antes de un minuto, no se repite; después de un minuto puede volver a sonar. El control de volumen del encabezado permite silenciarlo o activarlo y conserva esa preferencia durante la pestaña. Si el navegador bloquea la reproducción automática, se intenta una vez más con el primer toque o tecla del usuario.
+El audio está en `public/assets/audio/agarrate-vuelta-de-pablo-aimar.mp3`. No se reproduce automáticamente: el icono de volumen del encabezado inicia una vista previa voluntaria de hasta 15 segundos; al pulsarlo otra vez, la detiene. Esta decisión evita bloqueos del navegador y sonido inesperado.
 
 ## Validación
 

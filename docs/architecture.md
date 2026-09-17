@@ -58,7 +58,7 @@ Consulta [design-system.md](design-system.md) para la guía de apariencia y [dat
 
 ## Audio
 
-La página principal carga `public/assets/audio/agarrate-vuelta-de-pablo-aimar.mp3`. Solo intenta reproducir 15 segundos. Un valor en `sessionStorage` evita repetirlo por recargas hechas dentro de un minuto; después de un minuto puede sonar de nuevo. El icono de volumen permite silenciar o activar el audio y conserva esa preferencia durante la pestaña.
+La página principal carga `public/assets/audio/agarrate-vuelta-de-pablo-aimar.mp3` solo cuando la persona pulsa el icono de volumen. Reproduce una vista previa de hasta 15 segundos y el mismo icono permite detenerla. No hay reproducción automática ni almacenamiento de preferencias.
 
 ## Validación obligatoria
 
@@ -74,4 +74,4 @@ Después verifica en 390 px, 768 px y escritorio:
 2. Hay 12 tarjetas y seis jugadores iniciales en la cancha.
 3. Un nombre largo como «Hermano de Fernando Jr.» no se cruza con su valoración.
 4. Se puede retirar un jugador y arrastrar otro a un slot vacío.
-5. El botón de volumen cambia entre activo y silenciado.
+5. El botón de volumen inicia y detiene una vista previa de máximo 15 segundos.
