@@ -17,7 +17,6 @@ if (!Array.from) {
 // ============================================================================
 
 var rosterData = {}; // Will be populated from JSON
-var matchResults = []; // Will be populated from JSON
 var currentLineup = []; // Empieza vacío
 var draggedPlayerId = null;
 
@@ -75,24 +74,13 @@ function initRoster() {
             console.log('Datos cargados vía Fetch:', data);
             rosterData = data;
             
-            // Cargar resultados también para el contexto de la IA
-            fetch('./data/results.json')
-                .then(r => r.json())
-                .then(resData => {
-                    window.matchResults = resData.matches;
-                    initializeApp();
-                })
-                .catch(() => {
-                    window.matchResults = [];
-                    initializeApp();
-                });
+            initializeApp();
         })
         .catch(function(err) {
             console.warn('Fetch falló, usando datos fallback:', err);
             
             // Prioridad 2: Fallback embebido
             rosterData = FALLBACK_DATA;
-            window.matchResults = []; // En fallback local no tenemos resultados
             initializeApp();
             
             showNotification('Modo sin conexión: Datos internos', 'info');

@@ -14,13 +14,16 @@
 
 ### Estructura de Archivos
 
-```
-TORNEO DE FUTBOL/
-├── index.html              # Estructura HTML principal
-├── styles.css              # Estilos globales y componentes
-├── script.js               # Lógica de aplicación (1434 líneas)
-└── data/
-    └── roster.json         # Datos de jugadores y configuración
+```text
+.
+├── public/
+│   ├── assets/css/styles.css
+│   ├── assets/js/main.js
+│   ├── assets/js/results.js
+│   └── data/
+└── src/
+    ├── data/
+    └── pages/index.astro
 ```
 
 ### Stack Tecnológico Actual

@@ -17,7 +17,6 @@ function initResults() {
     ])
     .then(([resultsData, rosterData, positionsData]) => {
         roster = rosterData.players || {};
-        window.matchResults = resultsData.matches;
         if (positionsData) renderPositionsTable(positionsData);
         renderResults(resultsData.matches);
         renderScorersTable(resultsData.matches);

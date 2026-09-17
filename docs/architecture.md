@@ -12,16 +12,18 @@ Aplicación web para gestionar plantilla, convocatorias y alineaciones de un equ
 
 ## 🗂️ Estructura de Archivos
 
-```
-TORNEO DE FUTBOL/
-├── index.html              # Página principal (producción)
-├── index.backup.html       # Backup con lógica inline
-├── script.js               # Lógica de la aplicación
-├── styles.css              # Estilos y diseño responsive
-├── README.md              # Instrucciones de usuario
-├── DOCUMENTACION_IA.md    # Este documento
-└── data/
-    └── roster.json        # Base de datos JSON
+```text
+.
+├── public/
+│   ├── assets/css/styles.css   # Estilos globales
+│   ├── assets/js/main.js       # Lógica de la página principal
+│   ├── assets/js/results.js    # Lógica de resultados
+│   ├── data/                   # Datos publicados
+│   └── resultados.html         # Página de resultados
+├── scripts/sync-data.js        # Sincronización de datos
+└── src/
+    ├── data/                   # Datos fuente
+    └── pages/index.astro       # Página principal
 ```
 
 ---
@@ -73,7 +75,7 @@ TORNEO DE FUTBOL/
 
 ---
 
-## 🔧 Arquitectura del Código (script.js)
+## 🔧 Arquitectura del Código (public/assets/js/main.js)
 
 ### Variables Globales
 
@@ -161,7 +163,7 @@ var savedConvocatorias = []; // Convocatorias guardadas
 
 ---
 
-## 🎨 Arquitectura CSS (styles.css)
+## 🎨 Arquitectura CSS (public/assets/css/styles.css)
 
 ### Organización por Secciones
 
@@ -423,17 +425,18 @@ console.log(savedConvocatorias); // Convocatorias guardadas
 
 ### Requisitos
 
-- Servidor web estático (Apache, Nginx, Live Server)
-- HTTPS recomendado para localStorage
-- No requiere Node.js ni build process
+- Node.js 22 y npm
+- Astro 5 con adaptador de Vercel
+- HTTPS recomendado para localStorage en producción
 
 ### Estructura de URLs
 
 ```
-/                    → index.html
-/data/roster.json    → Base de datos
-/styles.css          → Estilos
-/script.js           → Lógica
+/                         → Página principal
+/resultados.html          → Resultados y posiciones
+/data/roster.json         → Datos de la plantilla
+/assets/css/styles.css    → Estilos
+/assets/js/main.js        → Lógica principal
 ```
 
 ---
@@ -442,7 +445,7 @@ console.log(savedConvocatorias); // Convocatorias guardadas
 
 ### Agregar Nueva Formación
 
-1. Editar `getFormationConfig()` en script.js
+1. Editar `getFormationConfig()` en public/assets/js/main.js
 2. Agregar caso en objeto `configs`:
    ```javascript
    '1-1-3-1': [

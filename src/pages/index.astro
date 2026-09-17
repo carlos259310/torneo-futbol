@@ -9,8 +9,7 @@
     <title>Tránsito de Girón - Torneo C.E.A</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23166534' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M50 15 L62 38 L88 38 L67 54 L75 78 L50 63 L25 78 L33 54 L12 38 L38 38 Z' fill='%23f0fdf4' stroke='%23166534' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23166534'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css?v=3.0">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=3.0">
 </head>
 <body>
     <!-- Navigation Menu -->
@@ -198,36 +197,7 @@
         </div>
     </div>
 
-    <!-- AI Chat Box -->
-    <div id="ai-chat-container" class="ai-chat-container">
-        <button id="ai-chat-toggle" class="ai-chat-toggle" title="DT IA">
-            <i class="fas fa-futbol"></i>
-            <span class="chat-toggle-text">DT IA</span>
-        </button>
-        <div id="ai-chat-window" class="ai-chat-window hidden">
-            <div class="chat-header">
-                <div class="chat-header-info">
-                    <i class="fas fa-futbol"></i>
-                    <span>DT IA</span>
-                </div>
-                <div class="chat-header-actions">
-                    <button id="ai-chat-close"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            <div id="ai-chat-messages" class="chat-messages">
-                <div class="message assistant">
-                    ¡Hola! Soy el DT IA de Tránsito de Girón. Preguntame sobre jugadores, alineaciones, resultados o tácticas del Torneo CEA Fútbol 6.
-                </div>
-            </div>
-            <div class="chat-input-area">
-                <textarea id="ai-chat-input" placeholder="Pregúntame algo..." rows="1"></textarea>
-                <button id="ai-chat-send" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
-    <script is:inline src="/script.js?v=3.0"></script>
-    <script is:inline src="/ai-chat.js?v=3.0"></script>
+    <script is:inline src="/assets/js/main.js?v=3.0"></script>
 </body>
 </html>

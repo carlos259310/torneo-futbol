@@ -61,9 +61,9 @@
 
 **Archivos modificados:**
 
-- `script.js`: Funciones saveConvocatoria(), loadConvocatoria(), deleteConvocatoria()
-- `index.html`: Botón "Guardar" y sección de historial
-- `styles.css`: Estilos para lista de guardadas
+- `public/assets/js/main.js`: Funciones saveConvocatoria(), loadConvocatoria(), deleteConvocatoria()
+- `src/pages/index.astro`: Botón "Guardar" y sección de historial
+- `public/assets/css/styles.css`: Estilos para lista de guardadas
 
 ### 3. 📸 Exportación a PNG
 
