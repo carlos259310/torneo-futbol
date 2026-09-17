@@ -24,8 +24,6 @@ var draggedPlayerId = null;
 // INITIALIZATION
 // ============================================================================
 
-document.addEventListener('DOMContentLoaded', initRoster);
-
 // Fallback data for file:// access where fetch is blocked
 const FALLBACK_DATA = {
     "players": {
@@ -51,17 +49,15 @@ const FALLBACK_DATA = {
     "captains": [ { "order": 1, "id": "7" }, { "order": 2, "id": "3" }, { "order": 3, "id": "8" }, { "order": 4, "id": "1" } ],
     "field": [
         { "class": "goalkeeper", "id": "1", "side": "left" },
-        { "class": "defender-1", "id": "2" },
-        { "class": "defender-2", "id": "3" },
-        { "class": "midfielder-1", "id": "6" },
+        { "class": "defender-1", "id": "3" },
+        { "class": "defender-2", "id": "2" },
+        { "class": "midfielder-1", "id": "10" },
         { "class": "midfielder-2", "id": "7" },
         { "class": "forward", "id": "8" }
     ]
 };
 
 function initRoster() {
-    console.log('Iniciando carga del sistema...');
-
     // Prioridad 1: Fetch desde roster.json
     fetch('./data/roster.json')
         .then(function(response) {
@@ -69,7 +65,6 @@ function initRoster() {
             return response.json();
         })
         .then(function(data) {
-            console.log('Datos cargados vía Fetch:', data);
             rosterData = data;
             
             initializeApp();
@@ -91,12 +86,8 @@ function initializeApp() {
         renderPositionLists();
         renderFullRoster();
         renderCaptains();
-        renderConvocatoria();
         initializeDefaultLineup();
         updateConvocatoriaStats();
-        // highlightVeterans(); // Removed as it might not be needed or function missing in snippet
-        
-        console.log('Renderizado completado');
     } catch (err) {
         console.error('Error durante la inicialización de la app:', err);
     }
@@ -722,8 +713,6 @@ function createFieldSlot(pos, index) {
         }
         
         content.innerHTML = nameHTML + ratingHTML;
-        
-        slot.appendChild(content);
         
         var removeBtn = document.createElement('button');
         removeBtn.className = 'remove-player-btn';
@@ -1582,8 +1571,6 @@ function exportLineupToPNG() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Iniciando aplicación');
-    
     initRoster();
     
     var formationSelect = document.getElementById('formation-select');

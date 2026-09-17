@@ -168,6 +168,8 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 
 .roster-header {
     display: flex; align-items: center; gap: 1rem;
+    /* La valoración ocupa la esquina superior derecha de la tarjeta. */
+    padding-right: 3.25rem;
 }
 
 .player-number-badge {
@@ -187,7 +189,7 @@ h2 { font-size: 1.5rem; letter-spacing: -0.025em; border-bottom: 1px solid var(-
 .player-rating-badge i { color: #854d0e; font-size: 0.65rem; }
 
 .roster-info { flex: 1; min-width: 0; }
-.roster-name { display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+.roster-name { display: block; font-weight: 700; font-size: 0.95rem; line-height: 1.25; margin-bottom: 2px; white-space: normal; overflow-wrap: anywhere; color: var(--text-main); }
 .veteran-indicator { color: var(--accent); margin-left: 0.38rem; font-size: 0.78em; }
 .veteran-badge {
     align-self: flex-start;
@@ -870,6 +872,7 @@ a, button, select, .roster-card, .match-card {
     padding: 0;
     background: color-mix(in srgb, var(--bg-card) 88%, transparent);
     border-bottom-color: color-mix(in srgb, var(--border) 78%, transparent);
+    box-shadow: 0 8px 22px rgba(11, 39, 71, 0.07), inset 0 -1px 0 rgba(214, 166, 50, 0.2);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -932,7 +935,7 @@ a, button, select, .roster-card, .match-card {
 }
 
 .nav-link i { color: var(--primary); }
-.nav-link:hover { color: var(--primary-dark); background: color-mix(in srgb, var(--primary-soft) 62%, transparent); }
+.nav-link:hover { color: var(--primary-dark); background: color-mix(in srgb, var(--primary-soft) 62%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
 .audio-toggle { width: 38px; height: 38px; min-width: 38px; justify-content: center; padding: 0; border: 1px solid var(--border); background: transparent; cursor: pointer; }
 .audio-toggle[aria-pressed="true"] { color: var(--text-muted); border-color: color-mix(in srgb, var(--border) 82%, transparent); }
 .audio-toggle[aria-pressed="true"] i { color: var(--text-muted); }
@@ -1032,9 +1035,10 @@ a, button, select, .roster-card, .match-card {
     overflow: hidden;
     margin: 1.75rem 0 2.75rem;
     text-align: left;
-    border: 1px solid #d9e0e8;
+    border: 1px solid color-mix(in srgb, var(--primary) 26%, #d9e0e8);
     border-radius: 18px;
     background: #07182f;
+    box-shadow: 0 16px 34px rgba(11, 39, 71, 0.15), 0 0 0 3px rgba(255, 255, 255, 0.72);
     contain: layout paint;
     aspect-ratio: 3 / 1;
 }
