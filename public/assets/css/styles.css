@@ -1295,3 +1295,11 @@ body.dark-mode { background: var(--bg-body); }
 /* Veteran cards: same size, distinguished by a gold edge and medal */
 .roster-card.is-veteran { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); box-shadow: inset 4px 0 0 var(--accent); }
 .roster-card.is-veteran:hover { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+
+/* Dark mode: contrast fixes */
+.dark-mode .nav-link[aria-current="page"] { color: #f5cc62; background: rgba(214, 166, 50, 0.14); }
+.dark-mode .stat-badge { color: var(--text-main); background: #3a2227; border-color: #4f2f35; }
+.dark-mode .captain-rank { color: #2e070c; background: var(--accent); }
+.dark-mode .card-toggle, .dark-mode .card-toggle .toggle-icon { color: #f5cc62; }
+.dark-mode .audio-toggle[aria-pressed="true"] { color: #f5cc62; background: rgba(214, 166, 50, 0.14); }
+.dark-mode .convocado-item.dragging { background: #3a2227; }

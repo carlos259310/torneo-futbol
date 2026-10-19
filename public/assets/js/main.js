@@ -1308,7 +1308,7 @@ function autoLineup() {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     var isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark);
+    try { localStorage.setItem('tema', isDark ? 'oscuro' : 'claro'); } catch (e) {}
     
     var icon = document.getElementById('theme-icon');
     if (icon) {
@@ -1318,14 +1318,11 @@ function toggleDarkMode() {
     }
 }
 
-// Check saved theme on load
-// Modo oscuro por defecto; solo pasa a claro si el usuario lo eligió
-if (localStorage.getItem('darkMode') !== 'false') {
-    document.body.classList.add('dark-mode');
-    // Ensure icon matches on load
+// Tema oscuro por defecto (clase aplicada al abrir <body>); solo se sincroniza el icono
+(function () {
     var icon = document.getElementById('theme-icon');
-    if (icon) icon.className = 'fas fa-sun';
-}
+    if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+})();
 
 // ============================================================================
 // VALIDATION
