@@ -9,7 +9,7 @@ La fuente editable de la plantilla es `src/data/roster.json`. No se deben editar
 - `captains`: capitanes mostrados en la página.
 - `field`: alineación inicial de seis jugadores para la formación `1-2-2-1`.
 
-La alineación inicial vigente es Fernando Jr., Carlos Daniel, Marco, Hermano de Fernando Jr., Harold Charris y Jhon Vill. La aplicación conserva los controles para mover jugadores, cambiar formación, vaciar y restablecer la cancha.
+La alineación inicial vigente es Fernando Jr., Fabian, Marco, Hermano de Fernando Jr., Harold Charris y Jhon Vill. La aplicación conserva los controles para mover jugadores, cambiar formación, vaciar y restablecer la cancha.
 
 ## Veteranos
 

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sist. Gestión - Resultados</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/styles.css?v=3.0">
+    <link rel="stylesheet" href="/assets/css/styles.css?v=3.3">
     <style>
         /* ── Grid: align-items start fixes row-stretch bug ── */
         .results-grid {
@@ -48,7 +48,7 @@
         /* Scoreboard */
         .scoreboard { display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%; }
         .team  { flex: 1; text-align: center; font-weight: 700; font-size: 0.92rem; }
-        .score { background: #1e293b; color: white; font-size: 1.5rem; font-weight: 800; padding: 0.4rem 0.8rem; border-radius: 8px; min-width: 3rem; text-align: center; transition: background .2s; }
+        .score { background: #4f0d15; color: white; font-size: 1.5rem; font-weight: 800; padding: 0.4rem 0.8rem; border-radius: 8px; min-width: 3rem; text-align: center; transition: background .2s; }
         .score-win  { background: linear-gradient(135deg,#16a34a,#15803d) !important; }
         .score-loss { background: linear-gradient(135deg,#dc2626,#b91c1c) !important; }
         .dark-mode .score { background: var(--primary); }
@@ -107,7 +107,7 @@
         .positions-header {
             display: flex; align-items: center; gap: 10px;
             padding: 1rem 1.2rem;
-            background: linear-gradient(135deg,#2563eb,#1e3a8a);
+            background: linear-gradient(135deg,#8a1c26,#4f0d15);
             color: #fff;
             font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
         }
@@ -122,7 +122,7 @@
             gap: 10px;
             border-bottom: 1px solid var(--border);
         }
-        .positions-info i { color: #3b82f6; font-size: 1rem; }
+        .positions-info i { color: #d6a632; font-size: 1rem; }
         .positions-table-wrap {
             overflow-x: auto;
         }
@@ -235,7 +235,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="brand" aria-label="Ir al inicio">
-                <span class="brand-mark"><img src="/favicon.svg" width="24" height="24" alt=""></span>
+                <span class="brand-mark"><img src="/favicon.svg?v=2" width="24" height="24" alt=""></span>
                 <span class="brand-copy"><strong>Tránsito Girón</strong><small>Fútbol 6</small></span>
             </a>
             <div class="nav-links">
@@ -244,18 +244,12 @@
                 <a href="#partidos-section" class="nav-link" aria-current="page"><i class="fas fa-chart-simple"></i> Resultados</a>
                 <a href="#scorers-section" class="nav-link"><i class="fas fa-futbol"></i> Goleadores</a>
             </div>
-            <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" aria-label="Cambiar tema"><i class="fas fa-moon" id="theme-icon"></i></button>
+            <button class="nav-link theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema" aria-label="Cambiar tema"><i class="fas fa-sun" id="theme-icon"></i></button>
         </div>
     </nav>
     <div class="container">
-        <header class="image-hero image-hero-compact">
-            <h1 class="visually-hidden">Resultados del Torneo de Fútbol CEA</h1>
-            <picture>
-                <source media="(max-width: 640px)" srcset="/assets/images/torneo-cea-banner-720.webp">
-                <img src="/assets/images/torneo-cea-banner-1200.webp" width="1200" height="536" alt="Torneo de Fútbol CEA, equipo Tránsito de Girón, en un estadio nocturno" fetchpriority="high">
-            </picture>
-        </header>
-        <main>
+        <h1 class="visually-hidden">Resultados del Torneo de Fútbol CEA</h1>
+        <main style="padding-top: 2rem;">
             <!-- Sección Posiciones -->
             <div id="positions-container" style="scroll-margin-top: 80px;"></div>
             
@@ -276,7 +270,7 @@
         <div class="footer-container">
             <div class="footer-main">
                 <div class="footer-brand">
-                    <span class="brand-mark"><img src="/favicon.svg" width="24" height="24" alt=""></span>
+                    <span class="brand-mark"><img src="/favicon.svg?v=2" width="24" height="24" alt=""></span>
                     <div><strong>Torneo C.E.A.</strong><p>Fútbol 6 · Alineaciones y resultados</p></div>
                 </div>
                 <div class="footer-message"><span>Nuestra identidad</span><strong>Un equipo. Una historia.</strong></div>
@@ -299,7 +293,8 @@
             var icon = document.getElementById('theme-icon');
             if (icon) icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
         }
-        if (localStorage.getItem('darkMode') === 'true') { 
+        // Modo oscuro por defecto; solo pasa a claro si el usuario lo eligió
+if (localStorage.getItem('darkMode') !== 'false') { 
             document.body.classList.add('dark-mode'); 
             var icon = document.getElementById('theme-icon');
             if (icon) icon.className = 'fas fa-sun';

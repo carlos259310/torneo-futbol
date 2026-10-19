@@ -28,28 +28,28 @@ var draggedPlayerId = null;
 const FALLBACK_DATA = {
     "players": {
         "1": { "name": "Fernando Jr.", "number": "99", "veteran": false, "rating": 4.2, "strengths": ["Buenos reflejos", "Buenas atajadas", "Reacción rápida"], "improvements": ["Salida con los pies", "A veces mide mal las salidas"] },
-        "2": { "name": "Marco", "number": "17", "veteran": true, "rating": 3.8, "strengths": ["Visión de juego", "Equilibrio"], "improvements": ["Estado físico", "Constancia en el juego"] },
-        "3": { "name": "Carlos Daniel", "number": "15", "veteran": false, "rating": 4.2, "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"], "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"] },
-        "4": { "name": "Fredual Guevara", "number": "2", "veteran": false, "rating": 3.6, "strengths": ["Juego asociativo", "Ubicación en ataque"], "improvements": ["Constancia en el juego", "Agresividad en marca"] },
-        "5": { "name": "Fernando Senior", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Inteligencia táctica", "Liderazgo"], "improvements": ["Precisión en pases", "Estado físico"] },
+        "2": { "name": "Marco", "number": "5", "veteran": true, "rating": 3.8, "strengths": ["Visión de juego", "Equilibrio"], "improvements": ["Estado físico", "Constancia en el juego"] },
+        "3": { "name": "Carlos Daniel", "number": "25", "veteran": false, "rating": 4.2, "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"], "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"] },
+        "5": { "name": "Juan Duarte", "number": "7", "veteran": true, "rating": 3.5, "strengths": ["Inteligencia táctica", "Liderazgo"], "improvements": ["Precisión en pases", "Estado físico"] },
         "6": { "name": "Javier", "number": "27", "veteran": false, "rating": 4.3, "strengths": ["Creatividad", "Pase filtrado", "Definición"], "improvements": ["Intensidad en marca", "Apoyo defensivo"] },
-        "7": { "name": "Harold Charris", "number": "9", "veteran": false, "rating": 4.2, "strengths": ["Liderazgo", "Organización", "Pase filtrado"], "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"] },
+        "7": { "name": "Harold Charris", "number": "69", "veteran": false, "rating": 4.2, "strengths": ["Liderazgo", "Organización", "Pase filtrado"], "improvements": ["Control emocional", "Trato con los compañeros","A veces no suelta el balón"] },
         "8": { "name": "Jhon Vill", "number": "22", "veteran": false, "rating": 4.2, "strengths": ["Presión alta", "Buena marca", "Solidaridad defensiva"], "improvements": ["Definición", "Juego asociativo en ataque"] },
         "9": { "name": "Carlos Medina", "number": "94", "veteran": false, "rating": 3.9, "strengths": ["Visión de juego", "Juego asociativo"], "improvements": ["Definición", "Intensidad en marca"] },
-        "10": { "name": "Hermano de Fernando Jr.", "number": "10", "veteran": false, "rating": 3.9, "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"], "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"] },
-        "11": { "name": "Cristian", "number": "4", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones", "Estado físico"] },
-        "12": { "name": "Ronal", "number": "3", "veteran": true, "rating": 3.9, "strengths": ["Remate fuerte media distancia", "Juego asociativo ofensivo"], "improvements": ["Precisión en remate", "Estado físico"] }
+        "10": { "name": "Hermano de Fernando Jr.", "number": "21", "veteran": false, "rating": 3.9, "strengths": ["Cambio de ritmo", "Regate", "Remate media distancia"], "improvements": ["Juego asociativo", "Recuperación tras pérdida", "Compromiso en marca"] },
+        "11": { "name": "Cristian", "number": "14", "veteran": false, "rating": 3.8, "strengths": ["Marca intensa", "Recuperación de balón"], "improvements": ["Toma de decisiones", "Estado físico"] },
+        "12": { "name": "Ronal", "number": "9", "veteran": true, "rating": 3.9, "strengths": ["Remate fuerte media distancia", "Juego asociativo ofensivo"], "improvements": ["Precisión en remate", "Estado físico"] },
+        "13": { "name": "Fabian", "number": "4", "veteran": false, "rating": 3.5, "strengths": [], "improvements": [] }
     },
     "positions": {
-        "porteros": [ { "id": "1", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "7", "priority": "low-priority" } ],
-        "defensas": [ { "id": "3", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "10", "priority": "medium-priority" }, { "id": "11", "priority": "medium-priority" }, { "id": "4", "priority": "low-priority" }, { "id": "5", "priority": "low-priority" }, { "id": "6", "priority": "low-priority" }, { "id": "12", "priority": "high-priority" } ],
-        "medio": [ { "id": "7", "priority": "high-priority" }, { "id": "8", "priority": "high-priority" }, { "id": "10", "priority": "high-priority" }, { "id": "6", "priority": "medium-priority" }, { "id": "9", "priority": "medium-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "low-priority" }, { "id": "12", "priority": "medium-priority" } ],
-        "delanteros": [ { "id": "10", "priority": "high-priority" }, { "id": "8", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" } ]
+        "porteros": [ { "id": "1", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" } ],
+        "defensas": [ { "id": "3", "priority": "high-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "10", "priority": "medium-priority" }, { "id": "11", "priority": "medium-priority" }, { "id": "6", "priority": "low-priority" }, { "id": "12", "priority": "high-priority" }, { "id": "13", "priority": "medium-priority" } ],
+        "medio": [ { "id": "7", "priority": "high-priority" }, { "id": "8", "priority": "high-priority" }, { "id": "10", "priority": "high-priority" }, { "id": "6", "priority": "medium-priority" }, { "id": "9", "priority": "medium-priority" }, { "id": "2", "priority": "medium-priority" }, { "id": "3", "priority": "low-priority" }, { "id": "12", "priority": "medium-priority" }, { "id": "13", "priority": "medium-priority" } ],
+        "delanteros": [ { "id": "8", "priority": "medium-priority" }, { "id": "7", "priority": "low-priority" }, { "id": "5", "priority": "medium-priority" } ]
     },
     "captains": [ { "order": 1, "id": "7" }, { "order": 2, "id": "3" }, { "order": 3, "id": "8" }, { "order": 4, "id": "1" } ],
     "field": [
         { "class": "goalkeeper", "id": "1", "side": "left" },
-        { "class": "defender-1", "id": "3" },
+        { "class": "defender-1", "id": "13" },
         { "class": "defender-2", "id": "2" },
         { "class": "midfielder-1", "id": "10" },
         { "class": "midfielder-2", "id": "7" },
@@ -178,7 +178,7 @@ function renderFullRoster() {
     ids.forEach(function(id) {
         var p = rosterData.players[id];
         var card = document.createElement('div');
-        card.className = 'roster-card';
+        card.className = 'roster-card' + (p.veteran ? ' is-veteran' : '');
 
         // Rating prominence
         if (p.rating) {
@@ -203,12 +203,12 @@ function renderFullRoster() {
         name.className = 'roster-name' + (p.veteran ? ' veteran' : '');
         name.textContent = p.name;
 
-        var veteranBadge = null;
         if (p.veteran) {
-            veteranBadge = document.createElement('span');
-            veteranBadge.className = 'veteran-badge';
-            veteranBadge.innerHTML = '<i class="fas fa-medal" aria-hidden="true"></i> Veterano';
-            veteranBadge.setAttribute('aria-label', 'Jugador veterano');
+            var medal = document.createElement('i');
+            medal.className = 'fas fa-medal veteran-indicator';
+            medal.setAttribute('aria-label', 'Jugador veterano');
+            medal.title = 'Veterano';
+            name.appendChild(medal);
         }
         
         var positionsDiv = document.createElement('div');
@@ -224,7 +224,6 @@ function renderFullRoster() {
         });
 
         info.appendChild(name);
-        if (veteranBadge) info.appendChild(veteranBadge);
         info.appendChild(positionsDiv);
         header.appendChild(badge);
         header.appendChild(info);
@@ -1320,7 +1319,8 @@ function toggleDarkMode() {
 }
 
 // Check saved theme on load
-if (localStorage.getItem('darkMode') === 'true') {
+// Modo oscuro por defecto; solo pasa a claro si el usuario lo eligió
+if (localStorage.getItem('darkMode') !== 'false') {
     document.body.classList.add('dark-mode');
     // Ensure icon matches on load
     var icon = document.getElementById('theme-icon');

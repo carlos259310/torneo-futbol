@@ -1,3 +1,24 @@
 {
-  "matches": []
+  "matches": [
+    {
+      "id": 1,
+      "date": "2026-10-18",
+      "homeTeam": "Tránsito de Girón",
+      "awayTeam": "CDA Principal",
+      "homeScore": 0,
+      "awayScore": 2,
+      "status": "Finalizado",
+     "scorers": [
+      ],
+      "strengths": [
+        "Equipo fue superior al rival durante gran parte del partido",
+        "Con el hermano de Fernando y Fabian se dio otra dimanica de juego con mas tenencia de balón y juego asociativo"
+      ],
+      "improvements": [
+        "Definicion",
+        "Manejo de los cambios",
+        "En el primer gol del rival estaba solo 1 jugador defendiendo"
+      ]
+    }
+  ]
 }
