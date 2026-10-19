@@ -13,11 +13,11 @@
 </head>
 <body>
     <script is:inline>
-        // Tema oscuro por defecto; 'tema' guarda la elección del usuario ('claro' u 'oscuro')
+        // Tema claro por defecto; 'tema' guarda la elección del usuario ('claro' u 'oscuro')
         (function () {
             var t = null;
             try { t = localStorage.getItem('tema'); } catch (e) {}
-            if (t !== 'claro') document.body.classList.add('dark-mode');
+            if (t === 'oscuro') document.body.classList.add('dark-mode');
         })();
     </script>
     <!-- Navigation Menu -->

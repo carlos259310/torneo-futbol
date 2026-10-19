@@ -152,10 +152,14 @@
         .pos-table tbody tr td:first-child { border-left: 4px solid transparent; }
 
         .pos-pts { font-weight: 900; color: var(--primary); font-size: 0.95rem; }
-        .our-team td { background: rgba(34,197,94,0.08) !important; border-top: 1px solid rgba(34,197,94,0.3); border-bottom: 1px solid rgba(34,197,94,0.3) !important; }
-        .our-team td:first-child { border-left: 4px solid #22c55e !important; }
-        .our-team .pos-team { color: #15803d; }
-        .dark-mode .our-team .pos-team { color: #4ade80; }
+        .our-team td { background: rgba(214,166,50,0.14) !important; border-top: 1px solid rgba(214,166,50,0.4); border-bottom: 1px solid rgba(214,166,50,0.4) !important; }
+        .our-team td:first-child { border-left: 4px solid #d6a632 !important; }
+        .our-team .pos-team { color: var(--primary); }
+        .dark-mode .our-team .pos-team { color: #f5cc62; }
+        .pos-table tbody tr:nth-child(-n+2) .pos-rank-box { background: var(--primary); color: #fff; }
+        .pos-table th:nth-child(n+2), .pos-table td:nth-child(n+2) { min-width: 44px; }
+        .pos-table td:first-child { min-width: 200px; }
+        .pos-table td:first-child, .pos-table th:first-child { position: sticky; left: 0; background: var(--bg-card); z-index: 1; }
 
         /* ── Scorers Table (standalone below grid) ── */
         #scorers-section {
@@ -233,11 +237,11 @@
 </head>
 <body>
     <script>
-        // Tema oscuro por defecto; 'tema' guarda la elección del usuario ('claro' u 'oscuro')
+        // Tema claro por defecto; 'tema' guarda la elección del usuario ('claro' u 'oscuro')
         (function () {
             var t = null;
             try { t = localStorage.getItem('tema'); } catch (e) {}
-            if (t !== 'claro') document.body.classList.add('dark-mode');
+            if (t === 'oscuro') document.body.classList.add('dark-mode');
         })();
     </script>
     <nav class="navbar">

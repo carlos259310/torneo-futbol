@@ -93,8 +93,8 @@ function renderPositionsTable(data) {
 
     const rows = sorted.map((t, index) => {
         const rank = index + 1;
-        const normalizedName = t.equipo.toLowerCase();
-        const isOurTeam = normalizedName === 'transito giron' || normalizedName === 'tránsito de girón' || normalizedName === 'tránsito girón';
+        const normalizedName = t.equipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const isOurTeam = normalizedName === 'transito giron' || normalizedName === 'transito de giron';
         const rowClass = isOurTeam ? `our-team` : '';
         
         return `

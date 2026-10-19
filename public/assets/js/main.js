@@ -1318,7 +1318,7 @@ function toggleDarkMode() {
     }
 }
 
-// Tema oscuro por defecto (clase aplicada al abrir <body>); solo se sincroniza el icono
+// Tema claro por defecto (clase aplicada al abrir <body>); solo se sincroniza el icono
 (function () {
     var icon = document.getElementById('theme-icon');
     if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';

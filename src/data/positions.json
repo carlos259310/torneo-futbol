@@ -1,5 +1,14 @@
 {
   "torneo": "C.E.A",
-  "ultima_actualizacion": "",
-  "tabla_posiciones": []
+  "ultima_actualizacion": "19/10/2026",
+  "tabla_posiciones": [
+    { "equipo": "CDA Tecnofull - CDA La 27", "pj": 2, "pg": 2, "pe": 0, "pp": 0, "gf": 12, "gc": 4,  "dg": 8,  "puntos": 6 },
+    { "equipo": "CNT Principal",             "pj": 3, "pg": 2, "pe": 0, "pp": 1, "gf": 13, "gc": 9,  "dg": 4,  "puntos": 6 },
+    { "equipo": "Auto Oriente",              "pj": 1, "pg": 1, "pe": 0, "pp": 0, "gf": 5,  "gc": 2,  "dg": 3,  "puntos": 3 },
+    { "equipo": "Auto Giron",                "pj": 1, "pg": 1, "pe": 0, "pp": 0, "gf": 3,  "gc": 0,  "dg": 3,  "puntos": 3 },
+    { "equipo": "CMR Lebrija",               "pj": 2, "pg": 1, "pe": 0, "pp": 1, "gf": 9,  "gc": 6,  "dg": 3,  "puntos": 3 },
+    { "equipo": "Transito de Giron",         "pj": 1, "pg": 0, "pe": 0, "pp": 1, "gf": 0,  "gc": 2,  "dg": -2, "puntos": 0 },
+    { "equipo": "Escuela Baron",             "pj": 2, "pg": 0, "pe": 0, "pp": 2, "gf": 6,  "gc": 15, "dg": -9, "puntos": 0 },
+    { "equipo": "Gestoria Bucaramanga",      "pj": 1, "pg": 0, "pe": 0, "pp": 1, "gf": 0,  "gc": 3,  "dg": -3, "puntos": 0 }
+  ]
 }

@@ -1303,3 +1303,36 @@ body.dark-mode { background: var(--bg-body); }
 .dark-mode .card-toggle, .dark-mode .card-toggle .toggle-icon { color: #f5cc62; }
 .dark-mode .audio-toggle[aria-pressed="true"] { color: #f5cc62; background: rgba(214, 166, 50, 0.14); }
 .dark-mode .convocado-item.dragging { background: #3a2227; }
+
+/* Roster card: selected (expanded) state with readable background in both themes */
+.roster-card.expanded,
+.roster-card.expanded:hover {
+    transform: none;
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 7%, var(--bg-card));
+    box-shadow: 0 0 0 1px var(--primary), 0 10px 24px rgba(79, 13, 21, 0.12);
+}
+.dark-mode .roster-card.expanded,
+.dark-mode .roster-card.expanded:hover {
+    border-color: var(--accent);
+    background: #331a1f;
+    box-shadow: 0 0 0 1px var(--accent), 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+.dark-mode .roster-card:hover:not(.expanded) { background: #2a171b; }
+
+/* "Ver detalles / Ocultar": legible en reposo, hover y seleccionado, claro y oscuro */
+.roster-card .card-toggle {
+    color: var(--primary);
+    border-top: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+.roster-card .card-toggle .toggle-text,
+.roster-card .card-toggle .toggle-icon { color: inherit; }
+.roster-card:hover .card-toggle,
+.roster-card.expanded .card-toggle { color: var(--primary); }
+.roster-card.expanded .card-toggle { font-weight: 800; }
+.dark-mode .roster-card .card-toggle,
+.dark-mode .roster-card:hover .card-toggle,
+.dark-mode .roster-card.expanded .card-toggle {
+    color: #f5cc62;
+    border-top-color: rgba(245, 204, 98, 0.3);
+}
