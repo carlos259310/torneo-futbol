@@ -19,6 +19,32 @@
         "Manejo de los cambios",
         "En el primer gol del rival estaba solo 1 jugador defendiendo"
       ]
+    },
+        {
+      "id": 2,
+      "date": "2026-10-25",
+      "homeTeam": "Tránsito de Girón",
+      "awayTeam": "Escula Baron",
+      "homeScore": 1,
+      "awayScore": 3,
+      "status": "Finalizado",
+     "scorers": [
+        {
+          "playerId": "8",
+          "goals": 1
+        }
+      ],
+      "strengths": [
+        "Fernando Jr a pesar de tener corresponsabilidad en el segundo gol, nos salvo de una goleada",
+        "Jhon anoto el gol del equipo",
+        "Don Cristian defendio bien cuando estuvo en cancha"
+      ],
+      "improvements": [
+        "Definicion, las que tuvimos no las concretamos",
+        "Orden en defensa ya que nos tomaron mal parados en varias ocasiones",
+        "No caer en provocaiones del rival se estaban tirando para buscar faltas(Carlos Daniel)",
+        "Mejorar al actitud y confianza ,tenemos jugadores habilidosos y con buen juego asociativo"
+      ]
     }
   ]
 }
