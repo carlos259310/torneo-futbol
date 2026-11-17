@@ -1,14 +1,14 @@
 {
   "torneo": "C.E.A",
-  "ultima_actualizacion": "19/10/2026",
+  "ultima_actualizacion": "17/11/2026",
   "tabla_posiciones": [
-    { "equipo": "CDA Tecnofull - CDA La 27", "pj": 2, "pg": 2, "pe": 0, "pp": 0, "gf": 12, "gc": 4,  "dg": 8,  "puntos": 6 },
-    { "equipo": "CNT Principal",             "pj": 3, "pg": 2, "pe": 0, "pp": 1, "gf": 13, "gc": 9,  "dg": 4,  "puntos": 6 },
-    { "equipo": "Auto Oriente",              "pj": 1, "pg": 1, "pe": 0, "pp": 0, "gf": 5,  "gc": 2,  "dg": 3,  "puntos": 3 },
-    { "equipo": "Auto Giron",                "pj": 1, "pg": 1, "pe": 0, "pp": 0, "gf": 3,  "gc": 0,  "dg": 3,  "puntos": 3 },
-    { "equipo": "CMR Lebrija",               "pj": 2, "pg": 1, "pe": 0, "pp": 1, "gf": 9,  "gc": 6,  "dg": 3,  "puntos": 3 },
-    { "equipo": "Transito de Giron",         "pj": 1, "pg": 0, "pe": 0, "pp": 1, "gf": 0,  "gc": 2,  "dg": -2, "puntos": 0 },
-    { "equipo": "Escuela Baron",             "pj": 2, "pg": 0, "pe": 0, "pp": 2, "gf": 6,  "gc": 15, "dg": -9, "puntos": 0 },
-    { "equipo": "Gestoria Bucaramanga",      "pj": 1, "pg": 0, "pe": 0, "pp": 1, "gf": 0,  "gc": 3,  "dg": -3, "puntos": 0 }
+    { "equipo": "Auto Oriente - Cda el Molino", "pj": 4, "pg": 4, "pe": 0, "pp": 0, "gf": 15, "gc": 5,  "dg": 10,  "puntos": 12 },
+    { "equipo": "CDA Tecnofull - CDA La 27",   "pj": 4, "pg": 3, "pe": 0, "pp": 1, "gf": 16, "gc": 12, "dg": 4,   "puntos": 9 },
+    { "equipo": "CNT Principal",                "pj": 5, "pg": 2, "pe": 1, "pp": 2, "gf": 18, "gc": 15, "dg": 3,   "puntos": 7 },
+    { "equipo": "Escuela Baron",                "pj": 5, "pg": 2, "pe": 0, "pp": 3, "gf": 16, "gc": 22, "dg": -6,  "puntos": 6 },
+    { "equipo": "CMR Lebrija",                  "pj": 4, "pg": 1, "pe": 1, "pp": 2, "gf": 12, "gc": 10, "dg": 2,   "puntos": 4 },
+    { "equipo": "Auto Giron",                   "pj": 2, "pg": 1, "pe": 0, "pp": 1, "gf": 5,  "gc": 5,  "dg": 0,   "puntos": 3 },
+    { "equipo": "Transito de Giron",            "pj": 2, "pg": 0, "pe": 0, "pp": 2, "gf": 2,  "gc": 5,  "dg": -3,  "puntos": 0 },
+    { "equipo": "Gestoria Bucaramanga",         "pj": 2, "pg": 0, "pe": 0, "pp": 2, "gf": 0,  "gc": 10, "dg": -10, "puntos": 0 }
   ]
 }
