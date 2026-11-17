@@ -65,7 +65,7 @@
           "goals": 1
         },
         {
-          "playerId": "7",
+          "playerId": "5",
           "goals": 1
         }
       ],
@@ -97,15 +97,8 @@
         {
           "playerId": "4",
           "goals": 1
-        },
-        {
-          "playerId": "8",
-          "goals": 1
-        },
-        {
-          "playerId": "7",
-          "goals": 1
         }
+ 
       ],
       "strengths": [
         "El equipo tuvo actitud, corrio bastante y empato al final ",
