@@ -24,11 +24,19 @@
       "strengths": ["Anticipación", "Corte de balón", "Marca fuerte"],
       "improvements": ["Salida limpia", "Juego asociativo", "Estado físico"]
     },
+    "4": {
+      "name": "Gregorio",
+      "number": "17",
+      "veteran": true,
+      "rating": 3.8,
+      "strengths": ["Buena marca","Apoyo en defensa"],
+      "improvements": ["Mejorar condifición física","Mejorar Juego asociativo"]
+    },
     "5": {
       "name": "Juan Duarte",
       "number": "7",
       "veteran": false,
-      "rating": 3.8,
+      "rating": 3.9,
       "strengths": ["Disparo de media distancia", "Regate"],
       "improvements": ["Toma de decisiones", "Estado físico"]
     },

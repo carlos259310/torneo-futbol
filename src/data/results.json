@@ -45,6 +45,81 @@
         "No caer en provocaciones del rival se estaban tirando para buscar faltas(Carlos Daniel)",
         "Mejorar al actitud y confianza ,tenemos jugadores habilidosos y con buen juego asociativo"
       ]
+    },
+    
+       {
+      "id": 3,
+      "date": "2026-11-17",
+      "homeTeam": "Tránsito de Girón",
+      "awayTeam": "Auto Oriente",
+      "homeScore": 4,
+      "awayScore": 3,
+      "status": "Finalizado",
+     "scorers": [
+        {
+          "playerId": "13",
+          "goals": 2
+        },
+        {
+          "playerId": "8",
+          "goals": 1
+        },
+        {
+          "playerId": "7",
+          "goals": 1
+        }
+      ],
+      "strengths": [
+        "El equipo tuvo actitud, corrio bastante y remonto un marcador adverso",
+        "Fabian anoto 2 goles y aporto bastante en el juego asociativo",
+        "Jhon y juan Duarte aportaron con 1 gol",
+        "Carlos Daniel casco y lo cascarón pero no se dejo intimidar, ni peleo y aporto en defensa",
+        "Fernando Junior mostro buena actitud y liderazgo a pesar de los errores en el primer gol",
+         "Se mejoró en la rotacion de los jugadores,pero aun debe organizar mejor ese tema ",
+        "Harold aporto con liderazgo y juego asociativo",  
+         "Gregorio y Marcos aportaron como veteranos lo mejor que pudierón con actitud y garra"
+        ],
+      "improvements": [
+        "Ferando Jr tuvo corresponsabilidad en el primer gol del rival, pero se redimio con una buena actuación",
+        "Definicion, a pesar de ganar no se concretaron varias oportunidades de gol",
+        "Desconcentraciones defensivas, el rival marco 3 goles que se pudieron evitar "
+      ]
+    },
+        {
+      "id": 4,
+      "date": "2026-11-17",
+      "homeTeam": "Tránsito de Girón",
+      "awayTeam": "Gestoria Bucaramanga",
+      "homeScore": 1,
+      "awayScore": 1,
+      "status": "Finalizado",
+     "scorers": [
+        {
+          "playerId": "4",
+          "goals": 1
+        },
+        {
+          "playerId": "8",
+          "goals": 1
+        },
+        {
+          "playerId": "7",
+          "goals": 1
+        }
+      ],
+      "strengths": [
+        "El equipo tuvo actitud, corrio bastante y empato al final ",
+        "Se manejo mejor el tema de los cambios y la rotacion de jugadores pero aun falta corregir este aspecto",
+        "A pesar del cansacio se corrio y lucho hasta el final",
+        "Fernando Jr se mostro mas seguro y cumplió cuando fue requerido",
+        "Carlos Medina y Don Cristian y Gregorio defendieron muy bien y cumplieron a pesar del error en el primer gol",
+        "Fabian aporto bastante en la creación de juego "
+       ],
+      "improvements": [
+    "El gol del rival fue un descuido tonto en la defensa , no pueden marcarnos goles asi",
+    "Harold y Fabian discutieron siendo jugadores importantes y habilidosos deben tener mejor comunicacion"
+        ,"Definicion , se deben concretar las oportunidades de gol que se generen"
+  ]
     }
   ]
 }
